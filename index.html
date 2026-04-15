@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>進捗管理</title>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 body{
 font-family:"Meiryo";
@@ -26,35 +28,21 @@ text-align:center;
 }
 
 .percent{
-font-size:28px;
+font-size:26px;
 font-weight:bold;
-}
-
-.bar{
-width:100%;
-height:20px;
-background:#334155;
-border-radius:20px;
-overflow:hidden;
 margin:10px 0;
-}
-
-.progress{
-height:100%;
-width:0%;
-background:#22c55e;
-transition:0.4s;
 }
 
 .info{
 font-size:13px;
 margin:10px 0;
+color:#cbd5e1;
 }
 
 .msg{
 height:20px;
-margin:10px 0;
 color:#facc15;
+margin:10px 0;
 }
 
 button{
@@ -64,12 +52,17 @@ margin:4px 0;
 border:none;
 border-radius:10px;
 font-weight:bold;
+cursor:pointer;
 }
 
-.add{ background:#22c55e; color:#fff; }
-.miss{ background:#ef4444; color:#fff; }
-.reset{ background:#64748b; color:#fff; }
+.good{ background:#22c55e; color:#fff; }
+.bad{ background:#ef4444; color:#fff; }
 .history{ background:#6366f1; color:#fff; }
+.reset{ background:#64748b; color:#fff; }
+
+canvas{
+margin:10px 0;
+}
 </style>
 </head>
 
@@ -81,20 +74,26 @@ font-weight:bold;
 
 <script>
 
-const TOTAL = 100;
 const GAME_COUNT = 5;
-
-const messages = [
-"いいぞ！","その調子🔥","速い！","ナイス入力！",
-"集中できてる","プロやん","もう止まらん"
-];
 
 const names = ["スケジュール", "口コミ獲得（日本人）", "口コミ獲得（外国人）", "飛込数", "プレイヤー5"];
 
-// ===== HTML生成 =====
+// ===== データ =====
+let data = {};
+
 for(let i=1;i<=GAME_COUNT;i++){
 
-let isJP = (i === 2);
+data[i] = {
+response: Number(localStorage.getItem(`response${i}`) || 0),
+acquired: Number(localStorage.getItem(`acquired${i}`) || 0),
+miss: Number(localStorage.getItem(`miss${i}`) || 0),
+history: JSON.parse(localStorage.getItem(`history${i}`) || "[]")
+};
+
+}
+
+// ===== HTML生成（全て統一） =====
+for(let i=1;i<=GAME_COUNT;i++){
 
 document.getElementById("games").innerHTML += `
 <div class="box">
@@ -102,139 +101,142 @@ document.getElementById("games").innerHTML += `
 <h3>${names[i - 1]}</h3>
 
 <div class="percent" id="percent${i}">0%</div>
-<div class="bar"><div class="progress" id="bar${i}"></div></div>
+
+<canvas id="chart${i}" height="180"></canvas>
+
 <div class="info" id="info${i}"></div>
+
 <div class="msg" id="msg${i}"></div>
 
-<button class="add" onclick="add(${i})">
-${isJP ? "応対数＋1" : "＋1件入力"}
-</button>
-
-<button class="miss" onclick="miss(${i})">
-${isJP ? "獲得数＋1" : "ミス"}
-</button>
-
-${isJP ? `<button class="history" onclick="showHistory(${i})">履歴</button>` : ""}
-
-<button class="reset" onclick="resetGame(${i})">
-${isJP ? "ミス" : "リセット"}
-</button>
+<button class="good" onclick="addAcquired(${i})">獲得数＋1</button>
+<button class="bad" onclick="addMiss(${i})">ミス数＋1</button>
+<button class="history" onclick="showHistory(${i})">履歴</button>
+<button class="reset" onclick="resetOnly(${i})">リセット</button>
 
 </div>
 `;
 }
 
-// ===== データ =====
-let data = {};
+// ===== Chart =====
+let charts = {};
 
-for(let i=1;i<=GAME_COUNT;i++){
-data[i] = {
-done: Number(localStorage.getItem(`done${i}`) || 0),
-miss: Number(localStorage.getItem(`miss${i}`) || 0),
-streak: Number(localStorage.getItem(`streak${i}`) || 0),
-time: Number(localStorage.getItem(`time${i}`) || 0),
-history: JSON.parse(localStorage.getItem(`history${i}`) || "[]")
-};
+function initChart(i){
+
+let ctx = document.getElementById(`chart${i}`);
+
+charts[i] = new Chart(ctx, {
+type: 'doughnut',
+data: {
+labels: ['獲得', 'ミス'],
+datasets: [{
+data: [data[i].acquired, data[i].miss]
+}]
+},
+options: {
+responsive: true,
+plugins: {
+legend: { labels: { color: "#fff" } }
+}
+}
+});
+
 }
 
 // ===== 保存 =====
 function save(i){
-localStorage.setItem(`done${i}`, data[i].done);
+localStorage.setItem(`response${i}`, data[i].response);
+localStorage.setItem(`acquired${i}`, data[i].acquired);
 localStorage.setItem(`miss${i}`, data[i].miss);
-localStorage.setItem(`streak${i}`, data[i].streak);
-localStorage.setItem(`time${i}`, data[i].time);
 localStorage.setItem(`history${i}`, JSON.stringify(data[i].history));
 }
 
-// ===== 履歴追加 =====
-function addHistory(i, text){
-data[i].history.unshift(`${new Date().toLocaleString()} ${text}`);
-data[i].history = data[i].history.slice(0, 30);
+// ===== 履歴 =====
+function addHistory(i, type, reason=""){
+data[i].history.unshift({
+time: new Date().toLocaleString(),
+type,
+reason
+});
+data[i].history = data[i].history.slice(0, 200);
 save(i);
 }
 
 // ===== 更新 =====
 function update(i){
+
 let d = data[i];
 
-let percent = Math.floor((d.done / TOTAL) * 100);
-let remain = TOTAL - d.done;
+let total = d.response;
+let percent = total === 0 ? 0 : Math.floor((d.acquired / total) * 100);
 
-let accuracy = (d.done + d.miss) === 0
-? 100
-: Math.floor((d.done / (d.done + d.miss)) * 100);
-
-document.getElementById(`percent${i}`).innerText = percent + "%";
-document.getElementById(`bar${i}`).style.width = percent + "%";
-
-document.getElementById(`bar${i}`).style.background =
-percent >= 80 ? "#f59e0b" : "#22c55e";
+document.getElementById(`percent${i}`).innerText =
+`獲得率 ${percent}%`;
 
 document.getElementById(`info${i}`).innerText =
-`入力:${d.done}/100 残り:${remain} ミス:${d.miss} 精度:${accuracy}% 連続:${d.streak}`;
+`応対:${d.response} / 獲得:${d.acquired} / ミス:${d.miss}`;
 
-if(d.done === TOTAL){
-alert(`🏆 プレイヤー${i} 完全達成！`);
-}
+charts[i].data.datasets[0].data = [d.acquired, d.miss];
+charts[i].update();
 
 save(i);
 }
 
-// ===== 応対数（元add） =====
-function add(i){
-let d = data[i];
+// ===== 獲得 =====
+function addAcquired(i){
 
-if(d.done < TOTAL){
-d.done++;
-}
-
-d.time = Date.now();
-
-document.getElementById(`msg${i}`).innerText =
-messages[Math.floor(Math.random() * messages.length)];
-
-addHistory(i, "応対 +1");
-
-update(i);
-}
-
-// ===== 獲得数（元miss） =====
-function miss(i){
-let d = data[i];
-
-d.miss++;
+data[i].response++;
+data[i].acquired++;
 
 document.getElementById(`msg${i}`).innerText = "獲得 +1";
 
-addHistory(i, "獲得 +1");
+addHistory(i, "獲得");
 
 update(i);
 }
 
-// ===== ミス（元reset） =====
-function resetGame(i){
-if(confirm(`プレイヤー${i}をミス扱いする？`)){
+// ===== ミス（理由入力） =====
+function addMiss(i){
 
-data[i].done = 0;
-data[i].miss = 0;
-data[i].streak = 0;
-data[i].time = 0;
+let reason = prompt("ミスの理由を入力してください");
 
-addHistory(i, "ミス（リセット扱い）");
+data[i].response++;
+data[i].miss++;
 
-document.getElementById(`msg${i}`).innerText = "ミス扱い";
+document.getElementById(`msg${i}`).innerText = "ミス +1";
+
+addHistory(i, "ミス", reason || "未入力");
 
 update(i);
-}
 }
 
 // ===== 履歴表示 =====
 function showHistory(i){
-alert(data[i].history.join("\n") || "履歴なし");
+
+let list = data[i].history.map(h =>
+`${h.time}｜${h.type}｜${h.reason}`
+).join("\n");
+
+alert(list || "履歴なし");
 }
 
-// 初期描画
+// ===== リセット（数値のみ） =====
+function resetOnly(i){
+
+if(confirm("件数をリセットする？（履歴は残る）")){
+
+data[i].response = 0;
+data[i].acquired = 0;
+data[i].miss = 0;
+
+addHistory(i, "リセット");
+
+update(i);
+}
+}
+
+// ===== 初期化 =====
 for(let i=1;i<=GAME_COUNT;i++){
+initChart(i);
 update(i);
 }
 

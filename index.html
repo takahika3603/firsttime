@@ -69,6 +69,7 @@ font-weight:bold;
 .add{ background:#22c55e; color:#fff; }
 .miss{ background:#ef4444; color:#fff; }
 .reset{ background:#64748b; color:#fff; }
+.history{ background:#6366f1; color:#fff; }
 </style>
 </head>
 
@@ -89,8 +90,12 @@ const messages = [
 ];
 
 const names = ["スケジュール", "口コミ獲得（日本人）", "口コミ獲得（外国人）", "飛込数", "プレイヤー5"];
+
 // ===== HTML生成 =====
 for(let i=1;i<=GAME_COUNT;i++){
+
+let isJP = (i === 2);
+
 document.getElementById("games").innerHTML += `
 <div class="box">
 
@@ -100,9 +105,21 @@ document.getElementById("games").innerHTML += `
 <div class="bar"><div class="progress" id="bar${i}"></div></div>
 <div class="info" id="info${i}"></div>
 <div class="msg" id="msg${i}"></div>
-<button class="add" onclick="add(${i})">＋1件入力</button>
-<button class="miss" onclick="miss(${i})">ミス</button>
-<button class="reset" onclick="resetGame(${i})">リセット</button>
+
+<button class="add" onclick="add(${i})">
+${isJP ? "応対数＋1" : "＋1件入力"}
+</button>
+
+<button class="miss" onclick="miss(${i})">
+${isJP ? "獲得数＋1" : "ミス"}
+</button>
+
+${isJP ? `<button class="history" onclick="showHistory(${i})">履歴</button>` : ""}
+
+<button class="reset" onclick="resetGame(${i})">
+${isJP ? "ミス" : "リセット"}
+</button>
+
 </div>
 `;
 }
@@ -115,7 +132,8 @@ data[i] = {
 done: Number(localStorage.getItem(`done${i}`) || 0),
 miss: Number(localStorage.getItem(`miss${i}`) || 0),
 streak: Number(localStorage.getItem(`streak${i}`) || 0),
-time: Number(localStorage.getItem(`time${i}`) || 0)
+time: Number(localStorage.getItem(`time${i}`) || 0),
+history: JSON.parse(localStorage.getItem(`history${i}`) || "[]")
 };
 }
 
@@ -125,6 +143,14 @@ localStorage.setItem(`done${i}`, data[i].done);
 localStorage.setItem(`miss${i}`, data[i].miss);
 localStorage.setItem(`streak${i}`, data[i].streak);
 localStorage.setItem(`time${i}`, data[i].time);
+localStorage.setItem(`history${i}`, JSON.stringify(data[i].history));
+}
+
+// ===== 履歴追加 =====
+function addHistory(i, text){
+data[i].history.unshift(`${new Date().toLocaleString()} ${text}`);
+data[i].history = data[i].history.slice(0, 30);
+save(i);
 }
 
 // ===== 更新 =====
@@ -154,52 +180,57 @@ alert(`🏆 プレイヤー${i} 完全達成！`);
 save(i);
 }
 
-// ===== 入力 =====
+// ===== 応対数（元add） =====
 function add(i){
 let d = data[i];
-let now = Date.now();
-
-if(now - d.time < 3000){
-d.streak++;
-}else{
-d.streak = 1;
-}
 
 if(d.done < TOTAL){
 d.done++;
 }
 
-d.time = now;
+d.time = Date.now();
 
 document.getElementById(`msg${i}`).innerText =
 messages[Math.floor(Math.random() * messages.length)];
 
+addHistory(i, "応対 +1");
+
 update(i);
 }
 
-// ===== ミス =====
+// ===== 獲得数（元miss） =====
 function miss(i){
 let d = data[i];
+
 d.miss++;
-d.streak = 0;
-document.getElementById(`msg${i}`).innerText = "ドンマイ、次！";
+
+document.getElementById(`msg${i}`).innerText = "獲得 +1";
+
+addHistory(i, "獲得 +1");
+
 update(i);
 }
 
-// ===== リセット =====
+// ===== ミス（元reset） =====
 function resetGame(i){
-if(confirm(`プレイヤー${i}をリセットする？`)){
-data[i] = { done:0, miss:0, streak:0, time:0 };
+if(confirm(`プレイヤー${i}をミス扱いする？`)){
 
-localStorage.removeItem(`done${i}`);
-localStorage.removeItem(`miss${i}`);
-localStorage.removeItem(`streak${i}`);
-localStorage.removeItem(`time${i}`);
+data[i].done = 0;
+data[i].miss = 0;
+data[i].streak = 0;
+data[i].time = 0;
 
-document.getElementById(`msg${i}`).innerText = "リセット完了";
+addHistory(i, "ミス（リセット扱い）");
+
+document.getElementById(`msg${i}`).innerText = "ミス扱い";
 
 update(i);
 }
+}
+
+// ===== 履歴表示 =====
+function showHistory(i){
+alert(data[i].history.join("\n") || "履歴なし");
 }
 
 // 初期描画

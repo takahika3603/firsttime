@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>シフト入力ゲーム</title>
+
+<style>
+body{
+  font-family:"Meiryo";
+  background:#0f172a;
+  color:#fff;
+  text-align:center;
+  padding:20px;
+}
+
+.box{
+  max-width:420px;
+  margin:auto;
+  background:#1e293b;
+  padding:20px;
+  border-radius:16px;
+}
+
+.percent{
+  font-size:32px;
+  font-weight:bold;
+}
+
+.bar{
+  width:100%;
+  height:25px;
+  background:#334155;
+  border-radius:20px;
+  overflow:hidden;
+  margin:15px 0;
+}
+
+.progress{
+  height:100%;
+  width:0%;
+  background:#22c55e;
+  transition:0.4s;
+}
+
+.info{
+  font-size:14px;
+  margin:10px 0;
+}
+
+.msg{
+  height:24px;
+  margin:10px 0;
+  color:#facc15;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  margin:5px 0;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+}
+
+.add{ background:#22c55e; color:#fff; }
+.miss{ background:#ef4444; color:#fff; }
+.reset{ background:#64748b; color:#fff; }
+
+.log{
+  margin-top:15px;
+  font-size:12px;
+  color:#94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>🎮 シフト入力ゲーム（100件）</h2>
+
+<div class="percent" id="percent">0%</div>
+
+<div class="bar">
+  <div class="progress" id="bar"></div>
+</div>
+
+<div class="info" id="info"></div>
+
+<div class="msg" id="msg"></div>
+
+<button class="add" onclick="add()">＋1件入力</button>
+<button class="miss" onclick="miss()">ミス</button>
+<button class="reset" onclick="reset()">リセット</button>
+
+<div class="log" id="log"></div>
+
+</div>
+
+<script>
+
+const TOTAL = 100;
+
+// 保存データ
+let done = Number(localStorage.getItem("done") || 0);
+let missCount = Number(localStorage.getItem("miss") || 0);
+let streak = Number(localStorage.getItem("streak") || 0);
+let lastTime = Number(localStorage.getItem("time") || 0);
+
+// 褒めメッセージ
+const messages = [
+  "いいぞ！",
+  "その調子🔥",
+  "速い！",
+  "ナイス入力！",
+  "集中できてる",
+  "プロやん",
+  "もう止まらん",
+];
+
+// 保存
+function save(){
+  localStorage.setItem("done", done);
+  localStorage.setItem("miss", missCount);
+  localStorage.setItem("streak", streak);
+  localStorage.setItem("time", Date.now());
+}
+
+// 更新
+function update(){
+  let percent = Math.floor((done / TOTAL) * 100);
+  let remain = TOTAL - done;
+
+  let accuracy = (done + missCount) === 0
+    ? 100
+    : Math.floor((done / (done + missCount)) * 100);
+
+  document.getElementById("percent").innerText = percent + "%";
+  document.getElementById("bar").style.width = percent + "%";
+
+  // 色変化（80%以上）
+  if(percent >= 80){
+    document.getElementById("bar").style.background = "#f59e0b";
+  }
+
+  document.getElementById("info").innerText =
+    "入力：" + done + "/100 ｜ 残り：" + remain +
+    " ｜ ミス：" + missCount +
+    " ｜ 精度：" + accuracy + "%" +
+    " ｜ 連続：" + streak;
+
+  document.getElementById("log").innerText =
+    "今日の記録 → 入力:" + done + " / ミス:" + missCount;
+
+  if(done === TOTAL){
+    alert("🏆 完全達成！今日は勝ち！");
+  }
+
+  save();
+}
+
+// 入力
+function add(){
+  let now = Date.now();
+
+  if(now - lastTime < 3000){
+    streak++;
+  }else{
+    streak = 1;
+  }
+
+  if(done < TOTAL){
+    done++;
+  }
+
+  lastTime = now;
+
+  // ランダムメッセージ
+  document.getElementById("msg").innerText =
+    messages[Math.floor(Math.random() * messages.length)];
+
+  update();
+}
+
+// ミス
+function miss(){
+  missCount++;
+  streak = 0;
+  document.getElementById("msg").innerText = "ドンマイ、次！";
+  update();
+}
+
+// リセット
+function reset(){
+  if(confirm("リセットする？")){
+    done = 0;
+    missCount = 0;
+    streak = 0;
+    localStorage.clear();
+    update();
+  }
+}
+
+update();
+
+</script>
+
+</body>
+</html>

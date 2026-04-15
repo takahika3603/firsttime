@@ -3,14 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>管理ダッシュボード</title>
+<title>業務ダッシュボード</title>
 
 <style>
 body{
 margin:0;
-font-family:"Meiryo";
+font-family:"Meiryo", sans-serif;
 background:#0f172a;
 color:#fff;
+}
+
+/* 全体フォント強制統一 */
+*{
+font-family:"Meiryo", sans-serif;
 }
 
 /* ヘッダー */
@@ -22,12 +27,13 @@ font-weight:bold;
 background:#111827;
 }
 
-/* 縦1列 */
+/* コンテンツ */
 .container{
 display:flex;
 flex-direction:column;
 gap:16px;
 padding:20px;
+padding-bottom:90px; /* 下ナビ分余白 */
 }
 
 /* カード */
@@ -63,6 +69,38 @@ background:#22c55e;
 border-radius:999px;
 font-size:12px;
 }
+
+/* ===== 下ナビ（アプリ化の核心） ===== */
+.nav{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+height:70px;
+background:#111827;
+display:flex;
+justify-content:space-around;
+align-items:center;
+border-top:1px solid #1f2937;
+}
+
+.nav-btn{
+flex:1;
+text-align:center;
+font-size:12px;
+cursor:pointer;
+color:#94a3b8;
+}
+
+.nav-btn:active{
+transform:scale(0.95);
+}
+
+.nav-btn strong{
+display:block;
+font-size:14px;
+color:#fff;
+}
 </style>
 </head>
 
@@ -74,20 +112,36 @@ font-size:12px;
 
 <div class="container">
 
-<!-- タスク -->
 <div class="card" onclick="openPage('task.html')">
 <div class="title">タスク管理</div>
 <div class="desc">日々の行動・業務整理</div>
 <div class="tag">TASK</div>
 </div>
 
-<!-- 進捗管理 -->
 <div class="card" onclick="openPage('index.html')">
 <div class="title">進捗管理</div>
 <div class="desc">KPI・成果・営業進捗</div>
 <div class="tag">KPI</div>
 </div>
 
+</div>
+
+<!-- 下ナビ -->
+<div class="nav">
+<div class="nav-btn" onclick="openPage('top.html')">
+<strong>🏠</strong>
+ホーム
+</div>
+
+<div class="nav-btn" onclick="openPage('task.html')">
+<strong>📋</strong>
+タスク
+</div>
+
+<div class="nav-btn" onclick="openPage('index.html')">
+<strong>📊</strong>
+進捗
+</div>
 </div>
 
 <script>

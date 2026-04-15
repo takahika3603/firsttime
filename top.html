@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理ダッシュボード</title>
+
+<style>
+body{
+margin:0;
+font-family:"Meiryo";
+background:#0f172a;
+color:#fff;
+}
+
+/* ヘッダー */
+header{
+padding:18px;
+text-align:center;
+font-size:20px;
+font-weight:bold;
+background:#111827;
+}
+
+/* 縦1列 */
+.container{
+display:flex;
+flex-direction:column;
+gap:16px;
+padding:20px;
+}
+
+/* カード */
+.card{
+background:#1e293b;
+padding:22px;
+border-radius:16px;
+text-align:center;
+cursor:pointer;
+transition:0.2s;
+}
+
+.card:active{
+transform:scale(0.98);
+}
+
+.title{
+font-size:18px;
+font-weight:bold;
+margin-bottom:6px;
+}
+
+.desc{
+font-size:12px;
+color:#94a3b8;
+}
+
+.tag{
+margin-top:10px;
+display:inline-block;
+padding:4px 10px;
+background:#22c55e;
+border-radius:999px;
+font-size:12px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+業務ダッシュボード
+</header>
+
+<div class="container">
+
+<!-- タスク -->
+<div class="card" onclick="openPage('task.html')">
+<div class="title">タスク管理</div>
+<div class="desc">日々の行動・業務整理</div>
+<div class="tag">TASK</div>
+</div>
+
+<!-- 進捗管理 -->
+<div class="card" onclick="openPage('index.html')">
+<div class="title">進捗管理</div>
+<div class="desc">KPI・成果・営業進捗</div>
+<div class="tag">KPI</div>
+</div>
+
+</div>
+
+<script>
+function openPage(url){
+window.location.href = url;
+}
+</script>
+
+</body>
+</html>

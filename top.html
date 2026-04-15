@@ -13,11 +13,6 @@ background:#0f172a;
 color:#fff;
 }
 
-/* 全体フォント強制統一 */
-*{
-font-family:"Meiryo", sans-serif;
-}
-
 /* ヘッダー */
 header{
 padding:18px;
@@ -33,10 +28,10 @@ display:flex;
 flex-direction:column;
 gap:16px;
 padding:20px;
-padding-bottom:90px; /* 下ナビ分余白 */
+padding-bottom:90px;
 }
 
-/* カード */
+/* カード（統一） */
 .card{
 background:#1e293b;
 padding:22px;
@@ -70,7 +65,7 @@ border-radius:999px;
 font-size:12px;
 }
 
-/* ===== 下ナビ（アプリ化の核心） ===== */
+/* 下ナビ */
 .nav{
 position:fixed;
 bottom:0;
@@ -92,10 +87,6 @@ cursor:pointer;
 color:#94a3b8;
 }
 
-.nav-btn:active{
-transform:scale(0.95);
-}
-
 .nav-btn strong{
 display:block;
 font-size:14px;
@@ -112,14 +103,23 @@ color:#fff;
 
 <div class="container">
 
+<!-- マニュアル（manual.htmlに遷移） -->
+<div class="card" onclick="openPage('manual.html')">
+<div class="title">📘 マニュアル</div>
+<div class="desc">業務手順・ルール確認</div>
+<div class="tag">MANUAL</div>
+</div>
+
+<!-- タスク -->
 <div class="card" onclick="openPage('task.html')">
-<div class="title">タスク管理</div>
+<div class="title">📋 タスク管理</div>
 <div class="desc">日々の行動・業務整理</div>
 <div class="tag">TASK</div>
 </div>
 
+<!-- 進捗 -->
 <div class="card" onclick="openPage('index.html')">
-<div class="title">進捗管理</div>
+<div class="title">📊 進捗管理</div>
 <div class="desc">KPI・成果・営業進捗</div>
 <div class="tag">KPI</div>
 </div>
@@ -128,9 +128,15 @@ color:#fff;
 
 <!-- 下ナビ -->
 <div class="nav">
+
 <div class="nav-btn" onclick="openPage('top.html')">
 <strong>🏠</strong>
 ホーム
+</div>
+
+<div class="nav-btn" onclick="openPage('manual.html')">
+<strong>📘</strong>
+マニュアル
 </div>
 
 <div class="nav-btn" onclick="openPage('task.html')">
@@ -142,6 +148,7 @@ color:#fff;
 <strong>📊</strong>
 進捗
 </div>
+
 </div>
 
 <script>

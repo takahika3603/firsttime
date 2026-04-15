@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>シフト入力ゲーム（5面）</title>
+<title>進捗管理</title>
 
 <style>
 body{
@@ -74,7 +74,7 @@ font-weight:bold;
 
 <body>
 
-<h2 style="text-align:center;">🎮 シフト入力ゲーム（5面管理）</h2>
+<h2 style="text-align:center;">進捗管理</h2>
 
 <div class="wrapper" id="games"></div>
 
@@ -88,11 +88,15 @@ const messages = [
 "集中できてる","プロやん","もう止まらん"
 ];
 
+const names = ["プレイヤー1", "崇斗", "プレイヤー3", "プレイヤー4", "プレイヤー5"];
 // ===== HTML生成 =====
 for(let i=1;i<=GAME_COUNT;i++){
 document.getElementById("games").innerHTML += `
 <div class="box">
-<h3>プレイヤー${i}</h3>
+
+<h3>${names[i - 1]}</h3>
+
+<div class="percent" id="percent${i}">0%</div>
 <div class="percent" id="percent${i}">0%</div>
 <div class="bar"><div class="progress" id="bar${i}"></div></div>
 <div class="info" id="info${i}"></div>

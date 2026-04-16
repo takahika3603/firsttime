@@ -218,10 +218,7 @@ justify-content:space-between;
 <h1>VISION CMS</h1>
 
 <canvas id="donut"></canvas>
-<select id="month">
-</select>
-<select id="monthSelect" onchange="changeMonth()" style="margin-top:10px;padding:8px;border-radius:8px;">
-</select>
+
 <div class="buttons" id="buttons"></div>
 
 <div class="list" id="list"></div>
@@ -405,35 +402,14 @@ document.getElementById("title").value="";
 closeModal();
 update();
 }
-function addArticle(){
 
-const title=document.getElementById("title").value;
-const category=document.getElementById("category").value;
-
-if(!title) return;
-
-articles.unshift({title,category});
-
-document.getElementById("title").value="";
-
-closeModal();
-update();
-}
 function update(){
-renderMonths();
 renderModalMonth();
 renderButtons();
 renderChart();
 renderList();
 }
-/* ===== 更新 ===== */
-function update(){
-renderButtons();
-renderChart();
-renderList();
-}
 
-update();
 
 let startX = 0;
 let currentEl = null;

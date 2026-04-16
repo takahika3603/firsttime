@@ -218,7 +218,10 @@ justify-content:space-between;
 <h1>VISION CMS</h1>
 
 <canvas id="donut"></canvas>
-
+<select id="month">
+</select>
+<select id="monthSelect" onchange="changeMonth()" style="margin-top:10px;padding:8px;border-radius:8px;">
+</select>
 <div class="buttons" id="buttons"></div>
 
 <div class="list" id="list"></div>
@@ -267,12 +270,38 @@ const categories = [
 "お客様層","採用条件","お仕事内容","お店のつぶやき"
 ];
 
-let articles = [
-{title:"給与制度説明",category:"お給料"},
-{title:"スタッフ教育",category:"スタッフ"},
-{title:"店内環境改善",category:"お店の環境"}
+const months = [
+"2026-04","2026-05","2026-06","2026-07","2026-08","2026-09"
 ];
+let selectedMonth = "2026-04";
+let articles = [
+{title:"給与制度説明",category:"お給料",month:"2026-04"},
+{title:"スタッフ教育",category:"スタッフ",month:"2026-04"},
+{title:"店内環境改善",category:"お店の環境",month:"2026-05"}
+];
+function renderModalMonth(){
+const el = document.getElementById("month");
+el.innerHTML = "";
 
+months.forEach(m=>{
+el.innerHTML += `<option value="${m}">${m}</option>`;
+});
+}
+function renderMonths(){
+const el = document.getElementById("monthSelect");
+el.innerHTML = "";
+
+months.forEach(m=>{
+el.innerHTML += `
+<option value="${m}" ${m===selectedMonth?"selected":""}>
+${m}
+</option>`;
+});
+}
+function changeMonth(){
+selectedMonth = document.getElementById("monthSelect").value;
+update();
+}     
 let current="全体";
 let chart;
 
@@ -326,25 +355,26 @@ ${c}
 /* ===== リスト ===== */
 function renderList(){
 
-const el=document.getElementById("list");
+  const el = document.getElementById("list");
 
-let filtered=current==="全体"
-?articles
-:articles.filter(a=>a.category===current);
+  let filtered = articles.filter(a =>
+    a.month === selectedMonth &&
+    (current === "全体" ? true : a.category === current)
+  );
 
-el.innerHTML = filtered.map((a, index) => `
-<div class="item"
-     data-id="${index}"
-     ontouchstart="touchStart(event)"
-     ontouchmove="touchMove(event)"
-     ontouchend="touchEnd(event)">
+  el.innerHTML = filtered.map((a, index) => `
+    <div class="item"
+         data-id="${index}"
+         ontouchstart="touchStart(event)"
+         ontouchmove="touchMove(event)"
+         ontouchend="touchEnd(event)">
 
-  <span>${a.title}</span>
-  <span>${a.category}</span>
+      <span>${a.title}</span>
+      <span>${a.category}</span>
 
-  <div class="trash">🗑️</div>
-</div>
-`).join("");
+      <div class="trash">🗑️</div>
+    </div>
+  `).join("");
 }
 
 
@@ -361,7 +391,20 @@ document.getElementById("modal").style.display="flex";
 function closeModal(){
 document.getElementById("modal").style.display="none";
 }
+function addArticle(){
 
+const title=document.getElementById("title").value;
+const category=document.getElementById("category").value;
+const month=document.getElementById("month").value;
+
+if(!title) return;
+
+articles.unshift({title,category,month});
+
+document.getElementById("title").value="";
+closeModal();
+update();
+}
 function addArticle(){
 
 const title=document.getElementById("title").value;
@@ -376,7 +419,13 @@ document.getElementById("title").value="";
 closeModal();
 update();
 }
-
+function update(){
+renderMonths();
+renderModalMonth();
+renderButtons();
+renderChart();
+renderList();
+}
 /* ===== 更新 ===== */
 function update(){
 renderButtons();

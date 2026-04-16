@@ -82,7 +82,48 @@ font-size:12px;
 opacity:0.6;
 line-height:1.6;
 }
+.nav{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
 
+display:flex;
+gap:10px;
+
+padding:10px;
+
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.12);
+backdrop-filter:blur(20px);
+-webkit-backdrop-filter:blur(20px);
+
+border-radius:999px;
+
+box-shadow:
+0 20px 60px rgba(0,0,0,0.6),
+inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+.nav-btn{
+padding:10px 16px;
+font-size:12px;
+letter-spacing:1px;
+color:rgba(255,255,255,0.85);
+cursor:pointer;
+
+border-radius:999px;
+transition:0.25s;
+}
+
+.nav-btn:hover{
+background:rgba(255,255,255,0.12);
+transform:translateY(-1px);
+}
+
+.nav-btn:active{
+transform:scale(0.97);
+}
 </style>
 </head>
 
@@ -115,6 +156,14 @@ line-height:1.6;
 </div>
 
 </div>
+<div class="nav">
+  <div class="nav-btn" onclick="location.href='index.html'">
+    TOP
+  </div>
 
+  <div class="nav-btn" onclick="location.href='manual.html'">
+    MANUAL
+  </div>
+</div>
 </body>
 </html>

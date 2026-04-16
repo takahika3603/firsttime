@@ -1,373 +1,328 @@
-<!DOCTYPE html>
-<html lang="ja">
+<!DOCTYPE html> 
+<html lang="ja"> 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vision CMS</title>
+<meta charset="UTF-8"> 
+<meta name="viewport" 
+content="width=device-width, initial-scale=1.0"> 
+<title>Vision CMS</title> 
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js">
+</script> 
 
-<style>
-body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans","Meiryo",sans-serif;
-background:#05070c;
-color:#fff;
-overflow-x:hidden;
-}
-
-/* ===== コンテナ ===== */
-.container{
-max-width:600px;
-margin:0 auto;
-padding:40px 16px 120px;
-text-align:center;
-}
-
-/* ===== タイトル ===== */
-h1{
-font-size:12px;
-letter-spacing:4px;
-opacity:0.5;
-}
-
-/* ===== グラフ ===== */
-canvas{
-max-width:260px;
-margin:20px auto;
-}
-
-/* ===== ボタン ===== */
-.buttons{
-display:flex;
-flex-wrap:wrap;
-gap:8px;
-justify-content:center;
+<style> 
+body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans","Meiryo",sans-serif; background:#05070c; color:#fff; overflow-x:hidden; } 
+     
+/*===== コンテナ ===== */ 
+.container{ 
+max-width:600px; 
+margin:0 auto; 
+padding:40px 16px 120px; text-align:center; } 
+     
+/* ===== タイトル ===== */ 
+h1{ font-size:12px; letter-spacing:4px; opacity:0.5; } 
+     
+/* ===== グラフ ===== */ 
+canvas{ max-width:260px; margin:20px auto; } 
+     
+/* ===== ボタン ===== */ 
+.buttons{ 
+display:flex; 
+flex-wrap:wrap; 
+gap:8px; 
+justify-content:center; 
 margin:20px 0;
-}
-
-button{
-background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.12);
-color:#fff;
-padding:8px 14px;
-border-radius:999px;
-font-size:12px;
-cursor:pointer;
-transition:0.25s;
-}
-
-button.active{
-background:#fff;
-color:#000;
-}
-
-/* ===== 記事リスト ===== */
-.list{
-text-align:left;
+} 
+     
+button{ 
+background:rgba(255,255,255,0.05); 
+border:1px solid 
+rgba(255,255,255,0.12); 
+color:#fff; 
+padding:8px 14px; 
+border-radius:999px; 
+font-size:12px; 
+cursor:pointer; 
+transition:0.25s; 
+} 
+button.active{ 
+background:#fff; 
+color:#000; 
+} 
+     
+/* ===== 記事リスト ===== */ 
+.list{ 
+text-align:left; 
 margin-top:20px;
-}
-
-/* スワイプ中の赤背景 */
-.item{
-position:relative;
-overflow:hidden;
-transition:0.2s;
-
-padding:12px 0;
-border-bottom:1px solid rgba(255,255,255,0.08);
-}
-
-.item:last-child{
-border-bottom:none;
+} 
+     
+/* スワイプ中の赤背景 */ 
+.item{ 
+position:relative; 
+overflow:hidden; 
+transition:0.2s; 
+     
+padding:12px 0; 
+border-bottom:1px solid 
+rgba(255,255,255,0.08); 
+} 
+     
+.item:last-child{ 
+border-bottom:none; 
+} 
+     
+.item.swiping{ 
+background:
+rgba(255,0,0,0.2); 
+transform:scale(1.02);
+} 
+     
+/* ゴミ箱アイコン */ 
+.trash{ 
+position:absolute; 
+right:12px; 
+top:50%; 
+transform:translateY(-50%);
+opacity:0; 
+transition:0.2s; 
+} 
+     
+.item.swiping .trash{ 
+opacity:1;
+} 
+     
+/* 削除アニメ */ 
+.item.delete{ 
+transform:scale(0.7); 
+opacity:0; 
+transition:0.25s; 
+} 
+     
+/* スナックバー */ 
+.snackbar{ 
+position:fixed; 
+bottom:120px; 
+left:50%; 
+transform:translateX(-50%); 
+background:rgba(0,0,0,0.8); 
+border:1px solid 
+rgba(255,255,255,0.15); 
+padding:10px 14px; 
+border-radius:12px; 
+display:flex; 
+gap:10px; 
+align-items:center; 
+animation:fadein 0.2s;
+} 
+     
+@keyframes fadein{ 
+from{opacity:0;transform:translate(-50%,20px);} 
+to{opacity:1;transform:translate(-50%,0);} 
 }
      
-.item.swiping{
-background:rgba(255,0,0,0.2);
-transform:scale(1.02);
-}
-
-/* ゴミ箱アイコン */
-.trash{
-position:absolute;
-right:12px;
-top:50%;
-transform:translateY(-50%);
-opacity:0;
-transition:0.2s;
-}
-
-.item.swiping .trash{
-opacity:1;
-}
-
-/* 削除アニメ */
-.item.delete{
-transform:scale(0.7);
-opacity:0;
-transition:0.25s;
-}
-
-/* スナックバー */
-.snackbar{
-position:fixed;
-bottom:120px;
-left:50%;
-transform:translateX(-50%);
-background:rgba(0,0,0,0.8);
-border:1px solid rgba(255,255,255,0.15);
-padding:10px 14px;
-border-radius:12px;
-display:flex;
-gap:10px;
-align-items:center;
-animation:fadein 0.2s;
-}
-
-@keyframes fadein{
-from{opacity:0;transform:translate(-50%,20px);}
-to{opacity:1;transform:translate(-50%,0);}
-}
-
 .snackbar button{
-background:#fff;
-color:#000;
-border:none;
-padding:4px 8px;
-border-radius:6px;
-cursor:pointer;
-}
+background:#fff; 
+color:#000; 
+border:none; 
+padding:4px 8px; 
+border-radius:6px; 
+cursor:pointer; 
+} 
+     
+/* ===== 追加ボタン ===== */ 
+.fab{ 
+position:fixed; 
+bottom:90px; 
+left:50%; 
+transform:translateX(-50%); 
+padding:14px 20px; 
+border-radius:999px; 
+background:rgba(255,255,255,0.1); 
+border:1px solid 
+rgba(255,255,255,0.2); 
+backdrop-filter:blur(20px); 
+cursor:pointer; } 
 
-/* ===== 追加ボタン ===== */
-.fab{
-position:fixed;
-bottom:90px;
-left:50%;
-transform:translateX(-50%);
-padding:14px 20px;
-border-radius:999px;
+/* ===== ナビ ===== */ 
+.nav{ 
+position:fixed; 
+bottom:20px; 
+left:50%; 
+transform:translateX(-50%); 
+display:flex; 
+gap:10px; 
+padding:10px; 
+background:rgba(255,255,255,0.05); 
+border:1px solid rgba(255,255,255,0.12); 
+border-radius:999px; 
+backdrop-filter:blur(20px); 
+} 
 
-background:rgba(255,255,255,0.1);
-border:1px solid rgba(255,255,255,0.2);
-backdrop-filter:blur(20px);
-
-cursor:pointer;
-}
-
-/* ===== ナビ ===== */
-.nav{
-position:fixed;
-bottom:20px;
-left:50%;
-transform:translateX(-50%);
-display:flex;
-gap:10px;
-padding:10px;
-
-background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.12);
-border-radius:999px;
-backdrop-filter:blur(20px);
-}
-
-.nav-btn{
-padding:10px 16px;
-font-size:12px;
-cursor:pointer;
-}
-
-/* ===== ポップアップ ===== */
-.modal{
-position:fixed;
-inset:0;
-display:none;
-justify-content:center;
-align-items:center;
-background:rgba(0,0,0,0.6);
-}
-
+.nav-btn{ 
+padding:10px 16px; 
+font-size:12px; 
+cursor:pointer; 
+} 
+     
+/* ===== ポップアップ ===== */ 
+.modal{ 
+position:fixed; 
+inset:0; 
+display:none; 
+justify-content:center; 
+align-items:center; 
+background:rgba(0,0,0,0.6); 
+} 
+     
 .modal-box{
-width:300px;
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(20px);
-padding:20px;
-border-radius:16px;
-border:1px solid rgba(255,255,255,0.15);
-}
+width:300px; 
+background:rgba(255,255,255,0.08); 
+backdrop-filter:blur(20px); 
+padding:20px; 
+border-radius:16px; 
+border:1px solid rgba(255,255,255,0.15); 
+} 
+input,select{ 
+width:100%; 
+padding:10px; 
+margin-top:10px; 
+border-radius:8px; 
+border:none; 
+} 
+     
+.modal-actions{ 
+margin-top:10px; 
+display:flex; 
+justify-content:space-between; 
+} 
 
-input,select{
-width:100%;
-padding:10px;
-margin-top:10px;
-border-radius:8px;
-border:none;
-}
-
-.modal-actions{
-margin-top:10px;
-display:flex;
-justify-content:space-between;
-}
-</style>
-</head>
-
+</style> 
+</head> 
 <body>
-
-<div class="container">
-
-<h1>VISION CMS</h1>
-
+<div class="container"> 
+     
+<h1>VISION CMS</h1> 
+     
 <canvas id="donut"></canvas>
-<select id="monthSelect" onchange="changeMonth()"
-style="margin-top:10px;padding:8px;border-radius:8px;">
-</select>
-
-<div class="buttons" id="buttons"></div>
-
-<div class="list" id="list"></div>
+<div class="buttons" 
+id="buttons">
 
 </div>
+     
+<div class="list" id="list">
 
-<!-- 追加ボタン -->
-<div class="fab" onclick="openModal()">＋ 追加</div>
+</div> 
+</div> 
 
+<!-- 追加ボタン --> 
+     
+<div class="fab" onclick="openModal()">＋ 追加</div> 
+     
 <!-- ナビ -->
-<div class="nav">
-<div class="nav-btn" onclick="location.href='top.html'">TOP</div>
-<div class="nav-btn" onclick="location.href='manual.html'">MANUAL</div>
-</div>
+<div class="nav"> 
+<div class="nav-btn" onclick="location.href='top.html'">
+TOP
+</div> 
+<div class="nav-btn" onclick="location.href='manual.html'">
+MANUAL</div> </div> 
+     
+<!-- モーダル --> 
+<div class="modal" id="modal"> 
+<div class="modal-box"> 
+     
+<h3>記事追加</h3> 
+     
+<input id="title" placeholder="タイトル"> 
+<select id="category"> 
 
-<!-- モーダル -->
-<div class="modal" id="modal">
-<div class="modal-box">
-<h3>記事追加</h3>
-
-<input id="title" placeholder="タイトル">
-
-<select id="category">
 <option>お給料</option>
-<option>スタッフ</option>
-<option>お店の環境</option>
+<option>スタッフ</option> 
+<option>お店の環境</option> 
 <option>うれしい待遇</option>
-<option>お客様層</option>
-<option>採用条件</option>
-<option>お仕事内容</option>
-<option>お店のつぶやき</option>
-</select>
+<option>お客様層</option> 
+<option>採用条件</option> 
+<option>お仕事内容</option> 
+<option>お店のつぶやき</option> 
 
-<div class="modal-actions">
-<button onclick="closeModal()">戻る</button>
-<button onclick="addArticle()">完了</button>
-</div>
-
-</div>
-</div>
-
+</select> <div class="modal-actions"> 
+<button onclick="closeModal()">
+戻る
+</button>
+     
+<button onclick="addArticle()">完了</button> 
+</div> 
+</div> 
+</div> 
+     
 <script>
-
-const categories = [
-"お給料","スタッフ","お店の環境","うれしい待遇",
-"お客様層","採用条件","お仕事内容","お店のつぶやき"
-];
-
-const months = [
-"2026-04","2026-05","2026-06","2026-07","2026-08","2026-09"
-];
-let selectedMonth = "2026-04";
-let articles = [
-{title:"給与制度説明",category:"お給料",month:"2026-04"},
-{title:"スタッフ教育",category:"スタッフ",month:"2026-04"},
-{title:"店内環境改善",category:"お店の環境",month:"2026-05"}
-];
-function renderModalMonth(){
-const el = document.getElementById("month");
-el.innerHTML = "";
-
-months.forEach(m=>{
-el.innerHTML += `<option value="${m}">${m}</option>`;
-});
-}
-function renderMonths(){
-const el = document.getElementById("monthSelect");
-el.innerHTML = "";
-
-months.forEach(m=>{
-el.innerHTML += `
-<option value="${m}" ${m===selectedMonth?"selected":""}>
-${m}
-</option>`;
-});
-}
-function changeMonth(){
-selectedMonth = document.getElementById("monthSelect").value;
-update();
-}     
-let current="全体";
-let chart;
-
-/* ===== グラフ（ラベル完全非表示） ===== */
+const categories = [ "お給料","スタッフ","お店の環境","うれしい待遇", "お客様層","採用条件","お仕事内容","お店のつぶやき" ]; 
+let articles = [ {title:"給与制度説明",category:"お給料"}, {title:"スタッフ教育",category:"スタッフ"}, {title:"店内環境改善",category:"お店の環境"} ]; 
+     
+let current="全体"; 
+let chart; 
+     
+/* ===== グラフ（ラベル完全非表示） ===== */ 
 function renderChart(){
-
 const data = categories.map(c =>
 articles.filter(a => a.category === c).length
-);
-
-if(chart) chart.destroy();
-
-chart = new Chart(document.getElementById("donut"),{
-type:"doughnut",
-data:{
-labels:categories,
-datasets:[{
-data:data,
-backgroundColor:categories.map(c=>
-c===current
-? "rgba(255,255,255,0.9)"
-: "rgba(255,255,255,0.1)"
-)
-}]
-},
-options:{
-plugins:{
-legend:{
-display:false   // ←ここで完全に消す
-}
-}
-}
-});
-}
-
-/* ===== ボタン ===== */
+); 
+     
+if(chart) chart.destroy(); 
+chart = new 
+Chart(document.getElementById("donut"),{ 
+type:"doughnut", 
+data:{ labels:categories, 
+datasets:[{ 
+data:data, 
+backgroundColor:categories.map(c=> 
+c===current 
+? "rgba(255,255,255,0.9)" 
+: "rgba(255,255,255,0.1)" 
+) 
+}] 
+}, 
+options:{ 
+plugins:{ 
+legend:{ 
+display:false // ←ここで完全に消す
+} 
+} 
+} 
+}); 
+} 
+     
+/* ===== ボタン ===== */ 
 function renderButtons(){
+  const el = document.getElementById("buttons");
 
-const el=document.getElementById("buttons");
+  el.innerHTML = `
+    <button onclick="filterAll()" class="${current==='全体'?'active':''}">
+      全体
+    </button>
+  `;
 
-el.innerHTML=`<button onclick="filterAll()" class="${current==='全体'?'active':''}">全体</button>`;
-
-categories.forEach(c=>{
-el.innerHTML+=`
-<button onclick="filter('${c}')" class="${current===c?'active':''}">
-${c}
-</button>`;
-});
+  categories.forEach(c=>{
+    el.innerHTML += `
+      <button onclick="filter('${c}')" class="${current===c?'active':''}">
+        ${c}
+      </button>
+    `;
+  });
 }
+     
+/* ===== リスト ===== */ 
+function renderList(){ 
+  const el = document.getElementById("list"); 
 
-/* ===== リスト ===== */
-function renderList(){
-
-  const el = document.getElementById("list");
-
-  let filtered = articles.filter(a =>
-    a.month === selectedMonth &&
-    (current === "全体" ? true : a.category === current)
-  );
+  let filtered = current==="全体"
+    ? articles
+    : articles.filter(a => a.category === current);
 
   el.innerHTML = filtered.map((a, index) => `
     <div class="item"
-         data-id="${index}"
-         ontouchstart="touchStart(event)"
-         ontouchmove="touchMove(event)"
-         ontouchend="touchEnd(event)">
+      data-id="${index}"
+      ontouchstart="touchStart(event)"
+      ontouchmove="touchMove(event)"
+      ontouchend="touchEnd(event)">
 
       <span>${a.title}</span>
       <span>${a.category}</span>
@@ -376,84 +331,84 @@ function renderList(){
     </div>
   `).join("");
 }
+     
+/* ===== フィルター ===== */ 
+function filter(c)
+{current=c;update();} 
+function filterAll(){current="全体";update();} 
 
-
-
-/* ===== フィルター ===== */
-function filter(c){current=c;update();}
-function filterAll(){current="全体";update();}
-
-/* ===== 追加 ===== */
-function openModal(){
-document.getElementById("modal").style.display="flex";
-}
-
-function closeModal(){
+/* ===== 追加 ===== */ 
+function openModal(){ 
+document.getElementById("modal").style.display="flex"; 
+} 
+     
+function closeModal(){ 
 document.getElementById("modal").style.display="none";
-}
-function addArticle(){
+} 
+     
+function addArticle(){ 
+const title=document.getElementById("title").value; 
+const 
+category=document.getElementById("category").value; 
 
-const title=document.getElementById("title").value;
-const category=document.getElementById("category").value;
-const month=document.getElementById("month").value;
+if(!title) return; 
 
-if(!title) return;
+articles.unshift({title,category}); 
 
-articles.unshift({title,category,month});
+document.getElementById("title").value=""; 
 
-document.getElementById("title").value="";
-closeModal();
-update();
-}
+closeModal(); 
+update(); } 
+     
+/* ===== 更新 ===== */ 
+function update(){ 
+renderButtons(); 
+renderChart(); 
+renderList(); 
+} 
+     
+update(); 
+     
+let startX = 0; 
+let currentEl = null; 
+let deletedItem = null; 
 
-function update(){
-renderModalMonth();
-renderButtons();
-renderChart();
-renderList();
-}
-
-
-let startX = 0;
-let currentEl = null;
-let deletedItem = null;
-
-function touchStart(e){
-startX = e.touches[0].clientX;
-currentEl = e.currentTarget;
-}
-
-function touchMove(e){
-let diff = e.touches[0].clientX - startX;
+function touchStart(e){ 
+startX = e.touches[0].clientX; 
+currentEl = e.currentTarget; 
+} 
+     
+function touchMove(e){ 
+let diff = e.touches[0].clientX - startX; 
 
 if(diff < -30){
 currentEl.classList.add("swiping");
-}
-}
+} 
+} 
+     
+function touchEnd(e){ 
+let diff =
+e.changedTouches[0].clientX - startX; 
+     
+if(diff < -80){ 
+     
+// 削除対象保存（UNDO用） 
+const index = 
+currentEl.dataset.id; 
+deletedItem = articles[index]; 
+     
+// 削除アニメ 
+currentEl.classList.add("delete"); 
+setTimeout(()=>{ 
+articles.splice(index,1); 
+update(); 
+showUndo(); 
+},200); 
 
-function touchEnd(e){
-let diff = e.changedTouches[0].clientX - startX;
-
-if(diff < -80){
-
-// 削除対象保存（UNDO用）
-const index = currentEl.dataset.id;
-deletedItem = articles[index];
-
-// 削除アニメ
-currentEl.classList.add("delete");
-
-setTimeout(()=>{
-articles.splice(index,1);
-update();
-showUndo();
-},200);
-
-}else{
+}else{ 
 currentEl.classList.remove("swiping");
 }
-}
-</script>
-
-</body>
+} 
+</script> 
+</body> 
 </html>

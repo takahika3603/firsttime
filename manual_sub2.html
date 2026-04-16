@@ -60,17 +60,21 @@ button{
   gap:14px;
 }
 
-/* card */
+/* card（上品縮小） */
 .card{
   background:rgba(255,255,255,0.06);
   border:1px solid rgba(255,255,255,0.12);
   border-radius:18px;
   padding:14px;
+
   backdrop-filter: blur(14px);
   display:flex;
   align-items:center;
   gap:10px;
+
   transition:0.25s ease;
+
+  font-size:13px; /* ← 上品スケール */
 }
 
 /* 未チェック発光 */
@@ -89,9 +93,10 @@ button{
   transform:scale(0.96);
 }
 
+/* checkbox（縮小） */
 input{
-  width:18px;
-  height:18px;
+  width:15px;
+  height:15px;
   accent-color:#6aa9ff;
 }
 
@@ -124,11 +129,11 @@ input{
   <div class="card"><input type="checkbox">時間設定</div>
   <div class="card"><input type="checkbox">お昼／夜の区別</div>
 
-  <div class="card"><input type="checkbox">明日出勤の子か確認</div>
-  <div class="card"><input type="checkbox">URL貼り付け</div>
+  <div class="card"><input type="checkbox">明日出勤の子か</div>
+  <div class="card"><input type="checkbox">URL</div>
 
-  <div class="card"><input type="checkbox">年齢チェック</div>
-  <div class="card"><input type="checkbox">キャッチコピー作成</div>
+  <div class="card"><input type="checkbox">年齢</div>
+  <div class="card"><input type="checkbox">キャッチコピー</div>
 
 </div>
 
@@ -158,7 +163,6 @@ function update(){
   const percent = done / cards.length;
   progress.style.width = (percent*100) + "%";
 
-  // 完了エフェクト
   if(percent === 1 && !fired){
     fired = true;
     burst();
@@ -169,7 +173,7 @@ function update(){
   }
 }
 
-/* パーティクル */
+/* particles */
 function burst(){
   for(let i=0;i<45;i++){
     const p = document.createElement("div");

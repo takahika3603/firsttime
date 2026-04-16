@@ -14,7 +14,14 @@
   --muted:rgba(255,255,255,0.6);
   --accent:linear-gradient(135deg,#a5b4fc,#f9a8d4);
 }
-
+input{
+width:100%;
+padding:10px;
+border-radius:10px;
+border:none;
+margin:6px 0;
+font-family:monospace;
+}
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Meiryo",sans-serif;
@@ -164,7 +171,7 @@ color:var(--muted);
 <div class="card">
 <button onclick="openPreview()">👀 プレビュー</button>
 </div>
-
+  
 <!-- ブロック -->
 <div class="card" id="list"></div>
 
@@ -184,6 +191,25 @@ color:var(--muted);
 </div>
 </div>
 
+<!-- =========================
+編集モーダル（ここを追加）
+========================= -->
+<div class="modal" id="editModal">
+<div class="modal-box">
+
+<button onclick="closeEdit()">✖ 閉じる</button>
+
+<div class="small">タイトル</div>
+<input id="editTitle">
+
+<div class="small">内容</div>
+<textarea id="editText"></textarea>
+
+<button onclick="saveEdit()">💾 保存</button>
+
+</div>
+</div>
+  
 <script>
 
 /* =========================
@@ -310,8 +336,46 @@ document.getElementById("modal").style.display="none";
 /* =========================
 編集（仮）
 ========================= */
+let editIndex = null;
+
+/* =========================
+編集モーダルを開く
+========================= */
 function edit(i){
-alert("編集機能は次ステップで拡張できます");
+editIndex = i;
+
+// 今のデータをフォームに入れる
+document.getElementById("editTitle").value = blocks[i].title;
+document.getElementById("editText").value = blocks[i].text;
+
+// モーダル表示
+document.getElementById("editModal").style.display = "flex";
+}
+
+/* =========================
+閉じる
+========================= */
+function closeEdit(){
+document.getElementById("editModal").style.display = "none";
+}
+
+/* =========================
+保存
+========================= */
+function saveEdit(){
+
+// 値を反映
+blocks[editIndex].title =
+document.getElementById("editTitle").value;
+
+blocks[editIndex].text =
+document.getElementById("editText").value;
+
+// 閉じる
+closeEdit();
+
+// 再描画
+render();
 }
 
 /* =========================

@@ -76,7 +76,7 @@ display:flex;
 justify-content:space-between;
 }
 
-/* ===== 追加ボタン（フロー） ===== */
+/* ===== 追加ボタン ===== */
 .fab{
 position:fixed;
 bottom:90px;
@@ -168,7 +168,7 @@ justify-content:space-between;
 
 <!-- ナビ -->
 <div class="nav">
-<div class="nav-btn" onclick="location.href='index.html'">TOP</div>
+<div class="nav-btn" onclick="location.href='top.html'">TOP</div>
 <div class="nav-btn" onclick="location.href='manual.html'">MANUAL</div>
 </div>
 
@@ -214,7 +214,7 @@ let articles = [
 let current="全体";
 let chart;
 
-/* ===== グラフ ===== */
+/* ===== グラフ（ラベル完全非表示） ===== */
 function renderChart(){
 
 const data = categories.map(c =>
@@ -230,12 +230,18 @@ labels:categories,
 datasets:[{
 data:data,
 backgroundColor:categories.map(c=>
-c===current?"rgba(255,255,255,0.9)":"rgba(255,255,255,0.1)"
+c===current
+? "rgba(255,255,255,0.9)"
+: "rgba(255,255,255,0.1)"
 )
 }]
 },
 options:{
-plugins:{legend:{labels:{color:"#fff"}}}
+plugins:{
+legend:{
+display:false   // ←ここで完全に消す
+}
+}
 }
 });
 }

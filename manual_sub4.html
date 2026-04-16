@@ -1,1 +1,283 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Room Setup Checklist</title>
+
+<style>
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans","Meiryo",sans-serif;
+  background: radial-gradient(circle at 20% 10%, #1b2a3a, #05070c 60%);
+  color:#eaf2ff;
+  padding:20px;
+  overflow:hidden;
+}
+
+/* header */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.title{
+  font-size:18px;
+  font-weight:600;
+  opacity:0.9;
+}
+
+button{
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  color:#eaf2ff;
+  padding:8px 12px;
+  border-radius:12px;
+  cursor:pointer;
+}
+
+/* progress */
+.progress-wrap{
+  height:10px;
+  background:rgba(255,255,255,0.08);
+  border-radius:999px;
+  overflow:hidden;
+  margin:10px 0 18px;
+}
+
+.progress{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#6aa9ff,#8be7ff);
+  transition:0.3s ease;
+}
+
+/* grid */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:14px;
+}
+
+/* card */
+.card{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:18px;
+  padding:14px;
+  backdrop-filter: blur(14px);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  transition:0.25s ease;
+  position:relative;
+  font-size:13px;
+}
+
+/* 未チェック発光 */
+.card:not(.done){
+  box-shadow:0 0 18px rgba(120,180,255,0.18);
+}
+
+/* 完了 */
+.card.done{
+  opacity:0.4;
+  transform:scale(0.98);
+  box-shadow:none;
+}
+
+.card:active{
+  transform:scale(0.96);
+}
+
+/* checkbox */
+input{
+  width:15px;
+  height:15px;
+  accent-color:#6aa9ff;
+}
+
+/* particle */
+.particle{
+  position:fixed;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:rgba(140,200,255,0.9);
+  pointer-events:none;
+  box-shadow:0 0 12px rgba(120,180,255,0.8);
+}
+
+/* =========================
+   BACK BUTTON（追加）
+========================= */
+
+.back-btn{
+  position:fixed;
+  bottom:22px;
+  left:50%;
+  transform:translateX(-50%);
+
+  padding:10px 16px;
+  border-radius:999px;
+
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+
+  backdrop-filter: blur(18px);
+
+  color:rgba(230,240,255,0.8);
+  font-size:12px;
+
+  cursor:pointer;
+
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+
+  transition:0.25s ease;
+}
+
+/* hover浮遊 */
+.back-btn:hover{
+  transform:translateX(-50%) translateY(-4px) scale(1.02);
+  background:rgba(255,255,255,0.10);
+  border:1px solid rgba(120,180,255,0.35);
+  box-shadow:
+    0 25px 70px rgba(0,0,0,0.75),
+    0 0 20px rgba(120,180,255,0.25);
+  color:#eaf2ff;
+}
+
+/* active沈み */
+.back-btn:active{
+  transform:translateX(-50%) translateY(1px) scale(0.98);
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="title">Room Setup Checklist</div>
+  <button onclick="resetAll()">Reset</button>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress" id="progress"></div>
+</div>
+
+<div class="grid" id="grid">
+
+  <div class="card"><input type="checkbox">時間設定</div>
+  <div class="card"><input type="checkbox">文章内容（特に曜日）</div>
+  <div class="card"><input type="checkbox">氏名</div>
+  <div class="card"><input type="checkbox">キャッチコピー</div>
+  <div class="card"><input type="checkbox">クラス</div>
+  <div class="card"><input type="checkbox">写真</div>
+  <div class="card"><input type="checkbox">年齢</div>
+  <div class="card"><input type="checkbox">紹介文</div>
+  <div class="card"><input type="checkbox">関連リンク</div>
+  <div class="card"><input type="checkbox">直近入店</div>
+
+</div>
+
+<!-- BACK BUTTON -->
+<div class="back-btn" onclick="goManual()">
+  ← MANUALに戻る
+</div>
+
+<script>
+const cards = document.querySelectorAll(".card");
+const progress = document.getElementById("progress");
+
+let fired = false;
+
+function update(){
+
+  let done = 0;
+
+  cards.forEach((card, i)=>{
+    const cb = card.querySelector("input");
+
+    if(cb.checked){
+      card.classList.add("done");
+      done++;
+    }else{
+      card.classList.remove("done");
+    }
+
+    localStorage.setItem("check_"+i, cb.checked);
+  });
+
+  const percent = done / cards.length;
+  progress.style.width = (percent * 100) + "%";
+
+  if(percent === 1 && !fired){
+    fired = true;
+    burstParticles();
+  }
+
+  if(percent < 1){
+    fired = false;
+  }
+}
+
+/* particles */
+function burstParticles(){
+  for(let i=0;i<50;i++){
+    const p = document.createElement("div");
+    p.className = "particle";
+    document.body.appendChild(p);
+
+    const angle = Math.random()*Math.PI*2;
+    const radius = 80 + Math.random()*160;
+
+    const x = Math.cos(angle)*radius;
+    const y = Math.sin(angle)*radius;
+
+    p.style.left="50%";
+    p.style.top="40%";
+
+    p.animate([
+      {transform:"translate(0,0) scale(1)",opacity:1},
+      {transform:`translate(${x}px,${y}px) scale(0.3)`,opacity:0}
+    ],{
+      duration:1100,
+      easing:"cubic-bezier(0.16,1,0.3,1)"
+    });
+
+    setTimeout(()=>p.remove(),1100);
+  }
+}
+
+/* navigation */
+function goManual(){
+  window.location.href = "manual.html";
+}
+
+/* load */
+cards.forEach((card,i)=>{
+  const cb = card.querySelector("input");
+  const saved = localStorage.getItem("check_"+i);
+  if(saved === "true") cb.checked = true;
+
+  cb.addEventListener("change", update);
+});
+
+/* reset */
+function resetAll(){
+  cards.forEach((card,i)=>{
+    const cb = card.querySelector("input");
+    cb.checked = false;
+    localStorage.removeItem("check_"+i);
+  });
+  update();
+}
+
+update();
+</script>
+
+</body>
+</html>
 

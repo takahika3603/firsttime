@@ -2,224 +2,164 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Skill Mirror GRID 2x2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<title>Vision OS</title>
 
 <style>
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans";
-  color:#e6eeff;
 
+  /* ■ OS空間背景（完全ダークレイヤー） */
   background:
-    radial-gradient(circle at 50% 0%, rgba(60,110,255,0.18), transparent 60%),
-    radial-gradient(circle at 80% 30%, rgba(160,60,255,0.12), transparent 65%),
-    #02040a;
+    radial-gradient(circle at 50% 0%, rgba(18,22,35,0.9), transparent 60%),
+    radial-gradient(circle at 80% 30%, rgba(10,12,25,0.8), transparent 65%),
+    radial-gradient(circle at 20% 100%, rgba(5,8,18,1), #02030a 70%);
+
+  color:#d7dbe6;
+  -webkit-font-smoothing:antialiased;
 }
 
-/* HEADER */
+/* HEADER（OSステータス領域） */
 header{
-  padding:16px;
+  padding:28px 18px 14px;
 }
 
 h1{
   margin:0;
-  font-size:18px;
+  font-size:20px;
+  font-weight:500;
+  letter-spacing:0.3px;
 }
 
-/* INPUT */
-.inputBox{
-  display:flex;
-  gap:8px;
-  padding:0 12px;
+.sub{
+  font-size:12px;
+  opacity:0.35;
+  margin-top:6px;
 }
 
-input{
-  flex:1;
-  padding:14px;
-  border-radius:14px;
-  border:none;
-  background:rgba(255,255,255,0.06);
-  color:white;
-}
-
-button{
-  padding:14px;
-  border-radius:14px;
-  border:none;
-  background:linear-gradient(135deg,#4d6bff,#7a3cff);
-  color:white;
-}
-
-/* GRID DEFAULT = 2x2 */
-#list{
-  padding:12px;
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
-}
-
-/* PC = 4 columns */
-@media (min-width:900px){
-  #list{
-    grid-template-columns:repeat(4,1fr);
-  }
-}
-
-/* CARD */
-.card{
-  padding:14px;
-  border-radius:16px;
-
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(120,140,255,0.12);
-
+/* SPACE LAYER */
+.space{
+  padding:10px 14px 40px;
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:16px;
+
+  perspective:1200px; /* 空間の深さ */
+}
+
+/* ■ FLOATING CARD（OSウィンドウ） */
+.window{
+  padding:18px;
+  border-radius:24px;
+
+  background:rgba(16,18,26,0.72);
+
+  border:1px solid rgba(255,255,255,0.05);
+
+  box-shadow:
+    0 25px 80px rgba(0,0,0,0.65),
+    inset 0 1px 0 rgba(255,255,255,0.03);
+
+  backdrop-filter: blur(24px);
+
+  transform: translateZ(0);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+/* ■ “空間押し込み” */
+.window:active{
+  transform:
+    scale(0.97)
+    translateY(8px)
+    translateZ(-60px);
+
+  background:rgba(12,14,20,0.85);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.7);
 }
 
 /* TITLE */
 .title{
-  font-size:13px;
-  font-weight:600;
+  font-size:15px;
+  font-weight:500;
+  color:#e6eaf2;
 }
 
-/* BADGE */
-.badge{
-  font-size:10px;
-  opacity:0.6;
+/* DESC */
+.desc{
+  font-size:12px;
+  opacity:0.35;
+  margin-top:6px;
 }
 
-/* BAR */
-.barBg{
-  height:8px;
-  background:rgba(255,255,255,0.05);
-  border-radius:999px;
-  overflow:hidden;
+/* STATUS DOT */
+.dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  display:inline-block;
+  margin-right:6px;
+  opacity:0.5;
 }
 
-.bar{
-  height:100%;
-  background:linear-gradient(90deg,#4d6bff,#7a3cff);
+.blue{ background:#6b7a90; }
+.orange{ background:#907a6b; }
+.purple{ background:#7a6b90; }
+.green{ background:#6b9080; }
+
+/* SECTION LABEL */
+.section{
+  font-size:11px;
+  opacity:0.4;
+  margin:6px 2px -6px;
+  letter-spacing:0.5px;
 }
 
-.barDanger{
-  height:100%;
-  background:linear-gradient(90deg,#ff3b3b,#ff0055);
-}
-
-/* ACTIONS */
-.actions{
-  display:flex;
-  gap:5px;
-}
-
-.btn{
-  flex:1;
-  padding:6px;
-  font-size:10px;
-  border-radius:8px;
-  border:none;
-  background:rgba(255,255,255,0.06);
-  color:white;
-}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>Skill Mirror GRID 2x2</h1>
+  <h1>Vision OS</h1>
+  <div class="sub">spatial operating system</div>
 </header>
 
-<div class="inputBox">
-  <input id="title" placeholder="苦手・ミス入力">
-  <button onclick="add()">追加</button>
+<div class="space">
+
+  <div class="section">CORE SYSTEM</div>
+
+  <div class="window" onclick="location.href='manual.html'">
+    <div class="title"><span class="dot blue"></span>マニュアル</div>
+    <div class="desc">システム理解・構造・操作定義</div>
+  </div>
+
+  <div class="section">ANALYTICS</div>
+
+  <div class="window" onclick="location.href='badskill.html'">
+    <div class="title"><span class="dot orange"></span>苦手分野</div>
+    <div class="desc">弱点・ミス・再発・危険領域</div>
+  </div>
+
+  <div class="window" onclick="location.href='index.html'">
+    <div class="title"><span class="dot purple"></span>進捗管理</div>
+    <div class="desc">成長・履歴・達成ログ</div>
+  </div>
+
+  <div class="section">BUSINESS</div>
+
+  <div class="window" onclick="location.href='money.html'">
+    <div class="title"><span class="dot green"></span>売上管理</div>
+    <div class="desc">成果・数字・パフォーマンス</div>
+  </div>
+
 </div>
-
-<div id="list"></div>
-
-<script>
-
-let data = JSON.parse(localStorage.getItem("skills") || "[]");
-
-/* SAVE */
-function save(){
-  localStorage.setItem("skills", JSON.stringify(data));
-  render();
-}
-
-/* ADD */
-function add(){
-  let t=document.getElementById("title").value;
-  if(!t) return;
-
-  data.push({
-    id:Date.now(),
-    title:t,
-    repeat:1
-  });
-
-  save();
-}
-
-/* SCORE */
-function score(d){
-  return d.repeat;
-}
-
-/* DELETE */
-function del(i){
-  data.splice(i,1);
-  save();
-}
-
-/* REPEAT */
-function bump(i){
-  data[i].repeat++;
-  save();
-}
-
-/* RENDER */
-function render(){
-
-  let list=document.getElementById("list");
-  list.innerHTML="";
-
-  let view=[...data].sort((a,b)=>score(b)-score(a));
-
-  view.forEach((d,i)=>{
-
-    let danger=d.repeat>=3;
-    let width=Math.min(d.repeat*20,100);
-
-    list.innerHTML+=`
-      <div class="card">
-
-        <div class="title">${d.title}</div>
-
-        <div class="badge">${danger?"🔥危険":"通常"}</div>
-
-        <div class="barBg">
-          <div class="${danger?'barDanger':'bar'}"
-               style="width:${width}%"></div>
-        </div>
-
-        <div class="actions">
-          <button class="btn" onclick="bump(${i})">+</button>
-          <button class="btn" onclick="del(${i})">×</button>
-        </div>
-
-      </div>
-    `;
-  });
-}
-
-/* INIT */
-render();
-
-</script>
 
 </body>
 </html>

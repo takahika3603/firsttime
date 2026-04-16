@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Room Operation Dashboard</title>
+<title>Room Zero Idle System</title>
 
 <style>
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans","Meiryo",sans-serif;
-  background: radial-gradient(circle at 20% 10%, #1b2a3a, #05070c 60%);
+  background:#05070c;
   color:#eaf2ff;
   padding:16px;
 }
@@ -21,16 +21,8 @@ body{
   border-radius:14px;
   padding:10px;
   margin-bottom:10px;
-  backdrop-filter: blur(10px);
 }
 
-h3{
-  margin:0 0 6px 0;
-  font-size:13px;
-  opacity:0.9;
-}
-
-/* inputs */
 input,button{
   padding:8px;
   margin:3px 0;
@@ -43,227 +35,224 @@ input,button{
 /* grid */
 .grid{
   display:grid;
-  grid-template-columns:repeat(2, 1fr);
+  grid-template-columns:repeat(3,1fr);
   gap:10px;
 }
 
-/* card */
-.card{
+/* room */
+.room{
   background:rgba(255,255,255,0.06);
   border:1px solid rgba(255,255,255,0.12);
   border-radius:14px;
   padding:10px;
-  font-size:11px;
+  font-size:12px;
+  position:relative;
 }
 
 .title{
   font-weight:600;
   color:#9fd0ff;
-  margin-bottom:4px;
+  margin-bottom:6px;
 }
 
-.small{
-  opacity:0.7;
+/* warning */
+.badge{
+  position:absolute;
+  top:8px;
+  right:8px;
+  font-size:10px;
+  padding:2px 6px;
+  border-radius:999px;
+  background:rgba(255,80,80,0.2);
+  color:#ff9a9a;
+}
+
+/* waiting */
+.wait{
+  background:rgba(255,255,255,0.04);
+  border-radius:12px;
+  padding:8px;
+  font-size:11px;
+  margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- =====================
-① 午前（固定）
-===================== -->
+<!-- 午前 -->
 <div class="section">
-  <h3>午前シフト（固定）</h3>
-
+  <h3>午前（固定）</h3>
   <input id="m_name" placeholder="名前">
-  <input id="m_room" placeholder="部屋（201など）">
-  <input id="m_start" type="time">
+  <input id="m_room" placeholder="部屋">
   <input id="m_end" type="time">
   <button onclick="addMorning()">追加</button>
-
-  <div id="morningList"></div>
 </div>
 
-<!-- =====================
-② 午後（可変）
-===================== -->
+<!-- 午後 -->
 <div class="section">
-  <h3>午後シフト</h3>
-
+  <h3>午後</h3>
   <input id="a_name" placeholder="名前">
   <input id="a_start" type="time">
   <input id="a_end" type="time">
   <button onclick="addAfternoon()">追加</button>
-
-  <div id="afternoonList"></div>
 </div>
 
-<!-- =====================
-③ 部屋ステータス
-===================== -->
-<div class="section">
-  <h3>部屋稼働状況</h3>
-  <div class="grid" id="roomGrid"></div>
-</div>
+<button onclick="calc()">再計算</button>
 
-<!-- =====================
-④ 清掃予定
-===================== -->
+<div class="grid" id="grid"></div>
+
 <div class="section">
-  <h3>清掃・準備スケジュール</h3>
-  <div id="cleanList"></div>
+  <h3>待機リスト</h3>
+  <div id="wait"></div>
 </div>
 
 <script>
 
-const ROOMS = ["201","202","203","301","302","303","401","402","501"];
-const CLEAN = 30;
+const ROOMS=["201","202","203","301","302","303","401","402","501"];
+const CLEAN=30;
 
-let morning = [];
-let afternoon = [];
+let morning=[];
+let afternoon=[];
+let waiting=[];
 
 function toMin(t){
   const [h,m]=t.split(":").map(Number);
   return h*60+m;
 }
 
-/* =====================
-午前追加（固定）
-===================== */
+/* =================
+入力
+================= */
 function addMorning(){
-  const name = m_name.value;
-  const room = m_room.value;
-  const start = m_start.value;
-  const end = m_end.value;
-
-  if(!name||!room||!start||!end) return;
-
-  morning.push({name,room,start,end});
-  renderMorning();
+  morning.push({
+    name:m_name.value,
+    room:m_room.value,
+    end:m_end.value
+  });
 }
 
-/* =====================
-午後追加（動的）
-===================== */
 function addAfternoon(){
-  const name = a_name.value;
-  const start = a_start.value;
-  const end = a_end.value;
-
-  if(!name||!start||!end) return;
-
-  afternoon.push({name,start,end});
-  renderAfternoon();
+  afternoon.push({
+    name:a_name.value,
+    start:a_start.value,
+    end:a_end.value
+  });
 }
 
-/* =====================
-メイン計算
-===================== */
+/* =================
+コアロジック
+================= */
 function calc(){
 
-  let state = {};
+  let rooms={};
+  waiting=[];
 
   ROOMS.forEach(r=>{
-    state[r] = {
+    rooms[r]={
       room:r,
-      current:null,
-      next:null,
-      clean:null,
+      logs:[],
       freeAt:0
     };
   });
 
-  /* 午前固定 */
+  /* 午前 */
   morning.forEach(m=>{
-    state[m.room].current = {
+    rooms[m.room].logs.push({
       name:m.name,
+      start:0,
       end:toMin(m.end)
-    };
-    state[m.room].freeAt = toMin(m.end) + CLEAN;
+    });
+
+    rooms[m.room].freeAt=toMin(m.end)+CLEAN;
   });
 
-  /* 午後割当 */
-  let sorted = [...afternoon].sort((a,b)=>toMin(a.start)-toMin(b.start));
+  /* 午後（重要：空きを最小化優先） */
+  let sorted=[...afternoon].sort((a,b)=>toMin(a.start)-toMin(b.start));
 
   sorted.forEach(a=>{
 
-    let target = Object.values(state)
-      .sort((x,y)=>x.freeAt-y.freeAt)[0];
+    let candidates = Object.values(rooms)
+      .filter(r=>toMin(a.start)<=r.freeAt || r.freeAt<=toMin(a.start))
+      .sort((x,y)=>x.freeAt-y.freeAt);
 
-    let start = Math.max(toMin(a.start), target.freeAt);
+    let target = candidates[0];
 
-    target.current = {
-      name:a.name,
-      end:toMin(a.end)
-    };
-
-    target.next = {
-      name:a.name,
-      start:start
-    };
-
-    target.clean = {
-      start:toMin(a.end),
-      end:toMin(a.end)+CLEAN
-    };
-
-    target.freeAt = toMin(a.end) + CLEAN;
-  });
-
-  render(state);
-}
-
-/* =====================
-描画
-===================== */
-function render(state){
-
-  roomGrid.innerHTML = "";
-  cleanList.innerHTML = "";
-
-  Object.values(state).forEach(r=>{
-
-    roomGrid.innerHTML += `
-      <div class="card">
-        <div class="title">${r.room}</div>
-        <div>現在：${r.current?.name || "-"}</div>
-        <div class="small">終了：${fmt(r.current?.end)}</div>
-        <div>次候補：${r.next?.name || "-"}</div>
-      </div>
-    `;
-
-    if(r.clean){
-      cleanList.innerHTML += `
-        <div class="card">
-          ${r.room} 清掃 ${fmt(r.clean.start)} → ${fmt(r.clean.end)}
-        </div>
-      `;
+    if(!target){
+      waiting.push(a.name);
+      return;
     }
 
+    let start=Math.max(toMin(a.start),target.freeAt);
+
+    target.logs.push({
+      name:a.name,
+      start:start,
+      end:toMin(a.end)
+    });
+
+    target.freeAt=toMin(a.end)+CLEAN;
   });
+
+  render(rooms);
+}
+
+/* =================
+稼働率
+================= */
+function rate(logs){
+  if(!logs.length) return 0;
+
+  let min=Math.min(...logs.map(l=>l.start));
+  let max=Math.max(...logs.map(l=>l.end));
+
+  let total=logs.reduce((s,l)=>s+(l.end-l.start),0);
+  let span=max-min;
+
+  if(span<=0) return 0;
+
+  return Math.round(total/span*100);
+}
+
+/* =================
+表示
+================= */
+function render(rooms){
+
+  grid.innerHTML="";
+
+  Object.values(rooms).forEach(r=>{
+
+    let rrate=rate(r.logs);
+
+    grid.innerHTML+=`
+      <div class="room">
+        <div class="title">${r.room}</div>
+
+        ${rrate<60?'<div class="badge">LOW</div>':''}
+
+        <div>稼働率：${rrate}%</div>
+
+        ${r.logs.map(l=>`
+          <div style="margin-top:6px;">
+            ${l.name}<br>
+            ${fmt(l.start)} - ${fmt(l.end)}
+          </div>
+        `).join("")}
+
+      </div>
+    `;
+  });
+
+  wait.innerHTML = waiting.length
+    ? waiting.map(w=>`・${w}`).join("<br>")
+    : "なし";
 }
 
 function fmt(m){
   if(!m && m!==0) return "-";
   return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
 }
-
-/* =====================
-一覧表示
-===================== */
-function renderMorning(){
-  morningList.innerHTML =
-    morning.map(m=>`・${m.room} ${m.name} ${m.start}-${m.end}`).join("<br>");
-}
-
-function renderAfternoon(){
-  afternoonList.innerHTML =
-    afternoon.map(a=>`・${a.name} ${a.start}-${a.end}`).join("<br>");
-}
-
-/* auto update */
-setInterval(calc, 1000);
 
 </script>
 

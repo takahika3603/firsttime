@@ -66,15 +66,12 @@ button{
   border:1px solid rgba(255,255,255,0.12);
   border-radius:18px;
   padding:14px;
-
   backdrop-filter: blur(14px);
   display:flex;
   align-items:center;
   gap:10px;
-
   transition:0.25s ease;
-
-  font-size:13px; /* ← 上品スケール */
+  font-size:13px;
 }
 
 /* 未チェック発光 */
@@ -93,7 +90,7 @@ button{
   transform:scale(0.96);
 }
 
-/* checkbox（縮小） */
+/* checkbox */
 input{
   width:15px;
   height:15px;
@@ -109,6 +106,50 @@ input{
   background:rgba(140,200,255,0.9);
   pointer-events:none;
   box-shadow:0 0 12px rgba(120,180,255,0.8);
+}
+
+/* =========================
+   BACK BUTTON（追加）
+========================= */
+
+.back-btn{
+  position:fixed;
+  bottom:22px;
+  left:50%;
+  transform:translateX(-50%);
+
+  padding:10px 16px;
+  border-radius:999px;
+
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+
+  backdrop-filter: blur(18px);
+
+  color:rgba(230,240,255,0.8);
+  font-size:12px;
+
+  cursor:pointer;
+
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+
+  transition:0.25s ease;
+}
+
+/* ホバー時＝Vision Pro風に浮く */
+.back-btn:hover{
+  transform:translateX(-50%) translateY(-4px) scale(1.02);
+  background:rgba(255,255,255,0.10);
+  border:1px solid rgba(120,180,255,0.35);
+  box-shadow:
+    0 25px 70px rgba(0,0,0,0.75),
+    0 0 20px rgba(120,180,255,0.25);
+  color:#eaf2ff;
+}
+
+/* 押下 */
+.back-btn:active{
+  transform:translateX(-50%) translateY(1px) scale(0.98);
 }
 </style>
 </head>
@@ -129,12 +170,17 @@ input{
   <div class="card"><input type="checkbox">時間設定</div>
   <div class="card"><input type="checkbox">お昼／夜の区別</div>
 
-  <div class="card"><input type="checkbox">明日出勤の子か</div>
-  <div class="card"><input type="checkbox">URL</div>
+  <div class="card"><input type="checkbox">明日出勤の子か確認</div>
+  <div class="card"><input type="checkbox">URL貼り付け</div>
 
-  <div class="card"><input type="checkbox">年齢</div>
-  <div class="card"><input type="checkbox">キャッチコピー</div>
+  <div class="card"><input type="checkbox">年齢チェック</div>
+  <div class="card"><input type="checkbox">キャッチコピー作成</div>
 
+</div>
+
+<!-- BACK BUTTON -->
+<div class="back-btn" onclick="goManual()">
+  ← MANUALに戻る
 </div>
 
 <script>
@@ -199,6 +245,11 @@ function burst(){
 
     setTimeout(()=>p.remove(),1000);
   }
+}
+
+/* navigation */
+function goManual(){
+  window.location.href = "manual.html";
 }
 
 /* load */

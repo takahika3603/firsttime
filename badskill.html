@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<title>Skill Mirror Vision</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+/* ===== BASE ===== */
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans";
+
+  color:white;
+  overflow-x:hidden;
+
+  background:
+    radial-gradient(circle at 50% 0%, rgba(120,160,255,0.25), transparent 45%),
+    radial-gradient(circle at 90% 30%, rgba(255,120,200,0.18), transparent 50%),
+    radial-gradient(circle at 40% 100%, rgba(0,200,255,0.12), #05070c 60%);
+}
+
+/* subtle animated glow */
+body::before{
+  content:"";
+  position:fixed;
+  inset:-50px;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.06), transparent 60%);
+  animation: floatGlow 8s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes floatGlow{
+  0%,100%{transform:translateY(0px);}
+  50%{transform:translateY(-10px);}
+}
+
+/* ===== HEADER ===== */
+header{
+  padding:22px 18px 10px;
+}
+
+h1{
+  margin:0;
+  font-size:22px;
+  font-weight:600;
+  letter-spacing:0.5px;
+}
+
+.sub{
+  font-size:12px;
+  opacity:0.55;
+  margin-top:4px;
+}
+
+/* ===== DASHBOARD ===== */
+.dashboard{
+  margin:14px 16px;
+  padding:16px;
+  border-radius:28px;
+
+  background:rgba(255,255,255,0.06);
+  backdrop-filter: blur(35px);
+  -webkit-backdrop-filter: blur(35px);
+
+  border:1px solid rgba(255,255,255,0.14);
+
+  box-shadow:
+    0 20px 50px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* ===== INPUT ===== */
+.inputBox{
+  display:flex;
+  gap:8px;
+  padding:0 16px;
+}
+
+input, select{
+  flex:1;
+  padding:14px;
+  border-radius:16px;
+  border:none;
+  outline:none;
+
+  background:rgba(255,255,255,0.07);
+  color:white;
+
+  backdrop-filter: blur(25px);
+}
+
+button{
+  padding:14px 16px;
+  border:none;
+  border-radius:16px;
+
+  background:linear-gradient(135deg,#6aa8ff,#9b6bff);
+  color:white;
+
+  box-shadow:0 12px 30px rgba(120,140,255,0.25);
+}
+
+/* ===== CARD ===== */
+.card{
+  margin:14px 16px;
+  padding:18px;
+  border-radius:30px;
+  position:relative;
+  overflow:hidden;
+
+  background:rgba(255,255,255,0.05);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+
+  border:1px solid rgba(255,255,255,0.12);
+
+  box-shadow:
+    0 25px 60px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+
+  transition:0.35s;
+}
+
+/* soft hover/tap feel */
+.card:active{
+  transform:scale(0.99);
+}
+
+/* floating light layer */
+.card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:30px;
+
+  background:linear-gradient(
+    135deg,
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0.02)
+  );
+
+  pointer-events:none;
+}
+
+/* ===== PROGRESS ===== */
+.bar{
+  height:7px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#6aa8ff,#9b6bff);
+  margin:10px 0;
+  box-shadow:0 0 20px rgba(120,140,255,0.3);
+}
+
+/* ===== BADGE ===== */
+.badge{
+  font-size:11px;
+  opacity:0.6;
+}
+
+/* ===== SWIPE DELETE ===== */
+.deleteArea{
+  position:absolute;
+  right:-120px;
+  top:0;
+  width:120px;
+  height:100%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:linear-gradient(135deg,#ff4d4d,#ff2d55);
+  transition:0.3s;
+
+  font-weight:600;
+}
+
+.card.swiped .deleteArea{
+  right:0;
+}
+
+/* ===== AI PANEL ===== */
+.aiPanel{
+  margin:14px 16px;
+  padding:16px;
+  border-radius:28px;
+
+  background:rgba(255,255,255,0.05);
+  backdrop-filter: blur(40px);
+
+  border:1px solid rgba(255,255,255,0.12);
+
+  box-shadow:0 20px 50px rgba(0,0,0,0.4);
+}
+
+/* ===== CHART ===== */
+canvas{
+  max-height:220px;
+}
+
+/* ===== ANIMATION ===== */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(14px);}
+  to{opacity:1;transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Skill Mirror Vision</h1>
+  <div class="sub">営業スキル改善システム</div>
+</header>
+
+<!-- DASHBOARD -->
+<div class="dashboard">
+  <div style="font-size:13px;opacity:0.7;margin-bottom:8px;">
+    克服率ダッシュボード
+  </div>
+  <canvas id="chart"></canvas>
+</div>
+
+<!-- INPUT -->
+<div class="inputBox">
+  <input id="title" placeholder="苦手項目">
+  <select id="category">
+    <option>営業</option>
+    <option>税務</option>
+    <option>数字</option>
+    <option>提案</option>
+  </select>
+  <button onclick="add()">追加</button>
+</div>
+
+<!-- AI -->
+<div class="aiPanel">
+  <button onclick="analyze()">AI分析</button>
+  <div id="aiResult" style="margin-top:10px;font-size:13px;opacity:0.85;"></div>
+</div>
+
+<div id="list"></div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("skills") || "[]");
+
+function save(){
+  localStorage.setItem("skills", JSON.stringify(data));
+  render();
+  updateChart();
+}
+
+function add(){
+  const title = document.getElementById("title").value;
+  const cat = document.getElementById("category").value;
+  if(!title) return;
+
+  data.push({
+    id:Date.now(),
+    title,
+    cat,
+    checks:[false,false,false]
+  });
+
+  save();
+}
+
+/* toggle */
+function toggle(i,j){
+  data[i].checks[j] = !data[i].checks[j];
+  save();
+}
+
+/* delete */
+function del(i){
+  data.splice(i,1);
+  save();
+}
+
+/* swipe */
+let startX=0;
+
+function bindSwipe(el,i){
+  el.addEventListener("touchstart",(e)=>{
+    startX=e.touches[0].clientX;
+  });
+
+  el.addEventListener("touchmove",(e)=>{
+    let diff=e.touches[0].clientX-startX;
+
+    if(diff<-70) el.classList.add("swiped");
+    if(diff>70) el.classList.remove("swiped");
+  });
+}
+
+/* render */
+function render(){
+  const list=document.getElementById("list");
+  list.innerHTML="";
+
+  data.forEach((d,i)=>{
+
+    let progress = d.checks.filter(v=>v).length/3*100;
+
+    let el=document.createElement("div");
+    el.className="card";
+
+    el.innerHTML=`
+      <div style="font-size:16px;font-weight:600;">${d.title}</div>
+      <div class="badge">${d.cat}</div>
+
+      <div class="bar" style="width:${progress}%"></div>
+
+      <label><input type="checkbox" onchange="toggle(${i},0)" ${d.checks[0]?'checked':''}> ミス防止</label><br>
+      <label><input type="checkbox" onchange="toggle(${i},1)" ${d.checks[1]?'checked':''}> 事前確認</label><br>
+      <label><input type="checkbox" onchange="toggle(${i},2)" ${d.checks[2]?'checked':''}> 冷静対応</label>
+
+      <div class="deleteArea" onclick="del(${i})">削除</div>
+    `;
+
+    bindSwipe(el,i);
+    list.appendChild(el);
+  });
+}
+
+/* chart */
+let chart;
+
+function updateChart(){
+  let total=data.length;
+  let done=0;
+
+  data.forEach(d=>{
+    if(d.checks.filter(v=>v).length===3) done++;
+  });
+
+  let ctx=document.getElementById("chart");
+
+  if(chart) chart.destroy();
+
+  chart=new Chart(ctx,{
+    type:"doughnut",
+    data:{
+      labels:["克服済み","未克服"],
+      datasets:[{data:[done,total-done]}]
+    },
+    options:{
+      plugins:{
+        legend:{labels:{color:"white"}}
+      }
+    }
+  });
+}
+
+/* AI */
+async function analyze(){
+
+  const res = await fetch("https://api.openai.com/v1/chat/completions",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":"Bearer YOUR_API_KEY"
+    },
+    body:JSON.stringify({
+      model:"gpt-4o-mini",
+      messages:[
+        {
+          role:"system",
+          content:"あなたは営業改善コーチです。短く具体的に改善点を出してください"
+        },
+        {
+          role:"user",
+          content:JSON.stringify(data)
+        }
+      ]
+    })
+  });
+
+  const json=await res.json();
+
+  document.getElementById("aiResult").innerText =
+    json.choices[0].message.content;
+}
+
+/* init */
+render();
+updateChart();
+</script>
+
+</body>
+</html>

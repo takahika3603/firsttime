@@ -3,33 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Room Timeline System</title>
+<title>Room Optimization System PRO</title>
 
 <style>
 body{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans","Meiryo",sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Meiryo";
   background:#05070c;
   color:#eaf2ff;
-  padding:16px;
+  padding:14px;
 }
 
-.section{
+/* ===== 入力（1行共通） ===== */
+.row{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
   margin-bottom:10px;
-  padding:10px;
-  background:rgba(255,255,255,0.05);
-  border-radius:12px;
 }
 
 input,button{
-  padding:8px;
-  margin:3px 0;
-  border-radius:10px;
+  padding:6px;
+  border-radius:8px;
   border:1px solid rgba(255,255,255,0.15);
   background:rgba(255,255,255,0.06);
   color:#eaf2ff;
+  font-size:12px;
 }
 
+input{
+  flex:1;
+  min-width:90px;
+}
+
+/* ===== レイアウト ===== */
 .grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -49,134 +56,155 @@ input,button{
   margin-bottom:6px;
 }
 
-.block{
+.item{
   margin-top:6px;
-  font-size:11px;
-  opacity:0.9;
+  padding:6px;
+  border-radius:8px;
+}
+
+/* 通常 */
+.normal{
+  background:transparent;
+}
+
+/* オレンジ（接続・調整あり） */
+.orange{
+  background:rgba(255,165,0,0.18);
+  border:1px solid rgba(255,165,0,0.35);
+}
+
+/* 赤（待機・破綻） */
+.red{
+  background:rgba(255,80,80,0.18);
+  border:1px solid rgba(255,80,80,0.35);
 }
 </style>
 </head>
 
 <body>
 
-<div class="section">
-  <h3>午前（固定部屋）</h3>
-  <input id="m_name" placeholder="名前">
-  <input id="m_room" placeholder="部屋">
-  <input id="m_start" type="time">
-  <input id="m_end" type="time">
-  <button onclick="addMorning()">追加</button>
+<!-- ===== 共通入力 ===== -->
+<div class="row">
+  <input id="name" placeholder="名前">
+  <input id="room" placeholder="部屋（任意）">
+  <input id="start" type="time">
+  <input id="end" type="time">
+  <button onclick="add()">追加</button>
+  <button onclick="calc()">計算</button>
 </div>
-
-<div class="section">
-  <h3>午後</h3>
-  <input id="a_name" placeholder="名前">
-  <input id="a_start" type="time">
-  <input id="a_end" type="time">
-  <button onclick="addAfternoon()">追加</button>
-</div>
-
-<button onclick="calc()">再計算</button>
 
 <div class="grid" id="grid"></div>
 
 <script>
 
 const ROOMS=["201","202","203","301","302","303","401","402","501"];
-const CLEAN=30;
 
-let morning=[];
-let afternoon=[];
+let list=[];
 
 function toMin(t){
   const [h,m]=t.split(":").map(Number);
   return h*60+m;
 }
 
-/* =================
+/* =========================
 入力
-================= */
-function addMorning(){
-  morning.push({
-    name:m_name.value,
-    room:m_room.value,
-    start:m_start.value,
-    end:m_end.value
+========================= */
+function add(){
+  list.push({
+    name:name.value,
+    room:room.value || null,
+    start:toMin(start.value),
+    end:toMin(end.value)
   });
 }
 
-function addAfternoon(){
-  afternoon.push({
-    name:a_name.value,
-    start:a_start.value,
-    end:a_end.value
-  });
-}
-
-/* =================
-コア
-================= */
+/* =========================
+コアロジック
+========================= */
 function calc(){
 
   let rooms={};
 
   ROOMS.forEach(r=>{
-    rooms[r]={room:r,logs:[],freeAt:0};
+    rooms[r]={logs:[],freeAt:0};
   });
 
-  /* 午前 */
-  morning.forEach(m=>{
-    rooms[m.room].logs.push({
-      name:m.name,
-      start:toMin(m.start),
-      end:toMin(m.end)
-    });
+  let cleanBase = 30;
 
-    rooms[m.room].freeAt=toMin(m.end)+CLEAN;
-  });
+  // 混雑時は短縮
+  if(list.length > 15) cleanBase = 15;
 
-  /* 午後 */
-  afternoon.sort((a,b)=>toMin(a.start)-toMin(b.start));
+  list.sort((a,b)=>a.start-b.start);
 
-  afternoon.forEach(a=>{
+  list.forEach(p=>{
 
-    let target=Object.values(rooms)
-      .sort((x,y)=>x.freeAt-y.freeAt)[0];
+    let target;
 
-    let start=Math.max(toMin(a.start),target.freeAt);
+    // 固定（午前扱い）
+    if(p.room){
+      target = rooms[p.room];
+    }
+    // 流動（午後扱い）
+    else{
+      target = Object.values(rooms)
+        .sort((a,b)=>a.freeAt-b.freeAt)[0];
+    }
+
+    let realStart = Math.max(p.start, target.freeAt);
+
+    let isDelayed = realStart !== p.start;
+
+    let isBoundary = target.freeAt === p.start;
 
     target.logs.push({
-      name:a.name,
-      start:start,
-      end:toMin(a.end)
+      name:p.name,
+      start:p.start,       // シフトは絶対保持
+      end:p.end,
+      realStart,
+      isDelayed,
+      isBoundary
     });
 
-    target.freeAt=toMin(a.end)+CLEAN;
+    target.freeAt = p.end + cleanBase;
   });
 
   render(rooms);
 }
 
-/* =================
+/* =========================
 表示
-================= */
+========================= */
 function render(rooms){
 
   grid.innerHTML="";
 
-  Object.values(rooms).forEach(r=>{
+  Object.entries(rooms).forEach(([room,r])=>{
+
+    let html="";
+
+    r.logs.forEach(l=>{
+
+      let cls="normal";
+
+      if(l.isDelayed){
+        cls="red";        // 待機発生
+      }
+      else if(l.isBoundary){
+        cls="orange";     // 連続接続
+      }
+
+      html+=`
+        <div class="item ${cls}">
+          ${l.name}<br>
+          ${fmt(l.start)} - ${fmt(l.end)}
+        </div>
+      `;
+    });
 
     grid.innerHTML+=`
       <div class="room">
-        <div class="title">${r.room}</div>
-
-        ${r.logs.map(l=>`
-          <div class="block">
-            ${l.name}<br>
-            ${fmt(l.start)} - ${fmt(l.end)}
-          </div>
-        `).join("")}
-
+        <div class="title">${room}</div>
+        ${html}
       </div>
     `;
   });

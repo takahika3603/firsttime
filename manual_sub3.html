@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Room Allocator</title>
+<title>Room Operation Dashboard</title>
 
 <style>
 body{
@@ -11,169 +11,259 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans","Meiryo",sans-serif;
   background: radial-gradient(circle at 20% 10%, #1b2a3a, #05070c 60%);
   color:#eaf2ff;
-  padding:20px;
+  padding:16px;
 }
 
-h2{
-  font-size:16px;
+/* sections */
+.section{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:14px;
+  padding:10px;
+  margin-bottom:10px;
+  backdrop-filter: blur(10px);
+}
+
+h3{
+  margin:0 0 6px 0;
+  font-size:13px;
   opacity:0.9;
 }
 
-input, button{
-  padding:10px;
+/* inputs */
+input,button{
+  padding:8px;
+  margin:3px 0;
   border-radius:10px;
   border:1px solid rgba(255,255,255,0.15);
   background:rgba(255,255,255,0.06);
   color:#eaf2ff;
-  margin:4px 0;
-}
-
-button{
-  cursor:pointer;
 }
 
 /* grid */
-.box{
-  background:rgba(255,255,255,0.05);
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:10px;
+}
+
+/* card */
+.card{
+  background:rgba(255,255,255,0.06);
   border:1px solid rgba(255,255,255,0.12);
-  border-radius:16px;
-  padding:12px;
-  margin-bottom:12px;
-  backdrop-filter: blur(12px);
+  border-radius:14px;
+  padding:10px;
+  font-size:11px;
 }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
-  font-size:12px;
+.title{
+  font-weight:600;
+  color:#9fd0ff;
+  margin-bottom:4px;
 }
 
-td,th{
-  border-bottom:1px solid rgba(255,255,255,0.08);
-  padding:8px;
-  text-align:left;
+.small{
+  opacity:0.7;
 }
 </style>
 </head>
 
 <body>
 
-<h2>部屋割り最適化ツール</h2>
+<!-- =====================
+① 午前（固定）
+===================== -->
+<div class="section">
+  <h3>午前シフト（固定）</h3>
 
-<div class="box">
-  <div>女の子追加</div>
-  <input id="name" placeholder="名前">
-  <input id="start" type="time">
-  <input id="end" type="time">
-  <button onclick="addGirl()">追加</button>
+  <input id="m_name" placeholder="名前">
+  <input id="m_room" placeholder="部屋（201など）">
+  <input id="m_start" type="time">
+  <input id="m_end" type="time">
+  <button onclick="addMorning()">追加</button>
+
+  <div id="morningList"></div>
 </div>
 
-<div class="box">
-  <button onclick="allocate()">部屋割り実行</button>
-  <button onclick="resetAll()">リセット</button>
+<!-- =====================
+② 午後（可変）
+===================== -->
+<div class="section">
+  <h3>午後シフト</h3>
+
+  <input id="a_name" placeholder="名前">
+  <input id="a_start" type="time">
+  <input id="a_end" type="time">
+  <button onclick="addAfternoon()">追加</button>
+
+  <div id="afternoonList"></div>
 </div>
 
-<div class="box">
-  <div>入力一覧</div>
-  <div id="list"></div>
+<!-- =====================
+③ 部屋ステータス
+===================== -->
+<div class="section">
+  <h3>部屋稼働状況</h3>
+  <div class="grid" id="roomGrid"></div>
 </div>
 
-<div class="box">
-  <div>部屋割り結果</div>
-  <div id="result"></div>
+<!-- =====================
+④ 清掃予定
+===================== -->
+<div class="section">
+  <h3>清掃・準備スケジュール</h3>
+  <div id="cleanList"></div>
 </div>
 
 <script>
 
 const ROOMS = ["201","202","203","301","302","303","401","402","501"];
-const CLEAN_TIME = 30;
+const CLEAN = 30;
 
-let girls = [];
+let morning = [];
+let afternoon = [];
 
-function addGirl(){
-  const name = document.getElementById("name").value;
-  const start = document.getElementById("start").value;
-  const end = document.getElementById("end").value;
-
-  if(!name || !start || !end) return;
-
-  girls.push({name,start,end});
-  renderList();
-}
-
-function timeToMin(t){
-  const [h,m] = t.split(":").map(Number);
+function toMin(t){
+  const [h,m]=t.split(":").map(Number);
   return h*60+m;
 }
 
-function allocate(){
+/* =====================
+午前追加（固定）
+===================== */
+function addMorning(){
+  const name = m_name.value;
+  const room = m_room.value;
+  const start = m_start.value;
+  const end = m_end.value;
 
-  let roomState = ROOMS.map(r=>({
-    room:r,
-    freeAt:0,
-    log:[]
-  }));
+  if(!name||!room||!start||!end) return;
 
-  let sorted = [...girls].sort((a,b)=>timeToMin(a.start)-timeToMin(b.start));
+  morning.push({name,room,start,end});
+  renderMorning();
+}
 
-  sorted.forEach(g=>{
+/* =====================
+午後追加（動的）
+===================== */
+function addAfternoon(){
+  const name = a_name.value;
+  const start = a_start.value;
+  const end = a_end.value;
 
-    let start = timeToMin(g.start);
-    let end = timeToMin(g.end);
+  if(!name||!start||!end) return;
 
-    // 空いてる部屋を探す
-    roomState.sort((a,b)=>a.freeAt-b.freeAt);
+  afternoon.push({name,start,end});
+  renderAfternoon();
+}
 
-    let room = roomState[0];
+/* =====================
+メイン計算
+===================== */
+function calc(){
 
-    let realStart = Math.max(start, room.freeAt);
+  let state = {};
 
-    room.log.push({
-      name:g.name,
-      start:realStart,
-      end:end
-    });
-
-    room.freeAt = end + CLEAN_TIME;
+  ROOMS.forEach(r=>{
+    state[r] = {
+      room:r,
+      current:null,
+      next:null,
+      clean:null,
+      freeAt:0
+    };
   });
 
-  renderResult(roomState);
-}
-
-function renderList(){
-  document.getElementById("list").innerHTML =
-    girls.map(g=>`・${g.name} ${g.start}〜${g.end}`).join("<br>");
-}
-
-function renderResult(roomState){
-
-  let html = "<table><tr><th>部屋</th><th>割当</th></tr>";
-
-  roomState.forEach(r=>{
-    let text = r.log.map(l=>{
-      return `${l.name}(${format(l.start)}-${format(l.end)})`;
-    }).join("<br>");
-
-    html += `<tr><td>${r.room}</td><td>${text || "-"}</td></tr>`;
+  /* 午前固定 */
+  morning.forEach(m=>{
+    state[m.room].current = {
+      name:m.name,
+      end:toMin(m.end)
+    };
+    state[m.room].freeAt = toMin(m.end) + CLEAN;
   });
 
-  html += "</table>";
+  /* 午後割当 */
+  let sorted = [...afternoon].sort((a,b)=>toMin(a.start)-toMin(b.start));
 
-  document.getElementById("result").innerHTML = html;
+  sorted.forEach(a=>{
+
+    let target = Object.values(state)
+      .sort((x,y)=>x.freeAt-y.freeAt)[0];
+
+    let start = Math.max(toMin(a.start), target.freeAt);
+
+    target.current = {
+      name:a.name,
+      end:toMin(a.end)
+    };
+
+    target.next = {
+      name:a.name,
+      start:start
+    };
+
+    target.clean = {
+      start:toMin(a.end),
+      end:toMin(a.end)+CLEAN
+    };
+
+    target.freeAt = toMin(a.end) + CLEAN;
+  });
+
+  render(state);
 }
 
-function format(min){
-  let h = String(Math.floor(min/60)).padStart(2,"0");
-  let m = String(min%60).padStart(2,"0");
-  return `${h}:${m}`;
+/* =====================
+描画
+===================== */
+function render(state){
+
+  roomGrid.innerHTML = "";
+  cleanList.innerHTML = "";
+
+  Object.values(state).forEach(r=>{
+
+    roomGrid.innerHTML += `
+      <div class="card">
+        <div class="title">${r.room}</div>
+        <div>現在：${r.current?.name || "-"}</div>
+        <div class="small">終了：${fmt(r.current?.end)}</div>
+        <div>次候補：${r.next?.name || "-"}</div>
+      </div>
+    `;
+
+    if(r.clean){
+      cleanList.innerHTML += `
+        <div class="card">
+          ${r.room} 清掃 ${fmt(r.clean.start)} → ${fmt(r.clean.end)}
+        </div>
+      `;
+    }
+
+  });
 }
 
-function resetAll(){
-  girls = [];
-  document.getElementById("list").innerHTML = "";
-  document.getElementById("result").innerHTML = "";
+function fmt(m){
+  if(!m && m!==0) return "-";
+  return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
 }
+
+/* =====================
+一覧表示
+===================== */
+function renderMorning(){
+  morningList.innerHTML =
+    morning.map(m=>`・${m.room} ${m.name} ${m.start}-${m.end}`).join("<br>");
+}
+
+function renderAfternoon(){
+  afternoonList.innerHTML =
+    afternoon.map(a=>`・${a.name} ${a.start}-${a.end}`).join("<br>");
+}
+
+/* auto update */
+setInterval(calc, 1000);
 
 </script>
 

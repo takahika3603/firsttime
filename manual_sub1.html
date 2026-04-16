@@ -61,7 +61,7 @@ button{
   gap:14px;
 }
 
-/* card */
+/* card（上品に縮小反映） */
 .card{
   background:rgba(255,255,255,0.06);
   border:1px solid rgba(255,255,255,0.12);
@@ -73,6 +73,8 @@ button{
   gap:10px;
   transition:0.25s ease;
   position:relative;
+
+  font-size:13px; /* ← 上品縮小 */
 }
 
 /* 未チェック発光 */
@@ -92,9 +94,10 @@ button{
   transform:scale(0.96);
 }
 
+/* checkbox（上品縮小） */
 input{
-  width:18px;
-  height:18px;
+  width:15px;
+  height:15px;
   accent-color:#6aa9ff;
 }
 
@@ -145,7 +148,7 @@ input{
 const cards = document.querySelectorAll(".card");
 const progress = document.getElementById("progress");
 
-let fired = false; // ← パーティクル1回制御
+let fired = false;
 
 function update(){
 
@@ -167,19 +170,17 @@ function update(){
   const percent = done / cards.length;
   progress.style.width = (percent * 100) + "%";
 
-  // 🎉 完了時エフェクト
   if(percent === 1 && !fired){
     fired = true;
     burstParticles();
   }
 
-  // リセット後再発火可能に
   if(percent < 1){
     fired = false;
   }
 }
 
-/* パーティクル爆発 */
+/* particles */
 function burstParticles(){
   for(let i=0;i<50;i++){
     const p = document.createElement("div");

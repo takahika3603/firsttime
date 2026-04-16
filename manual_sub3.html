@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Room Allocator</title>
+
+<style>
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans","Meiryo",sans-serif;
+  background: radial-gradient(circle at 20% 10%, #1b2a3a, #05070c 60%);
+  color:#eaf2ff;
+  padding:20px;
+}
+
+h2{
+  font-size:16px;
+  opacity:0.9;
+}
+
+input, button{
+  padding:10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.06);
+  color:#eaf2ff;
+  margin:4px 0;
+}
+
+button{
+  cursor:pointer;
+}
+
+/* grid */
+.box{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:16px;
+  padding:12px;
+  margin-bottom:12px;
+  backdrop-filter: blur(12px);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  font-size:12px;
+}
+
+td,th{
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  padding:8px;
+  text-align:left;
+}
+</style>
+</head>
+
+<body>
+
+<h2>部屋割り最適化ツール</h2>
+
+<div class="box">
+  <div>女の子追加</div>
+  <input id="name" placeholder="名前">
+  <input id="start" type="time">
+  <input id="end" type="time">
+  <button onclick="addGirl()">追加</button>
+</div>
+
+<div class="box">
+  <button onclick="allocate()">部屋割り実行</button>
+  <button onclick="resetAll()">リセット</button>
+</div>
+
+<div class="box">
+  <div>入力一覧</div>
+  <div id="list"></div>
+</div>
+
+<div class="box">
+  <div>部屋割り結果</div>
+  <div id="result"></div>
+</div>
+
+<script>
+
+const ROOMS = ["201","202","203","301","302","303","401","402","501"];
+const CLEAN_TIME = 30;
+
+let girls = [];
+
+function addGirl(){
+  const name = document.getElementById("name").value;
+  const start = document.getElementById("start").value;
+  const end = document.getElementById("end").value;
+
+  if(!name || !start || !end) return;
+
+  girls.push({name,start,end});
+  renderList();
+}
+
+function timeToMin(t){
+  const [h,m] = t.split(":").map(Number);
+  return h*60+m;
+}
+
+function allocate(){
+
+  let roomState = ROOMS.map(r=>({
+    room:r,
+    freeAt:0,
+    log:[]
+  }));
+
+  let sorted = [...girls].sort((a,b)=>timeToMin(a.start)-timeToMin(b.start));
+
+  sorted.forEach(g=>{
+
+    let start = timeToMin(g.start);
+    let end = timeToMin(g.end);
+
+    // 空いてる部屋を探す
+    roomState.sort((a,b)=>a.freeAt-b.freeAt);
+
+    let room = roomState[0];
+
+    let realStart = Math.max(start, room.freeAt);
+
+    room.log.push({
+      name:g.name,
+      start:realStart,
+      end:end
+    });
+
+    room.freeAt = end + CLEAN_TIME;
+  });
+
+  renderResult(roomState);
+}
+
+function renderList(){
+  document.getElementById("list").innerHTML =
+    girls.map(g=>`・${g.name} ${g.start}〜${g.end}`).join("<br>");
+}
+
+function renderResult(roomState){
+
+  let html = "<table><tr><th>部屋</th><th>割当</th></tr>";
+
+  roomState.forEach(r=>{
+    let text = r.log.map(l=>{
+      return `${l.name}(${format(l.start)}-${format(l.end)})`;
+    }).join("<br>");
+
+    html += `<tr><td>${r.room}</td><td>${text || "-"}</td></tr>`;
+  });
+
+  html += "</table>";
+
+  document.getElementById("result").innerHTML = html;
+}
+
+function format(min){
+  let h = String(Math.floor(min/60)).padStart(2,"0");
+  let m = String(min%60).padStart(2,"0");
+  return `${h}:${m}`;
+}
+
+function resetAll(){
+  girls = [];
+  document.getElementById("list").innerHTML = "";
+  document.getElementById("result").innerHTML = "";
+}
+
+</script>
+
+</body>
+</html>

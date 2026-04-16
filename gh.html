@@ -9,8 +9,8 @@
 :root{
   --bg:#0b0f1a;
   --card:rgba(255,255,255,0.06);
-  --card-border:rgba(255,255,255,0.12);
-  --text:#ffffff;
+  --border:rgba(255,255,255,0.12);
+  --text:#fff;
   --muted:rgba(255,255,255,0.6);
   --accent:linear-gradient(135deg,#a5b4fc,#f9a8d4);
 }
@@ -20,7 +20,7 @@ margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Meiryo",sans-serif;
 background:var(--bg);
 color:var(--text);
-padding:18px;
+padding:16px;
 }
 
 .container{
@@ -28,63 +28,55 @@ max-width:760px;
 margin:0 auto;
 display:flex;
 flex-direction:column;
-gap:14px;
+gap:12px;
 }
 
-.header{
-font-size:20px;
-font-weight:700;
-margin-bottom:4px;
-}
-
-.sub{
-font-size:13px;
-color:var(--muted);
-margin-bottom:10px;
-}
-
+/* カード */
 .card{
 background:var(--card);
-border:1px solid var(--card-border);
-border-radius:16px;
-padding:14px;
-backdrop-filter:blur(18px);
+border:1px solid var(--border);
+border-radius:14px;
+padding:12px;
 }
 
+/* ボタン */
 button{
 width:100%;
-padding:14px;
+padding:12px;
 border:none;
-border-radius:14px;
+border-radius:12px;
 background:var(--accent);
 color:#fff;
-font-weight:700;
-font-size:14px;
+font-weight:bold;
 cursor:pointer;
-transition:0.2s;
 }
 
-button:hover{
-transform:translateY(-1px);
-opacity:0.95;
-}
-
-/* ===== ブロック（スマホでも崩れない横一列）===== */
+/* =========================
+ブロックUI（改善版）
+========================= */
 .block{
 display:flex;
-flex-direction:row;
 align-items:center;
-justify-content:flex-start;
-gap:12px;
-padding:12px;
-margin:10px 0;
-border-radius:12px;
-background:rgba(255,255,255,0.04);
-overflow-x:auto;
-white-space:nowrap;
+justify-content:space-between;
+gap:10px;
+padding:10px;
+margin:6px 0;
+border-radius:10px;
+background:rgba(255,255,255,0.05);
+cursor:grab;
 }
 
-.block-left{
+/* 左：ドラッグ */
+.drag{
+width:22px;
+text-align:center;
+opacity:0.7;
+font-size:18px;
+cursor:grab;
+}
+
+/* 中：チェック＋タイトル */
+.block-main{
 display:flex;
 align-items:center;
 gap:10px;
@@ -92,81 +84,73 @@ flex:1;
 min-width:0;
 }
 
+/* タイトル */
 .block-title{
 font-size:14px;
-font-weight:600;
 white-space:nowrap;
 overflow:hidden;
 text-overflow:ellipsis;
 }
 
-.block-meta{
+/* 右：情報 */
+.block-right{
 display:flex;
 align-items:center;
-gap:12px;
-font-size:12px;
-color:var(--muted);
-margin-left:auto;
+gap:8px;
+font-size:11px;
+opacity:0.7;
 flex-shrink:0;
 }
 
-.edit-btn{
-cursor:pointer;
+/* 編集ボタン小さく */
+.edit{
 color:#a5b4fc;
-white-space:nowrap;
+cursor:pointer;
+font-size:11px;
 }
 
-.output{
-white-space:pre-wrap;
-font-family:monospace;
-background:rgba(255,255,255,0.05);
-padding:14px;
-border-radius:14px;
-min-height:160px;
-font-size:12px;
-line-height:1.5;
-}
-
+/* モーダル */
 .modal{
 position:fixed;
 inset:0;
-background:rgba(0,0,0,0.7);
+background:rgba(0,0,0,0.75);
 display:none;
 align-items:center;
 justify-content:center;
 padding:14px;
+z-index:999;
 }
 
 .modal-box{
 width:100%;
 max-width:520px;
-background:#0b0f1a;
-border:1px solid rgba(255,255,255,0.12);
-border-radius:14px;
-padding:16px;
 }
 
-input,textarea{
-width:100%;
-background:#05070f;
-color:#fff;
-border:none;
-border-radius:10px;
-padding:10px;
-font-family:monospace;
-margin-bottom:10px;
-font-size:13px;
+.preview{
+background:#fff;
+color:#333;
+padding:14px;
+border-radius:12px;
+max-height:70vh;
+overflow:auto;
+line-height:1.6;
 }
 
+/* input */
 textarea{
-height:180px;
+width:100%;
+height:120px;
+padding:10px;
+border-radius:10px;
+border:none;
+margin-top:10px;
+font-family:monospace;
 }
 
 .small{
 font-size:12px;
 color:var(--muted);
 }
-
 </style>
 </head>
 
@@ -174,116 +158,168 @@ color:var(--muted);
 
 <div class="container">
 
-<div class="header">Blog CMS Builder PRO</div>
-<div class="sub">横並びUIでブロックを管理・生成できます</div>
+<h2>Blog CMS Builder PRO</h2>
 
+<!-- ボタン -->
 <div class="card">
-<button onclick="openAddModal()">＋ ブロック追加</button>
+<button onclick="save()">💾 保存</button>
+<button onclick="openPreview()">👀 プレビュー</button>
 </div>
 
-<div class="card" id="blockList"></div>
+<!-- ブロック -->
+<div class="card" id="list"></div>
 
+<!-- 自由入力 -->
 <div class="card">
-<button onclick="generate()">コード生成</button>
-</div>
-
-<div class="card">
-<div id="output" class="output">ここにHTMLが生成されます</div>
+<div class="small">自由入力</div>
+<textarea id="input"></textarea>
 </div>
 
 </div>
 
+<!-- プレビュー -->
 <div class="modal" id="modal">
 <div class="modal-box">
-<h3 id="modalTitle">ブロック編集</h3>
-
-<input id="titleInput" placeholder="タイトル">
-<input id="priorityInput" type="number" placeholder="優先順位（数字が大きいほど上）">
-<textarea id="codeInput" placeholder="HTMLコード"></textarea>
-
-<button onclick="saveBlock()">保存</button>
+<button onclick="closePreview()">✖ 閉じる</button>
+<div id="preview" class="preview"></div>
 </div>
 </div>
 
 <script>
 
+/* =========================
+データ
+========================= */
 let blocks = [
-{key:"salary",title:"給与ボックス",priority:1,code:`<div style=\"background:#fdf2f8;padding:12px;border-radius:12px;\">給与は安定しています</div>`,checked:false},
-{key:"job",title:"仕事内容ボックス",priority:1,code:`<div style=\"background:#ecfeff;padding:12px;border-radius:12px;\">仕事内容はシンプルです</div>`,checked:false},
-{key:"easy",title:"未経験OKボックス",priority:1,code:`<div style=\"background:#f0fdf4;padding:12px;border-radius:12px;\">未経験でも安心して始められます</div>`,checked:false},
-{key:"env",title:"働きやすさボックス",priority:1,code:`<div style=\"background:#fff7ed;padding:12px;border-radius:12px;\">働きやすい環境を整えています</div>`,checked:false}
+{ id:"salary", title:"給与ボックス", text:"給与は安定しています", priority:1, checked:false },
+{ id:"job", title:"仕事内容ボックス", text:"未経験でもOKです", priority:1, checked:false },
+{ id:"easy", title:"未経験OKボックス", text:"すぐに活躍できます", priority:1, checked:false },
+{ id:"env", title:"環境ボックス", text:"働きやすい環境です", priority:1, checked:false }
 ];
 
-let editIndex=null;
-let mode="add";
+let dragIndex = null;
 
-function renderList(){
+/* =========================
+保存
+========================= */
+function save(){
+localStorage.setItem("cms", JSON.stringify(blocks));
+alert("保存しました");
+}
+
+/* =========================
+復元
+========================= */
+function load(){
+const data = localStorage.getItem("cms");
+if(data) blocks = JSON.parse(data);
+}
+
+/* =========================
+描画
+========================= */
+function render(){
+
 let html="";
+
 blocks.forEach((b,i)=>{
 html+=`
-<div class="block">
-<div class="block-left">
+<div class="block"
+draggable="true"
+ondragstart="dragStart(${i})"
+ondrop="drop(${i})"
+ondragover="event.preventDefault()">
+
+<!-- 左：ドラッグ -->
+<div class="drag">≡</div>
+
+<!-- 中：チェック＋タイトル -->
+<div class="block-main">
 <input type="checkbox" onchange="toggle(${i})" ${b.checked?"checked":""}>
 <span class="block-title">${b.title}</span>
 </div>
 
-<div class="block-meta">
+<!-- 右：優先＋編集 -->
+<div class="block-right">
 <span>優先:${b.priority}</span>
-<span class="edit-btn" onclick="editBlock(${i})">編集</span>
+<span class="edit" onclick="edit(${i})">編集</span>
 </div>
+
 </div>
 `;
 });
-document.getElementById("blockList").innerHTML=html;
+
+document.getElementById("list").innerHTML = html;
 }
 
-function toggle(i){blocks[i].checked=!blocks[i].checked;}
+/* =========================
+チェック
+========================= */
+function toggle(i){
+blocks[i].checked = !blocks[i].checked;
+}
 
-function openAddModal(){
-mode="add";
-editIndex=null;
-document.getElementById("modalTitle").innerText="ブロック追加";
-document.getElementById("titleInput").value="";
-document.getElementById("priorityInput").value="1";
-document.getElementById("codeInput").value="";
+/* =========================
+ドラッグ
+========================= */
+function dragStart(i){
+dragIndex = i;
+}
+
+function drop(i){
+const temp = blocks[dragIndex];
+blocks.splice(dragIndex,1);
+blocks.splice(i,0,temp);
+render();
+}
+
+/* =========================
+プレビューHTML生成
+========================= */
+function generateHTML(){
+
+let html = `<h1>ブログプレビュー</h1>`;
+
+blocks
+.filter(b=>b.checked)
+.forEach(b=>{
+html+=`
+<div style="margin:10px 0;padding:10px;border:1px solid #ddd;border-radius:8px;">
+<h3>${b.title}</h3>
+<p>${b.text}</p>
+</div>
+`;
+});
+
+html+=`<p>${document.getElementById("input").value}</p>`;
+
+return html;
+}
+
+/* =========================
+プレビュー表示
+========================= */
+function openPreview(){
+document.getElementById("preview").innerHTML = generateHTML();
 document.getElementById("modal").style.display="flex";
 }
 
-function editBlock(i){
-mode="edit";
-editIndex=i;
-let b=blocks[i];
-document.getElementById("modalTitle").innerText="編集："+b.title;
-document.getElementById("titleInput").value=b.title;
-document.getElementById("priorityInput").value=b.priority;
-document.getElementById("codeInput").value=b.code;
-document.getElementById("modal").style.display="flex";
-}
-
-function saveBlock(){
-let title=document.getElementById("titleInput").value;
-let priority=parseInt(document.getElementById("priorityInput").value||"0");
-let code=document.getElementById("codeInput").value;
-
-if(mode==="add")blocks.push({key:"k"+Date.now(),title,priority,code,checked:false});
-else{
-blocks[editIndex].title=title;
-blocks[editIndex].priority=priority;
-blocks[editIndex].code=code;
-}
-
+function closePreview(){
 document.getElementById("modal").style.display="none";
-renderList();
 }
 
-function generate(){
-let sorted=[...blocks].filter(b=>b.checked).sort((a,b)=>b.priority-a.priority);
-let html="<style>body{font-family:Meiryo;background:#fff;padding:16px;color:#333;max-width:760px;margin:0 auto;line-height:1.6;}</style>";
-sorted.forEach(b=>html+=b.code);
-document.getElementById("output").innerText=html;
+/* =========================
+編集（仮）
+========================= */
+function edit(i){
+alert("編集機能は次ステップで拡張できます");
 }
 
-renderList();
+/* =========================
+初期化
+========================= */
+load();
+render();
 
 </script>
 

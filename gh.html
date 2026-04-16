@@ -3,249 +3,254 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ブログ生成ツール</title>
+<title>Blog CMS Builder</title>
 
 <style>
 body{
 margin:0;
-font-family:-apple-system, BlinkMacSystemFont, "Hiragino Sans", "Meiryo", sans-serif;
-background:
-radial-gradient(circle at 20% 20%, #1a1f2e, #000),
-radial-gradient(circle at 80% 80%, #0b1020, #000);
-color:#f5f5f7;
-padding:20px;
+font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Meiryo",sans-serif;
+background:linear-gradient(180deg,#0b0f1a,#000);
+color:#fff;
+padding:14px;
 }
 
-/* ===== タイトル ===== */
-h1{
-text-align:center;
-font-size:18px;
-letter-spacing:2px;
-margin-bottom:20px;
-color:rgba(255,255,255,0.85);
+/* ===== layout ===== */
+.container{
+display:flex;
+flex-direction:column;
+gap:12px;
 }
 
-/* ===== ガラスカード ===== */
 .card{
 background:rgba(255,255,255,0.06);
 border:1px solid rgba(255,255,255,0.12);
-border-radius:18px;
-padding:16px;
-margin-bottom:12px;
-
-backdrop-filter: blur(22px);
--webkit-backdrop-filter: blur(22px);
-
-box-shadow:
-0 10px 40px rgba(0,0,0,0.6),
-inset 0 1px 0 rgba(255,255,255,0.08);
+border-radius:16px;
+padding:14px;
+backdrop-filter:blur(18px);
 }
 
-/* ===== ラベル ===== */
-label{
-font-size:12px;
-color:rgba(255,255,255,0.7);
-display:block;
-margin-bottom:6px;
-}
-
-/* ===== 入力系 ===== */
-select, textarea, button{
+/* ===== input ===== */
+select,textarea{
 width:100%;
 padding:12px;
 border-radius:12px;
 border:none;
+background:rgba(255,255,255,0.08);
+color:#fff;
 font-size:14px;
 outline:none;
 }
 
-select, textarea{
-background:rgba(255,255,255,0.06);
-color:#fff;
-}
-
 textarea{
 height:90px;
-resize:none;
 }
 
-/* ===== チェック ===== */
-.checks label{
-display:block;
-font-size:13px;
-margin:6px 0;
-color:rgba(255,255,255,0.75);
+/* ===== checkbox ===== */
+.check{
+display:flex;
+align-items:center;
+gap:10px;
+margin:8px 0;
+font-size:14px;
+cursor:pointer;
 }
 
-/* ===== メインボタン ===== */
+/* ===== button ===== */
 button{
-background:linear-gradient(135deg,#22c55e,#16a34a);
+width:100%;
+padding:14px;
+border:none;
+border-radius:16px;
+background:linear-gradient(135deg,#a5b4fc,#f9a8d4);
 color:#fff;
 font-weight:bold;
-cursor:pointer;
-margin-top:6px;
-box-shadow:0 8px 20px rgba(34,197,94,0.25);
-transition:0.2s;
 }
 
-button:active{
-transform:scale(0.97);
-}
-
-/* ===== 出力 ===== */
+/* ===== output ===== */
 .output{
 white-space:pre-wrap;
 background:rgba(255,255,255,0.05);
-padding:16px;
-border-radius:16px;
-margin-top:12px;
-min-height:140px;
-border:1px solid rgba(255,255,255,0.08);
+padding:14px;
+border-radius:14px;
+font-family:monospace;
+min-height:160px;
 }
 
-/* コピー */
-.copy{
-background:linear-gradient(135deg,#6366f1,#4f46e5);
-margin-top:10px;
+/* ===== modal ===== */
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.6);
+display:none;
+align-items:center;
+justify-content:center;
+}
+
+.modal-box{
+width:90%;
+max-width:600px;
+background:#0b0f1a;
+border:1px solid rgba(255,255,255,0.12);
+border-radius:14px;
+padding:14px;
+}
+
+.modal-box textarea{
+width:100%;
+height:200px;
+background:#05070f;
+color:#fff;
+border:none;
+border-radius:10px;
+padding:10px;
+font-family:monospace;
 }
 </style>
 </head>
 
 <body>
 
-<h1>ブログ生成ツール</h1>
+<div class="container">
 
+<!-- ① -->
 <div class="card">
-<label>ブログの種類を選択してください</label>
-<select id="format">
-<option value="normal">通常ブログ</option>
-<option value="event">イベント告知</option>
-<option value="new">新人紹介</option>
-<option value="sales">高収入アピール</option>
-</select>
-</div>
-
-<div class="card">
-<label>訴求したいポイントを選択してください</label>
-<div class="checks">
-<label><input type="checkbox" value="salary"> お給料について</label>
-<label><input type="checkbox" value="job"> お仕事内容について</label>
-<label><input type="checkbox" value="easy"> 未経験でも安心</label>
-<label><input type="checkbox" value="env"> 働きやすさ</label>
-</div>
-</div>
-
-<div class="card">
-<label>文章の伝え方を選択してください</label>
+<h3>① ブログ種類</h3>
 <select id="type">
-<option value="important">大切さを強調する</option>
-<option value="anxiety">不安を解消する</option>
-<option value="push">後押しする</option>
+<option value="new">未経験者向け</option>
+<option value="society">社会人向け</option>
+<option value="max">最高精算額紹介</option>
+<option value="morning">朝でも稼げる</option>
 </select>
 </div>
 
+<!-- ② -->
 <div class="card">
-<label>文章の雰囲気を選択してください</label>
+<h3>② 訴求ポイント</h3>
+<label class="check"><input type="checkbox" value="salary">お給料</label>
+<label class="check"><input type="checkbox" value="job">仕事内容</label>
+<label class="check"><input type="checkbox" value="easy">未経験OK</label>
+<label class="check"><input type="checkbox" value="env">働きやすさ</label>
+</div>
+
+<!-- ③ -->
+<div class="card">
+<h3>③ 文章の伝え方</h3>
+<select id="style">
+<option value="soft">やわらかい</option>
+<option value="direct">ストレート</option>
+<option value="empathy">共感型</option>
+</select>
+</div>
+
+<!-- ④ -->
+<div class="card">
+<h3>④ 分賞の雰囲気</h3>
 <select id="tone">
-<option value="friendly">親しみやすい</option>
-<option value="cute">かわいらしい</option>
+<option value="cute">かわいい</option>
 <option value="luxury">高級感</option>
-<option value="sexy">セクシー</option>
+<option value="friendly">フレンドリー</option>
+<option value="serious">真面目</option>
 </select>
 </div>
 
+<!-- ⑤ ブロック -->
 <div class="card">
-<label>本日の内容を入力してください</label>
-<textarea id="input" placeholder="例：本日は満席で賑わっていました"></textarea>
+<h3>⑤ ブロック構成（クリックで編集）</h3>
+
+<div class="check" onclick="openModal('salary')">💰 お給料</div>
+<div class="check" onclick="openModal('job')">💼 仕事内容</div>
+<div class="check" onclick="openModal('easy')">🌱 未経験OK</div>
+<div class="check" onclick="openModal('env')">🏠 環境</div>
+
 </div>
 
-<button onclick="generate()">ブログを生成する</button>
-
+<!-- ⑥ -->
 <div class="card">
-<div id="output" class="output">ここに生成結果が表示されます</div>
-<button class="copy" onclick="copyText()">文章をコピー</button>
+<h3>⑥ 本日の内容</h3>
+<textarea id="content"></textarea>
+</div>
+
+<!-- ⑦ -->
+<div class="card">
+<h3>⑦ 生成</h3>
+<button onclick="generate()">コード生成</button>
+</div>
+
+<!-- 出力 -->
+<div class="card">
+<div id="output" class="output">ここにHTMLが表示されます</div>
+</div>
+
+</div>
+
+<!-- ===== モーダル ===== -->
+<div class="modal" id="modal">
+<div class="modal-box">
+<h3 id="modalTitle">編集</h3>
+<textarea id="editor"></textarea>
+<button onclick="save()">保存</button>
+</div>
 </div>
 
 <script>
 
-function getChecks(){
-const checks = document.querySelectorAll("input[type=checkbox]");
-let arr = [];
-checks.forEach(c=>{
-if(c.checked) arr.push(c.value);
-});
-return arr;
-}
-
-function buildAppeal(type, point){
-
-const map = {
-salary:"お給料",
-job:"お仕事内容",
-easy:"未経験の方",
-env:"働きやすさ"
+/* ===== ブロック保存 ===== */
+let blocks = {
+salary:`<div style="background:#fdf2f8;padding:12px;border-radius:12px;">お給料は安定しています。</div>`,
+job:`<div style="background:#ecfeff;padding:12px;border-radius:12px;">仕事内容はシンプルです。</div>`,
+easy:`<div style="background:#f0fdf4;padding:12px;border-radius:12px;">未経験でも安心です。</div>`,
+env:`<div style="background:#fff7ed;padding:12px;border-radius:12px;">働きやすい環境です。</div>`
 };
 
-let p = map[point] || point;
+let currentKey=null;
 
-if(type === "important"){
-return `「${p}」について気になる方は多いですよね。特に${p}はとても大切なポイントです。`;
+/* ===== モーダル ===== */
+function openModal(key){
+currentKey=key;
+document.getElementById("editor").value=blocks[key];
+document.getElementById("modal").style.display="flex";
+document.getElementById("modalTitle").innerText="編集：" + key;
 }
 
-if(type === "anxiety"){
-return `「${p}」に不安を感じる方もいらっしゃいます。特に${p}は心配されやすい点ですが、当店ではしっかりサポートしております。`;
+function save(){
+blocks[currentKey]=document.getElementById("editor").value;
+document.getElementById("modal").style.display="none";
 }
 
-return `${p}についてご紹介いたします。`;
-}
-
+/* ===== 生成 ===== */
 function generate(){
 
-const format = document.getElementById("format").value;
-const type = document.getElementById("type").value;
-const tone = document.getElementById("tone").value;
-const input = document.getElementById("input").value;
-const appeals = getChecks();
+let html="";
 
-let text = "";
+/* CSS */
+html+=`
+<style>
+body{font-family:Meiryo;background:#fff;padding:16px;}
+h2{color:#a5b4fc;}
+</style>
+`;
 
-// ===== フォーマット =====
-if(format === "normal"){
-text += "【通常ブログ】\n\n";
-}
-if(format === "event"){
-text += "【イベントのご案内】\n\n";
-}
-if(format === "new"){
-text += "【新人のご紹介】\n\n";
-}
-if(format === "sales"){
-text += "【高収入のご案内】\n\n";
-}
+/* 種類 */
+const type=document.getElementById("type").value;
+if(type==="new") html+="<h2>未経験者向け</h2>";
+if(type==="society") html+="<h2>社会人向け</h2>";
+if(type==="max") html+="<h2>最高精算額</h2>";
+if(type==="morning") html+="<h2>朝でも稼げる</h2>";
 
-// ===== 導入 =====
-text += "いつもご覧いただきありがとうございます。\n\n";
+/* スタイル */
+html+=`<p>${document.getElementById("style").value} / ${document.getElementById("tone").value}</p>`;
 
-// ===== 訴求 =====
-appeals.forEach(a=>{
-text += buildAppeal(type,a) + "\n\n";
+/* ブロック */
+document.querySelectorAll(".check input").forEach(c=>{
+if(c.checked){
+html+=blocks[c.value];
+}
 });
 
-// ===== 本文 =====
-text += "【本日の様子】\n";
-text += input + "\n\n";
+/* 本文 */
+html+=`<p>${document.getElementById("content").value}</p>`;
 
-// ===== トーン =====
-text += `【文章の雰囲気：${tone}】\n`;
-text += "皆様のご来店を心よりお待ちしております。\n";
-
-document.getElementById("output").innerText = text;
-}
-
-function copyText(){
-const text = document.getElementById("output").innerText;
-navigator.clipboard.writeText(text);
-alert("コピーしました");
+document.getElementById("output").innerText=html;
 }
 
 </script>

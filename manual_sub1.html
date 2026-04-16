@@ -61,7 +61,7 @@ button{
   gap:14px;
 }
 
-/* card（上品に縮小反映） */
+/* card */
 .card{
   background:rgba(255,255,255,0.06);
   border:1px solid rgba(255,255,255,0.12);
@@ -73,8 +73,7 @@ button{
   gap:10px;
   transition:0.25s ease;
   position:relative;
-
-  font-size:13px; /* ← 上品縮小 */
+  font-size:13px;
 }
 
 /* 未チェック発光 */
@@ -89,12 +88,11 @@ button{
   box-shadow:none;
 }
 
-/* press */
 .card:active{
   transform:scale(0.96);
 }
 
-/* checkbox（上品縮小） */
+/* checkbox */
 input{
   width:15px;
   height:15px;
@@ -110,6 +108,50 @@ input{
   background:rgba(140,200,255,0.9);
   pointer-events:none;
   box-shadow:0 0 12px rgba(120,180,255,0.8);
+}
+
+/* =========================
+   BACK BUTTON（追加）
+========================= */
+
+.back-btn{
+  position:fixed;
+  bottom:22px;
+  left:50%;
+  transform:translateX(-50%);
+
+  padding:10px 16px;
+  border-radius:999px;
+
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+
+  backdrop-filter: blur(18px);
+
+  color:rgba(230,240,255,0.8);
+  font-size:12px;
+
+  cursor:pointer;
+
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+
+  transition:0.25s ease;
+}
+
+/* hover浮遊 */
+.back-btn:hover{
+  transform:translateX(-50%) translateY(-4px) scale(1.02);
+  background:rgba(255,255,255,0.10);
+  border:1px solid rgba(120,180,255,0.35);
+  box-shadow:
+    0 25px 70px rgba(0,0,0,0.75),
+    0 0 20px rgba(120,180,255,0.25);
+  color:#eaf2ff;
+}
+
+/* active沈み */
+.back-btn:active{
+  transform:translateX(-50%) translateY(1px) scale(0.98);
 }
 </style>
 </head>
@@ -142,6 +184,11 @@ input{
   <div class="card"><input type="checkbox">クローゼット</div>
   <div class="card"><input type="checkbox">タオル補充</div>
 
+</div>
+
+<!-- BACK BUTTON -->
+<div class="back-btn" onclick="goManual()">
+  ← MANUALに戻る
 </div>
 
 <script>
@@ -187,25 +234,30 @@ function burstParticles(){
     p.className = "particle";
     document.body.appendChild(p);
 
-    const angle = Math.random() * Math.PI * 2;
-    const radius = 80 + Math.random() * 160;
+    const angle = Math.random()*Math.PI*2;
+    const radius = 80 + Math.random()*160;
 
-    const x = Math.cos(angle) * radius;
-    const y = Math.sin(angle) * radius;
+    const x = Math.cos(angle)*radius;
+    const y = Math.sin(angle)*radius;
 
-    p.style.left = "50%";
-    p.style.top = "40%";
+    p.style.left="50%";
+    p.style.top="40%";
 
     p.animate([
-      { transform:`translate(0,0) scale(1)`, opacity:1 },
-      { transform:`translate(${x}px, ${y}px) scale(0.3)`, opacity:0 }
+      {transform:"translate(0,0) scale(1)",opacity:1},
+      {transform:`translate(${x}px,${y}px) scale(0.3)`,opacity:0}
     ],{
       duration:1100,
-      easing:"cubic-bezier(0.16, 1, 0.3, 1)"
+      easing:"cubic-bezier(0.16,1,0.3,1)"
     });
 
     setTimeout(()=>p.remove(),1100);
   }
+}
+
+/* navigation */
+function goManual(){
+  window.location.href = "manual.html";
 }
 
 /* load */

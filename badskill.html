@@ -114,7 +114,42 @@ button{
   display:flex;
   gap:5px;
 }
+.top-btn{
+  position:fixed;
+  bottom:18px;
+  left:50%;
+  transform:translateX(-50%);
 
+  width:88%;
+  max-width:420px;
+
+  padding:14px;
+
+  border-radius:16px;
+
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.12);
+
+  backdrop-filter: blur(30px);
+
+  color:rgba(255,255,255,0.85);
+  font-weight:500;
+
+  box-shadow:0 25px 80px rgba(0,0,0,0.6);
+
+  cursor:pointer;
+  transition:0.2s ease;
+}
+
+.top-btn:hover{
+  transform:translateX(-50%) translateY(-2px);
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.18);
+}
+
+.top-btn:active{
+  transform:translateX(-50%) scale(0.98);
+}
 .btn{
   flex:1;
   padding:6px;
@@ -220,6 +255,8 @@ function render(){
 render();
 
 </script>
-
+<button class="top-btn" onclick="location.href='top.html'">
+  TOPへ戻る
+</button>
 </body>
 </html>

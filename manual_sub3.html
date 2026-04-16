@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Room Ops Control Panel</title>
+<title>Room Scheduler FINAL</title>
 
 <style>
 body{
@@ -14,17 +14,15 @@ body{
   padding:12px;
 }
 
-/* ===== 上部固定UI ===== */
+/* ===== INPUT ===== */
 .panel{
   position:sticky;
   top:0;
   background:#05070c;
   padding-bottom:10px;
-  z-index:10;
   border-bottom:1px solid rgba(255,255,255,0.08);
 }
 
-/* ===== フォーム2分割 ===== */
 .row{
   display:grid;
   grid-template-columns:1fr 1fr 1fr 1fr auto;
@@ -41,18 +39,7 @@ input,button{
   font-size:12px;
 }
 
-button{
-  cursor:pointer;
-}
-
-/* ===== セクションラベル ===== */
-.label{
-  font-size:11px;
-  opacity:0.6;
-  margin:6px 0 4px;
-}
-
-/* ===== レイアウト ===== */
+/* ===== GRID ===== */
 .grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -73,12 +60,11 @@ button{
   margin-bottom:6px;
 }
 
-/* ===== 状態表示 ===== */
+/* ===== ITEM ===== */
 .item{
   margin-top:6px;
   padding:6px;
   border-radius:8px;
-  line-height:1.3;
 }
 
 .ok{ background:transparent; }
@@ -93,19 +79,11 @@ button{
   border:1px solid rgba(255,80,80,0.35);
 }
 
-/* ===== 稼働率バー ===== */
-.bar{
-  height:6px;
-  background:rgba(255,255,255,0.08);
-  border-radius:999px;
-  overflow:hidden;
+/* ===== footer score ===== */
+.score{
+  font-size:10px;
+  opacity:0.6;
   margin-top:6px;
-}
-
-.fill{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#6aa9ff,#8be7ff);
 }
 </style>
 </head>
@@ -114,21 +92,12 @@ button{
 
 <div class="panel">
 
-<div class="label">固定（午前）※部屋必須</div>
 <div class="row">
-  <input id="m_name" placeholder="名前">
-  <input id="m_room" placeholder="部屋">
-  <input id="m_start" type="time">
-  <input id="m_end" type="time">
-  <button onclick="addFixed()">追加</button>
-</div>
-
-<div class="label">流動（午後）※自動配置</div>
-<div class="row">
-  <input id="a_name" placeholder="名前">
-  <input id="a_start" type="time">
-  <input id="a_end" type="time">
-  <button onclick="addFlow()">追加</button>
+  <input id="name" placeholder="名前">
+  <input id="room" placeholder="午前部屋（任意）">
+  <input id="start" type="time">
+  <input id="end" type="time">
+  <button onclick="add()">追加</button>
 </div>
 
 <button onclick="calc()">計算</button>
@@ -141,138 +110,149 @@ button{
 
 const ROOMS=["201","202","203","301","302","303","401","402","501"];
 
-let fixed=[];
-let flow=[];
+let list=[];
 
 function toMin(t){
   const [h,m]=t.split(":").map(Number);
   return h*60+m;
 }
 
+function fmt(m){
+  return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+}
+
 /* =========================
 入力
 ========================= */
-function addFixed(){
-  if(!m_name.value||!m_room.value||!m_start.value||!m_end.value) return;
-
-  fixed.push({
-    name:m_name.value,
-    room:m_room.value,
-    start:toMin(m_start.value),
-    end:toMin(m_end.value)
-  });
-}
-
-function addFlow(){
-  if(!a_name.value||!a_start.value||!a_end.value) return;
-
-  flow.push({
-    name:a_name.value,
-    start:toMin(a_start.value),
-    end:toMin(a_end.value)
+function add(){
+  list.push({
+    name:name.value,
+    room:room.value || null,
+    start:toMin(start.value),
+    end:toMin(end.value)
   });
 }
 
 /* =========================
-衝突判定
-========================= */
-function overlap(a,b){
-  return a.start < b.end && a.end > b.start;
-}
-
-/* =========================
-メイン
+メインロジック
 ========================= */
 function calc(){
 
   let rooms={};
-  let usage={};
 
   ROOMS.forEach(r=>{
-    rooms[r]=[];
-    usage[r]=0;
+    rooms[r]={
+      freeAt:480,
+      list:[]
+    };
   });
+
+  list.sort((a,b)=>a.start-b.start);
 
   const CLEAN=30;
 
-  /* ===== 固定（午前） ===== */
-  for(let p of fixed){
-
-    rooms[p.room].push(p);
-    usage[p.room]+=p.end-p.start;
-  }
-
-  /* ===== 流動（午後） ===== */
-  for(let p of flow){
+  for(let p of list){
 
     let placed=false;
 
-    for(let r of ROOMS){
+    /* ===== 午前固定 ===== */
+    if(p.room){
 
-      let list=rooms[r];
+      let r=rooms[p.room];
 
-      let ok=true;
+      r.list.push({
+        ...p,
+        realStart:Math.max(p.start,r.freeAt)
+      });
 
-      for(let x of list){
-        if(overlap(x,p)){
-          ok=false;
-          break;
+      r.freeAt=p.end+CLEAN;
+      placed=true;
+    }
+
+    /* ===== 午後（負荷分散） ===== */
+    if(!placed){
+
+      let bestRoom=null;
+      let bestScore=Infinity;
+
+      for(let r of ROOMS){
+
+        let room=rooms[r];
+
+        // 入れる条件
+        if(p.start >= room.freeAt - CLEAN){
+
+          let score=room.freeAt;
+
+          if(score < bestScore){
+            bestScore=score;
+            bestRoom=r;
+          }
         }
       }
 
-      if(ok){
-        rooms[r].push(p);
-        usage[r]+=p.end-p.start;
-        placed=true;
-        break;
-      }
-    }
+      if(bestRoom){
 
-    if(!placed){
-      console.log("未配置:",p);
+        let room=rooms[bestRoom];
+
+        room.list.push({
+          ...p,
+          realStart:Math.max(p.start,room.freeAt)
+        });
+
+        room.freeAt=p.end+CLEAN;
+
+      }else{
+        console.log("未配置:",p);
+      }
     }
   }
 
-  render(rooms,usage);
+  render(rooms);
 }
 
 /* =========================
 表示
 ========================= */
-function render(rooms,usage){
+function render(rooms){
 
   grid.innerHTML="";
 
   for(let r of ROOMS){
 
-    let arr=rooms[r].sort((a,b)=>a.start-b.start);
+    let room=rooms[r];
 
     let html="";
 
-    for(let i=0;i<arr.length;i++){
+    room.list.sort((a,b)=>a.realStart-b.realStart);
 
-      let a=arr[i];
+    for(let i=0;i<room.list.length;i++){
+
+      let a=room.list[i];
 
       let cls="ok";
 
-      for(let j=0;j<arr.length;j++){
-        if(i!==j && overlap(a,arr[j])){
-          cls="warn";
+      for(let j=0;j<room.list.length;j++){
+        if(i!==j){
+          let b=room.list[j];
+          if(a.realStart < b.end && a.end > b.realStart){
+            cls="warn";
+          }
         }
       }
 
       html+=`
         <div class="item ${cls}">
           ${a.name}<br>
-          ${fmt(a.start)} - ${fmt(a.end)}
+          ${fmt(a.realStart)} - ${fmt(a.end)}
         </div>
       `;
     }
 
-    let rate=Math.min(100,(usage[r]/960)*100);
-
     html+=`
-      <div class="bar"><div class="fill" style="width:${rate}%"></div></div>
+      <div class="score">
+        freeAt: ${fmt(room.freeAt)}
+      </div>
     `;
 
     grid.innerHTML+=`
@@ -282,10 +262,6 @@ function render(rooms,usage){
       </div>
     `;
   }
-}
-
-function fmt(m){
-  return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
 }
 
 </script>

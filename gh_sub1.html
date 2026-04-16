@@ -3,73 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vision Dashboard</title>
+<title>Vision CMS</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
 margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Meiryo",sans-serif;
+font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans","Meiryo",sans-serif;
+background:#05070c;
 color:#fff;
 overflow-x:hidden;
-
-/* 空間背景 */
-background:
-radial-gradient(circle at 50% 20%, rgba(255,255,255,0.08), transparent 60%),
-radial-gradient(circle at 80% 80%, rgba(120,160,255,0.06), transparent 55%),
-#05070c;
 }
 
-/* ===== 全体 ===== */
+/* ===== コンテナ ===== */
 .container{
-padding:120px 20px 140px;
-max-width:900px;
+max-width:600px;
 margin:0 auto;
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:24px;
-perspective:1000px;
+padding:40px 16px 120px;
+text-align:center;
 }
 
 /* ===== タイトル ===== */
 h1{
 font-size:12px;
 letter-spacing:4px;
-opacity:0.45;
-}
-
-/* ===== 浮遊ラベル ===== */
-#floatingLabel{
-position:fixed;
-top:18%;
-left:50%;
-transform:translateX(-50%);
-padding:10px 16px;
-border-radius:999px;
-background:rgba(255,255,255,0.08);
-border:1px solid rgba(255,255,255,0.12);
-backdrop-filter: blur(24px);
-font-size:12px;
-opacity:0;
-transition:0.3s;
-pointer-events:none;
+opacity:0.5;
 }
 
 /* ===== グラフ ===== */
 canvas{
 max-width:260px;
-}
-
-/* 線Canvas */
-#lineCanvas{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-pointer-events:none;
+margin:20px auto;
 }
 
 /* ===== ボタン ===== */
@@ -78,6 +43,7 @@ display:flex;
 flex-wrap:wrap;
 gap:8px;
 justify-content:center;
+margin:20px 0;
 }
 
 button{
@@ -89,90 +55,107 @@ border-radius:999px;
 font-size:12px;
 cursor:pointer;
 transition:0.25s;
-backdrop-filter: blur(20px);
-}
-
-button:hover{
-transform:translateY(-2px);
-background:rgba(255,255,255,0.12);
 }
 
 button.active{
-background:rgba(255,255,255,0.9);
+background:#fff;
 color:#000;
 }
 
-/* ===== リスト（空間カード） ===== */
+/* ===== 記事リスト ===== */
 .list{
-width:100%;
-display:flex;
-flex-direction:column;
-gap:10px;
+text-align:left;
+margin-top:20px;
 }
 
-.row-item{
+.item{
+padding:12px;
+border-bottom:1px solid rgba(255,255,255,0.08);
+font-size:13px;
 display:flex;
 justify-content:space-between;
-align-items:center;
-
-padding:14px 14px;
-border-radius:14px;
-
-background:rgba(255,255,255,0.04);
-border:1px solid rgba(255,255,255,0.08);
-
-transition:0.25s;
-transform:translateZ(0);
 }
 
-.row-item:hover{
-transform:translateX(6px) translateZ(20px);
-background:rgba(255,255,255,0.06);
+/* ===== 追加ボタン（フロー） ===== */
+.fab{
+position:fixed;
+bottom:90px;
+left:50%;
+transform:translateX(-50%);
+padding:14px 20px;
+border-radius:999px;
+
+background:rgba(255,255,255,0.1);
+border:1px solid rgba(255,255,255,0.2);
+backdrop-filter:blur(20px);
+
+cursor:pointer;
 }
 
-.row-item.active{
-border-left:2px solid rgba(255,255,255,0.7);
-padding-left:12px;
-background:rgba(255,255,255,0.06);
+/* ===== ナビ ===== */
+.nav{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+display:flex;
+gap:10px;
+padding:10px;
+
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.12);
+border-radius:999px;
+backdrop-filter:blur(20px);
 }
 
-.row-title{
+.nav-btn{
+padding:10px 16px;
 font-size:12px;
+cursor:pointer;
 }
 
-.row-cat{
-font-size:11px;
-opacity:0.5;
-}
-
-/* ===== 空間光 ===== */
-body::after{
-content:"";
+/* ===== ポップアップ ===== */
+.modal{
 position:fixed;
 inset:0;
-background:radial-gradient(circle at 50% 50%, rgba(120,160,255,0.08), transparent 60%);
-animation:float 8s ease-in-out infinite;
-pointer-events:none;
+display:none;
+justify-content:center;
+align-items:center;
+background:rgba(0,0,0,0.6);
 }
 
-@keyframes float{
-0%,100%{ transform:scale(1); }
-50%{ transform:scale(1.05); }
+.modal-box{
+width:300px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(20px);
+padding:20px;
+border-radius:16px;
+border:1px solid rgba(255,255,255,0.15);
+}
+
+input,select{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:8px;
+border:none;
+}
+
+.modal-actions{
+margin-top:10px;
+display:flex;
+justify-content:space-between;
 }
 </style>
 </head>
 
 <body>
 
-<div id="floatingLabel"></div>
-
 <div class="container">
 
-<h1>VISION ANALYTICS</h1>
+<h1>VISION CMS</h1>
 
 <canvas id="donut"></canvas>
-
-<canvas id="lineCanvas"></canvas>
 
 <div class="buttons" id="buttons"></div>
 
@@ -180,54 +163,58 @@ pointer-events:none;
 
 </div>
 
+<!-- 追加ボタン -->
+<div class="fab" onclick="openModal()">＋ 追加</div>
+
+<!-- ナビ -->
+<div class="nav">
+<div class="nav-btn" onclick="location.href='index.html'">TOP</div>
+<div class="nav-btn" onclick="location.href='manual.html'">MANUAL</div>
+</div>
+
+<!-- モーダル -->
+<div class="modal" id="modal">
+<div class="modal-box">
+<h3>記事追加</h3>
+
+<input id="title" placeholder="タイトル">
+
+<select id="category">
+<option>お給料</option>
+<option>スタッフ</option>
+<option>お店の環境</option>
+<option>うれしい待遇</option>
+<option>お客様層</option>
+<option>採用条件</option>
+<option>お仕事内容</option>
+<option>お店のつぶやき</option>
+</select>
+
+<div class="modal-actions">
+<button onclick="closeModal()">戻る</button>
+<button onclick="addArticle()">完了</button>
+</div>
+
+</div>
+</div>
+
 <script>
 
-/* =========================
-   データ
-========================= */
-const articles = [
-{title:"給与体系の設計", category:"お給料"},
-{title:"スタッフ教育方針", category:"スタッフ"},
-{title:"店内環境改善", category:"お店の環境"},
-{title:"特別待遇の説明", category:"うれしい待遇"},
-{title:"お客様層分析", category:"お客様層"},
-{title:"採用フロー", category:"採用条件"},
-{title:"業務マニュアル", category:"お仕事内容"},
-{title:"今日のつぶやき", category:"お店のつぶやき"},
-{title:"インセンティブ制度", category:"お給料"},
-{title:"スタッフ連携方法", category:"スタッフ"}
-];
-
 const categories = [
-"お給料",
-"スタッフ",
-"お店の環境",
-"うれしい待遇",
-"お客様層",
-"採用条件",
-"お仕事内容",
-"お店のつぶやき"
+"お給料","スタッフ","お店の環境","うれしい待遇",
+"お客様層","採用条件","お仕事内容","お店のつぶやき"
 ];
 
-let currentCategory = "全体";
+let articles = [
+{title:"給与制度説明",category:"お給料"},
+{title:"スタッフ教育",category:"スタッフ"},
+{title:"店内環境改善",category:"お店の環境"}
+];
+
+let current="全体";
 let chart;
 
-/* =========================
-   Canvas（線）
-========================= */
-const lineCanvas = document.getElementById("lineCanvas");
-const ctx = lineCanvas.getContext("2d");
-
-function resize(){
-lineCanvas.width = window.innerWidth;
-lineCanvas.height = window.innerHeight;
-}
-window.addEventListener("resize", resize);
-resize();
-
-/* =========================
-   ドーナツ
-========================= */
+/* ===== グラフ ===== */
 function renderChart(){
 
 const data = categories.map(c =>
@@ -236,136 +223,86 @@ articles.filter(a => a.category === c).length
 
 if(chart) chart.destroy();
 
-chart = new Chart(document.getElementById("donut"), {
+chart = new Chart(document.getElementById("donut"),{
 type:"doughnut",
 data:{
 labels:categories,
 datasets:[{
 data:data,
-backgroundColor:"rgba(255,255,255,0.15)"
+backgroundColor:categories.map(c=>
+c===current?"rgba(255,255,255,0.9)":"rgba(255,255,255,0.1)"
+)
 }]
 },
 options:{
-plugins:{ legend:{ labels:{ color:"#fff" } } }
+plugins:{legend:{labels:{color:"#fff"}}}
 }
 });
 }
 
-/* =========================
-   ボタン
-========================= */
+/* ===== ボタン ===== */
 function renderButtons(){
 
-const el = document.getElementById("buttons");
+const el=document.getElementById("buttons");
 
-el.innerHTML = `
-<button onclick="filterAll()" class="${currentCategory==='全体'?'active':''}">
-全体
-</button>
-`;
+el.innerHTML=`<button onclick="filterAll()" class="${current==='全体'?'active':''}">全体</button>`;
 
 categories.forEach(c=>{
-el.innerHTML += `
-<button onclick="filter('${c}')"
-class="${currentCategory===c?'active':''}">
+el.innerHTML+=`
+<button onclick="filter('${c}')" class="${current===c?'active':''}">
 ${c}
 </button>`;
 });
 }
 
-/* =========================
-   リスト
-========================= */
+/* ===== リスト ===== */
 function renderList(){
 
-const el = document.getElementById("list");
+const el=document.getElementById("list");
 
-let filtered =
-currentCategory==="全体"
-? articles
-: articles.filter(a => a.category === currentCategory);
+let filtered=current==="全体"
+?articles
+:articles.filter(a=>a.category===current);
 
-el.innerHTML = filtered.map(a => `
-<div class="row-item ${currentCategory!=='全体'?'active':''}">
-  <div class="row-title">${a.title}</div>
-  <div class="row-cat">${a.category}</div>
-</div>
-`).join("");
+el.innerHTML=filtered.map(a=>
+`<div class="item"><span>${a.title}</span><span>${a.category}</span></div>`
+).join("");
 }
 
-/* =========================
-   浮遊ラベル
-========================= */
-function floating(){
-const el = document.getElementById("floatingLabel");
+/* ===== フィルター ===== */
+function filter(c){current=c;update();}
+function filterAll(){current="全体";update();}
 
-if(currentCategory==="全体"){
-el.style.opacity=0;
-return;
+/* ===== 追加 ===== */
+function openModal(){
+document.getElementById("modal").style.display="flex";
 }
 
-el.style.opacity=1;
-el.innerText=currentCategory;
+function closeModal(){
+document.getElementById("modal").style.display="none";
 }
 
-/* =========================
-   線描画（空間接続）
-========================= */
-function drawLine(){
+function addArticle(){
 
-ctx.clearRect(0,0,lineCanvas.width,lineCanvas.height);
+const title=document.getElementById("title").value;
+const category=document.getElementById("category").value;
 
-if(currentCategory==="全体") return;
+if(!title) return;
 
-const donut = document.getElementById("donut");
-const r = donut.getBoundingClientRect();
+articles.unshift({title,category});
 
-const sx = r.left + r.width/2;
-const sy = r.top + r.height/2;
+document.getElementById("title").value="";
 
-const items = document.querySelectorAll(".row-item");
-
-items.forEach(i=>{
-const rect = i.getBoundingClientRect();
-
-const ex = rect.left;
-const ey = rect.top + rect.height/2;
-
-ctx.beginPath();
-ctx.moveTo(sx,sy);
-ctx.quadraticCurveTo(sx+120,sy,ex,ey);
-
-ctx.strokeStyle="rgba(255,255,255,0.18)";
-ctx.lineWidth=1;
-ctx.stroke();
-});
-}
-
-/* =========================
-   フィルター
-========================= */
-function filter(cat){
-currentCategory=cat;
+closeModal();
 update();
 }
 
-function filterAll(){
-currentCategory="全体";
-update();
-}
-
-/* =========================
-   更新
-========================= */
+/* ===== 更新 ===== */
 function update(){
 renderButtons();
 renderChart();
 renderList();
-floating();
-setTimeout(drawLine,50);
 }
-
-window.addEventListener("resize",drawLine);
 
 update();
 

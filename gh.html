@@ -69,44 +69,48 @@ transform:translateY(-1px);
 opacity:0.95;
 }
 
+/* ===== ブロック（完全横並び）===== */
 .block{
 display:flex;
-flex-direction:column;
-gap:6px;
+flex-direction:row;
+align-items:center;
+justify-content:space-between;
+gap:10px;
 padding:12px;
 margin:10px 0;
 border-radius:12px;
 background:rgba(255,255,255,0.04);
-transition:0.2s;
+overflow-x:auto;
+white-space:nowrap;
 }
 
-.block:hover{
-background:rgba(255,255,255,0.06);
-}
-
-.block-top{
+.block-left{
 display:flex;
-justify-content:space-between;
 align-items:center;
+gap:10px;
+min-width:0;
+flex-shrink:0;
 }
 
 .block-title{
 font-size:14px;
 font-weight:600;
+white-space:nowrap;
 }
 
 .block-meta{
+display:flex;
+align-items:center;
+gap:12px;
 font-size:12px;
 color:var(--muted);
-display:flex;
-gap:10px;
-align-items:center;
+flex-shrink:0;
 }
 
 .edit-btn{
 cursor:pointer;
-font-size:12px;
 color:#a5b4fc;
+white-space:nowrap;
 }
 
 .output{
@@ -168,7 +172,7 @@ color:var(--muted);
 <div class="container">
 
 <div class="header">Blog CMS Builder PRO</div>
-<div class="sub">ブロックを選んで、優先順位付きでHTMLを生成できます</div>
+<div class="sub">横並びUIでブロックを管理・生成できます</div>
 
 <div class="card">
 <button onclick="openAddModal()">＋ ブロック追加</button>
@@ -201,63 +205,36 @@ color:var(--muted);
 <script>
 
 let blocks = [
-{
-key:"salary",
-title:"給与ボックス",
-priority:1,
-code:`<div style=\"background:#fdf2f8;padding:12px;border-radius:12px;\">給与は安定しています</div>`,
-checked:false
-},
-{
-key:"job",
-title:"仕事内容ボックス",
-priority:1,
-code:`<div style=\"background:#ecfeff;padding:12px;border-radius:12px;\">仕事内容はシンプルです</div>`,
-checked:false
-},
-{
-key:"easy",
-title:"未経験OKボックス",
-priority:1,
-code:`<div style=\"background:#f0fdf4;padding:12px;border-radius:12px;\">未経験でも安心して始められます</div>`,
-checked:false
-},
-{
-key:"env",
-title:"働きやすさボックス",
-priority:1,
-code:`<div style=\"background:#fff7ed;padding:12px;border-radius:12px;\">働きやすい環境を整えています</div>`,
-checked:false
-}
+{key:"salary",title:"給与ボックス",priority:1,code:`<div style=\"background:#fdf2f8;padding:12px;border-radius:12px;\">給与は安定しています</div>`,checked:false},
+{key:"job",title:"仕事内容ボックス",priority:1,code:`<div style=\"background:#ecfeff;padding:12px;border-radius:12px;\">仕事内容はシンプルです</div>`,checked:false},
+{key:"easy",title:"未経験OKボックス",priority:1,code:`<div style=\"background:#f0fdf4;padding:12px;border-radius:12px;\">未経験でも安心して始められます</div>`,checked:false},
+{key:"env",title:"働きやすさボックス",priority:1,code:`<div style=\"background:#fff7ed;padding:12px;border-radius:12px;\">働きやすい環境を整えています</div>`,checked:false}
 ];
 
-let editIndex = null;
-let mode = "add";
+let editIndex=null;
+let mode="add";
 
 function renderList(){
 let html="";
 blocks.forEach((b,i)=>{
-html += `
+html+=`
 <div class="block">
-<div class="block-top">
-<label style="display:flex;gap:10px;align-items:center;">
+<div class="block-left">
 <input type="checkbox" onchange="toggle(${i})" ${b.checked?"checked":""}>
 <span class="block-title">${b.title}</span>
-</label>
 </div>
+
 <div class="block-meta">
-<span>優先度: ${b.priority}</span>
+<span>優先:${b.priority}</span>
 <span class="edit-btn" onclick="editBlock(${i})">編集</span>
 </div>
 </div>
 `;
 });
-document.getElementById("blockList").innerHTML = html;
+document.getElementById("blockList").innerHTML=html;
 }
 
-function toggle(i){
-blocks[i].checked = !blocks[i].checked;
-}
+function toggle(i){blocks[i].checked=!blocks[i].checked;}
 
 function openAddModal(){
 mode="add";
@@ -285,9 +262,8 @@ let title=document.getElementById("titleInput").value;
 let priority=parseInt(document.getElementById("priorityInput").value||"0");
 let code=document.getElementById("codeInput").value;
 
-if(mode==="add"){
-blocks.push({key:"k"+Date.now(),title,priority,code,checked:false});
-}else{
+if(mode==="add")blocks.push({key:"k"+Date.now(),title,priority,code,checked:false});
+else{
 blocks[editIndex].title=title;
 blocks[editIndex].priority=priority;
 blocks[editIndex].code=code;
@@ -298,16 +274,9 @@ renderList();
 }
 
 function generate(){
-let sorted=[...blocks]
-.filter(b=>b.checked)
-.sort((a,b)=>b.priority-a.priority);
-
+let sorted=[...blocks].filter(b=>b.checked).sort((a,b)=>b.priority-a.priority);
 let html="<style>body{font-family:Meiryo;background:#fff;padding:16px;color:#333;max-width:760px;margin:0 auto;line-height:1.6;}</style>";
-
-sorted.forEach(b=>{
-html += b.code;
-});
-
+sorted.forEach(b=>html+=b.code);
 document.getElementById("output").innerText=html;
 }
 

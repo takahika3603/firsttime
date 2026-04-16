@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Room Zero Idle System</title>
+<title>Room Timeline System</title>
 
 <style>
 body{
@@ -14,13 +14,11 @@ body{
   padding:16px;
 }
 
-/* sections */
 .section{
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:14px;
-  padding:10px;
   margin-bottom:10px;
+  padding:10px;
+  background:rgba(255,255,255,0.05);
+  border-radius:12px;
 }
 
 input,button{
@@ -32,21 +30,17 @@ input,button{
   color:#eaf2ff;
 }
 
-/* grid */
 .grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:10px;
 }
 
-/* room */
 .room{
   background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:14px;
+  border-radius:12px;
   padding:10px;
   font-size:12px;
-  position:relative;
 }
 
 .title{
@@ -55,41 +49,25 @@ input,button{
   margin-bottom:6px;
 }
 
-/* warning */
-.badge{
-  position:absolute;
-  top:8px;
-  right:8px;
-  font-size:10px;
-  padding:2px 6px;
-  border-radius:999px;
-  background:rgba(255,80,80,0.2);
-  color:#ff9a9a;
-}
-
-/* waiting */
-.wait{
-  background:rgba(255,255,255,0.04);
-  border-radius:12px;
-  padding:8px;
+.block{
+  margin-top:6px;
   font-size:11px;
-  margin-top:10px;
+  opacity:0.9;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 午前 -->
 <div class="section">
-  <h3>午前（固定）</h3>
+  <h3>午前（固定部屋）</h3>
   <input id="m_name" placeholder="名前">
   <input id="m_room" placeholder="部屋">
+  <input id="m_start" type="time">
   <input id="m_end" type="time">
   <button onclick="addMorning()">追加</button>
 </div>
 
-<!-- 午後 -->
 <div class="section">
   <h3>午後</h3>
   <input id="a_name" placeholder="名前">
@@ -102,11 +80,6 @@ input,button{
 
 <div class="grid" id="grid"></div>
 
-<div class="section">
-  <h3>待機リスト</h3>
-  <div id="wait"></div>
-</div>
-
 <script>
 
 const ROOMS=["201","202","203","301","302","303","401","402","501"];
@@ -114,7 +87,6 @@ const CLEAN=30;
 
 let morning=[];
 let afternoon=[];
-let waiting=[];
 
 function toMin(t){
   const [h,m]=t.split(":").map(Number);
@@ -128,6 +100,7 @@ function addMorning(){
   morning.push({
     name:m_name.value,
     room:m_room.value,
+    start:m_start.value,
     end:m_end.value
   });
 }
@@ -141,47 +114,34 @@ function addAfternoon(){
 }
 
 /* =================
-コアロジック
+コア
 ================= */
 function calc(){
 
   let rooms={};
-  waiting=[];
 
   ROOMS.forEach(r=>{
-    rooms[r]={
-      room:r,
-      logs:[],
-      freeAt:0
-    };
+    rooms[r]={room:r,logs:[],freeAt:0};
   });
 
   /* 午前 */
   morning.forEach(m=>{
     rooms[m.room].logs.push({
       name:m.name,
-      start:0,
+      start:toMin(m.start),
       end:toMin(m.end)
     });
 
     rooms[m.room].freeAt=toMin(m.end)+CLEAN;
   });
 
-  /* 午後（重要：空きを最小化優先） */
-  let sorted=[...afternoon].sort((a,b)=>toMin(a.start)-toMin(b.start));
+  /* 午後 */
+  afternoon.sort((a,b)=>toMin(a.start)-toMin(b.start));
 
-  sorted.forEach(a=>{
+  afternoon.forEach(a=>{
 
-    let candidates = Object.values(rooms)
-      .filter(r=>toMin(a.start)<=r.freeAt || r.freeAt<=toMin(a.start))
-      .sort((x,y)=>x.freeAt-y.freeAt);
-
-    let target = candidates[0];
-
-    if(!target){
-      waiting.push(a.name);
-      return;
-    }
+    let target=Object.values(rooms)
+      .sort((x,y)=>x.freeAt-y.freeAt)[0];
 
     let start=Math.max(toMin(a.start),target.freeAt);
 
@@ -198,23 +158,6 @@ function calc(){
 }
 
 /* =================
-稼働率
-================= */
-function rate(logs){
-  if(!logs.length) return 0;
-
-  let min=Math.min(...logs.map(l=>l.start));
-  let max=Math.max(...logs.map(l=>l.end));
-
-  let total=logs.reduce((s,l)=>s+(l.end-l.start),0);
-  let span=max-min;
-
-  if(span<=0) return 0;
-
-  return Math.round(total/span*100);
-}
-
-/* =================
 表示
 ================= */
 function render(rooms){
@@ -223,18 +166,12 @@ function render(rooms){
 
   Object.values(rooms).forEach(r=>{
 
-    let rrate=rate(r.logs);
-
     grid.innerHTML+=`
       <div class="room">
         <div class="title">${r.room}</div>
 
-        ${rrate<60?'<div class="badge">LOW</div>':''}
-
-        <div>稼働率：${rrate}%</div>
-
         ${r.logs.map(l=>`
-          <div style="margin-top:6px;">
+          <div class="block">
             ${l.name}<br>
             ${fmt(l.start)} - ${fmt(l.end)}
           </div>
@@ -243,14 +180,9 @@ function render(rooms){
       </div>
     `;
   });
-
-  wait.innerHTML = waiting.length
-    ? waiting.map(w=>`・${w}`).join("<br>")
-    : "なし";
 }
 
 function fmt(m){
-  if(!m && m!==0) return "-";
   return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
 }
 

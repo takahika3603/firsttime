@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Room Optimization System PRO</title>
+<title>Room Ops Control Panel</title>
 
 <style>
 body{
@@ -11,15 +11,25 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Meiryo";
   background:#05070c;
   color:#eaf2ff;
-  padding:14px;
+  padding:12px;
 }
 
-/* ===== 入力（1行共通） ===== */
+/* ===== 上部固定UI ===== */
+.panel{
+  position:sticky;
+  top:0;
+  background:#05070c;
+  padding-bottom:10px;
+  z-index:10;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+
+/* ===== フォーム2分割 ===== */
 .row{
-  display:flex;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr auto;
   gap:6px;
-  flex-wrap:wrap;
-  margin-bottom:10px;
+  margin-bottom:6px;
 }
 
 input,button{
@@ -31,9 +41,15 @@ input,button{
   font-size:12px;
 }
 
-input{
-  flex:1;
-  min-width:90px;
+button{
+  cursor:pointer;
+}
+
+/* ===== セクションラベル ===== */
+.label{
+  font-size:11px;
+  opacity:0.6;
+  margin:6px 0 4px;
 }
 
 /* ===== レイアウト ===== */
@@ -41,10 +57,11 @@ input{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:10px;
+  margin-top:10px;
 }
 
 .room{
-  background:rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.05);
   border-radius:12px;
   padding:10px;
   font-size:12px;
@@ -56,41 +73,66 @@ input{
   margin-bottom:6px;
 }
 
+/* ===== 状態表示 ===== */
 .item{
   margin-top:6px;
   padding:6px;
   border-radius:8px;
+  line-height:1.3;
 }
 
-/* 通常 */
-.normal{
-  background:transparent;
-}
+.ok{ background:transparent; }
 
-/* オレンジ（接続・調整あり） */
-.orange{
-  background:rgba(255,165,0,0.18);
+.warn{
+  background:rgba(255,165,0,0.15);
   border:1px solid rgba(255,165,0,0.35);
 }
 
-/* 赤（待機・破綻） */
-.red{
-  background:rgba(255,80,80,0.18);
+.bad{
+  background:rgba(255,80,80,0.15);
   border:1px solid rgba(255,80,80,0.35);
+}
+
+/* ===== 稼働率バー ===== */
+.bar{
+  height:6px;
+  background:rgba(255,255,255,0.08);
+  border-radius:999px;
+  overflow:hidden;
+  margin-top:6px;
+}
+
+.fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#6aa9ff,#8be7ff);
 }
 </style>
 </head>
 
 <body>
 
-<!-- ===== 共通入力 ===== -->
+<div class="panel">
+
+<div class="label">固定（午前）※部屋必須</div>
 <div class="row">
-  <input id="name" placeholder="名前">
-  <input id="room" placeholder="部屋（任意）">
-  <input id="start" type="time">
-  <input id="end" type="time">
-  <button onclick="add()">追加</button>
-  <button onclick="calc()">計算</button>
+  <input id="m_name" placeholder="名前">
+  <input id="m_room" placeholder="部屋">
+  <input id="m_start" type="time">
+  <input id="m_end" type="time">
+  <button onclick="addFixed()">追加</button>
+</div>
+
+<div class="label">流動（午後）※自動配置</div>
+<div class="row">
+  <input id="a_name" placeholder="名前">
+  <input id="a_start" type="time">
+  <input id="a_end" type="time">
+  <button onclick="addFlow()">追加</button>
+</div>
+
+<button onclick="calc()">計算</button>
+
 </div>
 
 <div class="grid" id="grid"></div>
@@ -99,7 +141,8 @@ input{
 
 const ROOMS=["201","202","203","301","302","303","401","402","501"];
 
-let list=[];
+let fixed=[];
+let flow=[];
 
 function toMin(t){
   const [h,m]=t.split(":").map(Number);
@@ -109,105 +152,136 @@ function toMin(t){
 /* =========================
 入力
 ========================= */
-function add(){
-  list.push({
-    name:name.value,
-    room:room.value || null,
-    start:toMin(start.value),
-    end:toMin(end.value)
+function addFixed(){
+  if(!m_name.value||!m_room.value||!m_start.value||!m_end.value) return;
+
+  fixed.push({
+    name:m_name.value,
+    room:m_room.value,
+    start:toMin(m_start.value),
+    end:toMin(m_end.value)
+  });
+}
+
+function addFlow(){
+  if(!a_name.value||!a_start.value||!a_end.value) return;
+
+  flow.push({
+    name:a_name.value,
+    start:toMin(a_start.value),
+    end:toMin(a_end.value)
   });
 }
 
 /* =========================
-コアロジック
+衝突判定
+========================= */
+function overlap(a,b){
+  return a.start < b.end && a.end > b.start;
+}
+
+/* =========================
+メイン
 ========================= */
 function calc(){
 
   let rooms={};
+  let usage={};
 
   ROOMS.forEach(r=>{
-    rooms[r]={logs:[],freeAt:0};
+    rooms[r]=[];
+    usage[r]=0;
   });
 
-  let cleanBase = 30;
+  const CLEAN=30;
 
-  // 混雑時は短縮
-  if(list.length > 15) cleanBase = 15;
+  /* ===== 固定（午前） ===== */
+  for(let p of fixed){
 
-  list.sort((a,b)=>a.start-b.start);
+    rooms[p.room].push(p);
+    usage[p.room]+=p.end-p.start;
+  }
 
-  list.forEach(p=>{
+  /* ===== 流動（午後） ===== */
+  for(let p of flow){
 
-    let target;
+    let placed=false;
 
-    // 固定（午前扱い）
-    if(p.room){
-      target = rooms[p.room];
+    for(let r of ROOMS){
+
+      let list=rooms[r];
+
+      let ok=true;
+
+      for(let x of list){
+        if(overlap(x,p)){
+          ok=false;
+          break;
+        }
+      }
+
+      if(ok){
+        rooms[r].push(p);
+        usage[r]+=p.end-p.start;
+        placed=true;
+        break;
+      }
     }
-    // 流動（午後扱い）
-    else{
-      target = Object.values(rooms)
-        .sort((a,b)=>a.freeAt-b.freeAt)[0];
+
+    if(!placed){
+      console.log("未配置:",p);
     }
+  }
 
-    let realStart = Math.max(p.start, target.freeAt);
-
-    let isDelayed = realStart !== p.start;
-
-    let isBoundary = target.freeAt === p.start;
-
-    target.logs.push({
-      name:p.name,
-      start:p.start,       // シフトは絶対保持
-      end:p.end,
-      realStart,
-      isDelayed,
-      isBoundary
-    });
-
-    target.freeAt = p.end + cleanBase;
-  });
-
-  render(rooms);
+  render(rooms,usage);
 }
 
 /* =========================
 表示
 ========================= */
-function render(rooms){
+function render(rooms,usage){
 
   grid.innerHTML="";
 
-  Object.entries(rooms).forEach(([room,r])=>{
+  for(let r of ROOMS){
+
+    let arr=rooms[r].sort((a,b)=>a.start-b.start);
 
     let html="";
 
-    r.logs.forEach(l=>{
+    for(let i=0;i<arr.length;i++){
 
-      let cls="normal";
+      let a=arr[i];
 
-      if(l.isDelayed){
-        cls="red";        // 待機発生
-      }
-      else if(l.isBoundary){
-        cls="orange";     // 連続接続
+      let cls="ok";
+
+      for(let j=0;j<arr.length;j++){
+        if(i!==j && overlap(a,arr[j])){
+          cls="warn";
+        }
       }
 
       html+=`
         <div class="item ${cls}">
-          ${l.name}<br>
-          ${fmt(l.start)} - ${fmt(l.end)}
+          ${a.name}<br>
+          ${fmt(a.start)} - ${fmt(a.end)}
         </div>
       `;
-    });
+    }
+
+    let rate=Math.min(100,(usage[r]/960)*100);
+
+    html+=`
+      <div class="bar"><div class="fill" style="width:${rate}%"></div></div>
+    `;
 
     grid.innerHTML+=`
       <div class="room">
-        <div class="title">${room}</div>
+        <div class="title">${r}</div>
         ${html}
       </div>
     `;
-  });
+  }
 }
 
 function fmt(m){

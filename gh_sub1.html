@@ -68,12 +68,67 @@ text-align:left;
 margin-top:20px;
 }
 
+/* スワイプ中の赤背景 */
 .item{
-padding:12px;
-border-bottom:1px solid rgba(255,255,255,0.08);
-font-size:13px;
+position:relative;
+overflow:hidden;
+transition:0.2s;
+}
+
+.item.swiping{
+background:rgba(255,0,0,0.2);
+transform:scale(1.02);
+}
+
+/* ゴミ箱アイコン */
+.trash{
+position:absolute;
+right:12px;
+top:50%;
+transform:translateY(-50%);
+opacity:0;
+transition:0.2s;
+}
+
+.item.swiping .trash{
+opacity:1;
+}
+
+/* 削除アニメ */
+.item.delete{
+transform:scale(0.7);
+opacity:0;
+transition:0.25s;
+}
+
+/* スナックバー */
+.snackbar{
+position:fixed;
+bottom:120px;
+left:50%;
+transform:translateX(-50%);
+background:rgba(0,0,0,0.8);
+border:1px solid rgba(255,255,255,0.15);
+padding:10px 14px;
+border-radius:12px;
 display:flex;
-justify-content:space-between;
+gap:10px;
+align-items:center;
+animation:fadein 0.2s;
+}
+
+@keyframes fadein{
+from{opacity:0;transform:translate(-50%,20px);}
+to{opacity:1;transform:translate(-50%,0);}
+}
+
+.snackbar button{
+background:#fff;
+color:#000;
+border:none;
+padding:4px 8px;
+border-radius:6px;
+cursor:pointer;
 }
 
 /* ===== 追加ボタン ===== */
@@ -270,10 +325,22 @@ let filtered=current==="全体"
 ?articles
 :articles.filter(a=>a.category===current);
 
-el.innerHTML=filtered.map(a=>
-`<div class="item"><span>${a.title}</span><span>${a.category}</span></div>`
-).join("");
+el.innerHTML = filtered.map((a, index) => `
+<div class="item"
+     data-id="${index}"
+     ontouchstart="touchStart(event)"
+     ontouchmove="touchMove(event)"
+     ontouchend="touchEnd(event)">
+
+  <span>${a.title}</span>
+  <span>${a.category}</span>
+
+  <div class="trash">🗑️</div>
+</div>
+`).join("");
 }
+
+
 
 /* ===== フィルター ===== */
 function filter(c){current=c;update();}
@@ -312,6 +379,45 @@ renderList();
 
 update();
 
+let startX = 0;
+let currentEl = null;
+let deletedItem = null;
+
+function touchStart(e){
+startX = e.touches[0].clientX;
+currentEl = e.currentTarget;
+}
+
+function touchMove(e){
+let diff = e.touches[0].clientX - startX;
+
+if(diff < -30){
+currentEl.classList.add("swiping");
+}
+}
+
+function touchEnd(e){
+let diff = e.changedTouches[0].clientX - startX;
+
+if(diff < -80){
+
+// 削除対象保存（UNDO用）
+const index = currentEl.dataset.id;
+deletedItem = articles[index];
+
+// 削除アニメ
+currentEl.classList.add("delete");
+
+setTimeout(()=>{
+articles.splice(index,1);
+update();
+showUndo();
+},200);
+
+}else{
+currentEl.classList.remove("swiping");
+}
+}
 </script>
 
 </body>

@@ -3,81 +3,109 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blog Generator</title>
+<title>ブログ生成ツール</title>
 
 <style>
 body{
 margin:0;
-font-family:-apple-system, BlinkMacSystemFont, "Meiryo", sans-serif;
-background:#0b0f1a;
-color:#fff;
+font-family:-apple-system, BlinkMacSystemFont, "Hiragino Sans", "Meiryo", sans-serif;
+background:
+radial-gradient(circle at 20% 20%, #1a1f2e, #000),
+radial-gradient(circle at 80% 80%, #0b1020, #000);
+color:#f5f5f7;
 padding:20px;
 }
 
+/* ===== タイトル ===== */
 h1{
 text-align:center;
 font-size:18px;
+letter-spacing:2px;
 margin-bottom:20px;
+color:rgba(255,255,255,0.85);
 }
 
-/* ===== カードUI ===== */
+/* ===== ガラスカード ===== */
 .card{
-background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.1);
-border-radius:14px;
-padding:14px;
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(255,255,255,0.12);
+border-radius:18px;
+padding:16px;
 margin-bottom:12px;
-backdrop-filter: blur(10px);
+
+backdrop-filter: blur(22px);
+-webkit-backdrop-filter: blur(22px);
+
+box-shadow:
+0 10px 40px rgba(0,0,0,0.6),
+inset 0 1px 0 rgba(255,255,255,0.08);
 }
 
-/* ===== input系 ===== */
+/* ===== ラベル ===== */
+label{
+font-size:12px;
+color:rgba(255,255,255,0.7);
+display:block;
+margin-bottom:6px;
+}
+
+/* ===== 入力系 ===== */
 select, textarea, button{
 width:100%;
-padding:10px;
-margin-top:6px;
-border-radius:10px;
+padding:12px;
+border-radius:12px;
 border:none;
 font-size:14px;
+outline:none;
+}
+
+select, textarea{
+background:rgba(255,255,255,0.06);
+color:#fff;
 }
 
 textarea{
-height:80px;
+height:90px;
 resize:none;
 }
 
-/* ===== チェックボックス ===== */
+/* ===== チェック ===== */
 .checks label{
 display:block;
-margin:6px 0;
 font-size:13px;
-color:#cbd5e1;
+margin:6px 0;
+color:rgba(255,255,255,0.75);
 }
 
-/* ===== ボタン ===== */
+/* ===== メインボタン ===== */
 button{
-background:#22c55e;
+background:linear-gradient(135deg,#22c55e,#16a34a);
 color:#fff;
 font-weight:bold;
 cursor:pointer;
+margin-top:6px;
+box-shadow:0 8px 20px rgba(34,197,94,0.25);
+transition:0.2s;
 }
 
 button:active{
-transform:scale(0.98);
+transform:scale(0.97);
 }
 
 /* ===== 出力 ===== */
 .output{
 white-space:pre-wrap;
 background:rgba(255,255,255,0.05);
-padding:14px;
-border-radius:12px;
+padding:16px;
+border-radius:16px;
 margin-top:12px;
-min-height:120px;
+min-height:140px;
+border:1px solid rgba(255,255,255,0.08);
 }
 
 /* コピー */
 .copy{
-background:#6366f1;
+background:linear-gradient(135deg,#6366f1,#4f46e5);
 margin-top:10px;
 }
 </style>
@@ -85,57 +113,57 @@ margin-top:10px;
 
 <body>
 
-<h1>Blog Generator</h1>
+<h1>ブログ生成ツール</h1>
 
 <div class="card">
-<label>フォーマット</label>
+<label>ブログの種類を選択してください</label>
 <select id="format">
 <option value="normal">通常ブログ</option>
-<option value="event">イベント</option>
+<option value="event">イベント告知</option>
 <option value="new">新人紹介</option>
 <option value="sales">高収入アピール</option>
 </select>
 </div>
 
 <div class="card">
-<label>訴求ポイント</label>
+<label>訴求したいポイントを選択してください</label>
 <div class="checks">
-<label><input type="checkbox" value="salary"> お給料</label>
-<label><input type="checkbox" value="job"> 仕事内容</label>
-<label><input type="checkbox" value="easy"> 未経験OK</label>
+<label><input type="checkbox" value="salary"> お給料について</label>
+<label><input type="checkbox" value="job"> お仕事内容について</label>
+<label><input type="checkbox" value="easy"> 未経験でも安心</label>
 <label><input type="checkbox" value="env"> 働きやすさ</label>
 </div>
 </div>
 
 <div class="card">
-<label>どういう系</label>
+<label>文章の伝え方を選択してください</label>
 <select id="type">
-<option value="important">大事アピール系</option>
-<option value="anxiety">不安解決系</option>
-<option value="push">背中押し系</option>
+<option value="important">大切さを強調する</option>
+<option value="anxiety">不安を解消する</option>
+<option value="push">後押しする</option>
 </select>
 </div>
 
 <div class="card">
-<label>トーン</label>
+<label>文章の雰囲気を選択してください</label>
 <select id="tone">
-<option value="friendly">フレンドリー</option>
-<option value="cute">かわいい</option>
+<option value="friendly">親しみやすい</option>
+<option value="cute">かわいらしい</option>
 <option value="luxury">高級感</option>
 <option value="sexy">セクシー</option>
 </select>
 </div>
 
 <div class="card">
-<label>自由入力</label>
-<textarea id="input" placeholder="今日の内容やイベントなど"></textarea>
+<label>本日の内容を入力してください</label>
+<textarea id="input" placeholder="例：本日は満席で賑わっていました"></textarea>
 </div>
 
-<button onclick="generate()">生成する</button>
+<button onclick="generate()">ブログを生成する</button>
 
 <div class="card">
 <div id="output" class="output">ここに生成結果が表示されます</div>
-<button class="copy" onclick="copyText()">コピー</button>
+<button class="copy" onclick="copyText()">文章をコピー</button>
 </div>
 
 <script>
@@ -151,24 +179,24 @@ return arr;
 
 function buildAppeal(type, point){
 
-const labelMap = {
+const map = {
 salary:"お給料",
-job:"仕事内容",
-easy:"未経験",
+job:"お仕事内容",
+easy:"未経験の方",
 env:"働きやすさ"
 };
 
-let p = labelMap[point] || point;
+let p = map[point] || point;
 
 if(type === "important"){
-return `○○に関して気になることは多いですよね。特に${p}はとても大事なポイントです。`;
+return `「${p}」について気になる方は多いですよね。特に${p}はとても大切なポイントです。`;
 }
 
 if(type === "anxiety"){
-return `○○に関して不安になる方も多いですが、特に${p}は心配されやすいポイントです。しかし当店ではしっかりサポートしています。`;
+return `「${p}」に不安を感じる方もいらっしゃいます。特に${p}は心配されやすい点ですが、当店ではしっかりサポートしております。`;
 }
 
-return `${p}についてご紹介します。`;
+return `${p}についてご紹介いたします。`;
 }
 
 function generate(){
@@ -186,17 +214,17 @@ if(format === "normal"){
 text += "【通常ブログ】\n\n";
 }
 if(format === "event"){
-text += "【イベント案内】\n\n";
+text += "【イベントのご案内】\n\n";
 }
 if(format === "new"){
-text += "【新人紹介】\n\n";
+text += "【新人のご紹介】\n\n";
 }
 if(format === "sales"){
-text += "【高収入アピール】\n\n";
+text += "【高収入のご案内】\n\n";
 }
 
 // ===== 導入 =====
-text += "いつもご覧いただきありがとうございます✨\n\n";
+text += "いつもご覧いただきありがとうございます。\n\n";
 
 // ===== 訴求 =====
 appeals.forEach(a=>{
@@ -204,12 +232,12 @@ text += buildAppeal(type,a) + "\n\n";
 });
 
 // ===== 本文 =====
-text += "【本日の内容】\n";
+text += "【本日の様子】\n";
 text += input + "\n\n";
 
 // ===== トーン =====
-text += `【トーン：${tone}】\n`;
-text += "ご来店お待ちしております✨\n";
+text += `【文章の雰囲気：${tone}】\n`;
+text += "皆様のご来店を心よりお待ちしております。\n";
 
 document.getElementById("output").innerText = text;
 }

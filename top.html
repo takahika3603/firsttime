@@ -3,42 +3,79 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>業務ダッシュボード</title>
+<title>Vision Dashboard</title>
 
 <style>
 body{
 margin:0;
-font-family:"Meiryo", sans-serif;
-background:#0f172a;
-color:#fff;
+font-family:-apple-system, BlinkMacSystemFont, "Meiryo", sans-serif;
+background:#000;
+color:#f5f5f7;
+overflow:hidden;
 }
 
-/* ヘッダー */
+/* ===== 空間ライト（Vision Pro風） ===== */
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 40%),
+radial-gradient(circle at 80% 70%, rgba(120,180,255,0.06), transparent 45%),
+radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03), transparent 60%);
+filter: blur(10px);
+pointer-events:none;
+}
+
+/* ===== ヘッダー ===== */
 header{
-padding:18px;
+position:absolute;
+top:24px;
+width:100%;
 text-align:center;
-font-size:20px;
-font-weight:bold;
-background:#111827;
+font-size:13px;
+letter-spacing:4px;
+color:rgba(255,255,255,0.6);
 }
 
-/* コンテンツ */
-.container{
+/* ===== 中央空間レイアウト ===== */
+.center{
+height:100vh;
 display:flex;
 flex-direction:column;
+justify-content:center;
+align-items:center;
 gap:16px;
 padding:20px;
-padding-bottom:90px;
 }
 
-/* カード（統一） */
+/* ===== Vision Glass Card ===== */
 .card{
-background:#1e293b;
-padding:22px;
-border-radius:16px;
+width:100%;
+max-width:420px;
+
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(255,255,255,0.12);
+border-radius:24px;
+
+padding:24px;
 text-align:center;
+
+backdrop-filter: blur(22px);
+-webkit-backdrop-filter: blur(22px);
+
+box-shadow:
+0 20px 60px rgba(0,0,0,0.6),
+inset 0 1px 0 rgba(255,255,255,0.08);
+
 cursor:pointer;
-transition:0.2s;
+transition:0.35s;
+}
+
+/* 浮遊感 */
+.card:hover{
+transform:translateY(-3px) scale(1.01);
+border-color:rgba(255,255,255,0.2);
 }
 
 .card:active{
@@ -47,50 +84,72 @@ transform:scale(0.98);
 
 .title{
 font-size:18px;
-font-weight:bold;
+font-weight:500;
+letter-spacing:1px;
 margin-bottom:6px;
 }
 
 .desc{
 font-size:12px;
-color:#94a3b8;
+color:rgba(255,255,255,0.55);
+line-height:1.5;
 }
 
 .tag{
-margin-top:10px;
+margin-top:12px;
 display:inline-block;
-padding:4px 10px;
-background:#22c55e;
+font-size:10px;
+padding:4px 12px;
 border-radius:999px;
-font-size:12px;
+
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(255,255,255,0.12);
+color:rgba(255,255,255,0.7);
 }
 
-/* 下ナビ */
+/* ===== Vision Floating Dock ===== */
 .nav{
 position:fixed;
-bottom:0;
-left:0;
-width:100%;
-height:70px;
-background:#111827;
+bottom:22px;
+left:50%;
+transform:translateX(-50%);
+
+width:92%;
+max-width:440px;
+height:64px;
+
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.12);
+border-radius:22px;
+
+backdrop-filter: blur(24px);
+-webkit-backdrop-filter: blur(24px);
+
 display:flex;
-justify-content:space-around;
 align-items:center;
-border-top:1px solid #1f2937;
+justify-content:space-around;
+
+box-shadow:0 20px 60px rgba(0,0,0,0.7);
 }
 
+/* ナビボタン */
 .nav-btn{
 flex:1;
 text-align:center;
-font-size:12px;
+font-size:10px;
+color:rgba(255,255,255,0.5);
 cursor:pointer;
-color:#94a3b8;
+transition:0.25s;
 }
 
 .nav-btn strong{
 display:block;
-font-size:14px;
-color:#fff;
+font-size:13px;
+color:rgba(255,255,255,0.9);
+}
+
+.nav-btn:active{
+transform:scale(0.92);
 }
 </style>
 </head>
@@ -98,55 +157,48 @@ color:#fff;
 <body>
 
 <header>
-業務ダッシュボード
+VISION DASHBOARD
 </header>
 
-<div class="container">
+<div class="center">
 
-<!-- マニュアル（manual.htmlに遷移） -->
 <div class="card" onclick="openPage('manual.html')">
-<div class="title">📘 マニュアル</div>
-<div class="desc">業務手順・ルール確認</div>
-<div class="tag">MANUAL</div>
+<div class="title">Manual</div>
+<div class="desc">Knowledge / Rules / System Logic</div>
+<div class="tag">GUIDE</div>
 </div>
 
-<!-- タスク -->
 <div class="card" onclick="openPage('task.html')">
-<div class="title">📋 タスク管理</div>
-<div class="desc">日々の行動・業務整理</div>
-<div class="tag">TASK</div>
+<div class="title">Task</div>
+<div class="desc">Execution / Daily Flow / Action</div>
+<div class="tag">WORK</div>
 </div>
 
-<!-- 進捗 -->
 <div class="card" onclick="openPage('index.html')">
-<div class="title">📊 進捗管理</div>
-<div class="desc">KPI・成果・営業進捗</div>
-<div class="tag">KPI</div>
+<div class="title">Progress</div>
+<div class="desc">KPI / Analytics / Performance</div>
+<div class="tag">DATA</div>
 </div>
 
 </div>
 
-<!-- 下ナビ -->
+<!-- Floating Dock -->
 <div class="nav">
 
 <div class="nav-btn" onclick="openPage('top.html')">
-<strong>🏠</strong>
-ホーム
+<strong>Home</strong>
 </div>
 
 <div class="nav-btn" onclick="openPage('manual.html')">
-<strong>📘</strong>
-マニュアル
+<strong>Manual</strong>
 </div>
 
 <div class="nav-btn" onclick="openPage('task.html')">
-<strong>📋</strong>
-タスク
+<strong>Task</strong>
 </div>
 
 <div class="nav-btn" onclick="openPage('index.html')">
-<strong>📊</strong>
-進捗
+<strong>Data</strong>
 </div>
 
 </div>

@@ -3,46 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>経営ダッシュボード</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>ダッシュボード</title>
 
 <style>
 body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont;
-  background:#0b0f1a;
-  color:white;
-}
-.container{ padding:20px; }
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display";
+color:#e6eeff;
 
+background:
+radial-gradient(circle at 20% 10%, rgba(120,160,255,0.15), transparent 40%),
+radial-gradient(circle at 80% 90%, rgba(255,120,200,0.15), transparent 40%),
+#0b0f1a;
+}
+
+.container{
+padding:20px;
+max-width:600px;
+margin:auto;
+}
+
+h1{
+text-align:center;
+margin-bottom:20px;
+}
+
+/* グリッド（2×2） */
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+margin-bottom:20px;
+}
+
+/* カード */
 .card{
-  background:rgba(255,255,255,0.05);
-  padding:16px;
-  border-radius:16px;
-  margin-bottom:16px;
+backdrop-filter: blur(20px);
+background: rgba(255,255,255,0.06);
+border-radius:18px;
+padding:16px;
+border:1px solid rgba(255,255,255,0.1);
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
 }
 
-.big{
-  font-size:22px;
-  font-weight:bold;
+/* タイトル */
+.label{
+font-size:12px;
+color:#9fb0ff;
+margin-bottom:6px;
 }
 
-.flex{
-  display:flex;
-  gap:8px;
+/* 数字 */
+.value{
+font-size:20px;
+font-weight:600;
 }
 
-button{
-  flex:1;
-  padding:12px;
-  border:none;
-  border-radius:12px;
+/* グラフカード */
+.chart-card{
+backdrop-filter: blur(20px);
+background: rgba(255,255,255,0.05);
+border-radius:20px;
+padding:16px;
+margin-bottom:16px;
+border:1px solid rgba(255,255,255,0.08);
 }
 
-.active{
-  background:linear-gradient(135deg,#6aa2ff,#ff7ad9);
-  color:white;
+/* 見出し */
+.chart-title{
+font-size:14px;
+margin-bottom:10px;
+color:#cbd6ff;
+}
+
+/* 仮キャンバス */
+.canvas-box{
+width:100%;
+height:220px;
+display:flex;
+align-items:center;
+justify-content:center;
+color:#6f7fbf;
+font-size:13px;
+border-radius:12px;
+background:rgba(255,255,255,0.03);
+}
+
+/* ボタン */
+.button{
+width:100%;
+padding:12px;
+border-radius:14px;
+border:none;
+background:rgba(255,255,255,0.1);
+color:white;
+margin-bottom:16px;
+backdrop-filter: blur(20px);
+transition:0.2s;
+}
+
+.button:hover{
+background:rgba(255,255,255,0.2);
 }
 </style>
 </head>
@@ -50,180 +111,51 @@ button{
 <body>
 <div class="container">
 
-<h2>経営ダッシュボード</h2>
+<h1>ダッシュボード</h1>
 
-<div class="flex">
-  <button onclick="setMode('day')" id="btnDay">今日</button>
-  <button onclick="setMode('month')" id="btnMonth">今月</button>
-  <button onclick="setMode('year')" id="btnYear">今年</button>
+<button class="button">← 名簿に戻る</button>
+
+<!-- 2×2 KPI -->
+<div class="grid">
+
+<div class="card">
+<div class="label">目標金額</div>
+<div class="value" id="goal">¥20,000,000</div>
 </div>
 
 <div class="card">
-  <div>目標（今月）</div>
-  <div class="big">¥20,000,000</div>
+<div class="label">今月売上</div>
+<div class="value" id="total">¥0</div>
 </div>
 
 <div class="card">
-  <div>今月売上</div>
-  <div id="total" class="big">¥0</div>
+<div class="label">進捗率</div>
+<div class="value" id="rate">0%</div>
 </div>
 
 <div class="card">
-  <div>達成率</div>
-  <div id="rate" class="big">0%</div>
-</div>
-
-<div class="card">
-  <div>必要日割り売上</div>
-  <div id="dailyNeed" class="big">¥0</div>
-</div>
-
-<div class="card">
-  <canvas id="castChart"></canvas>
-</div>
-
-<div class="card">
-  <canvas id="countryChart"></canvas>
-</div>
-
-<div class="card">
-  <canvas id="trendChart"></canvas>
+<div class="label">必要日割り売上</div>
+<div class="value" id="daily">¥0</div>
 </div>
 
 </div>
 
-<script>
+<!-- 国別ドーナツ -->
+<div class="chart-card">
+<div class="chart-title">日本 vs 外国人 売上比率</div>
+<div class="canvas-box">
+（ここにドーナツグラフ）
+</div>
+</div>
 
-const GOAL = 20000000;
+<!-- キャストドーナツ -->
+<div class="chart-card">
+<div class="chart-title">キャスト別 売上構成</div>
+<div class="canvas-box">
+（ここにドーナツグラフ）
+</div>
+</div>
 
-let records = JSON.parse(localStorage.getItem("records") || "[]");
-let mode = "day";
-
-function setMode(m){
-  mode = m;
-
-  document.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
-  if(m==="day") btnDay.classList.add("active");
-  if(m==="month") btnMonth.classList.add("active");
-  if(m==="year") btnYear.classList.add("active");
-
-  render();
-}
-
-function render(){
-
-  const now = new Date();
-
-  // ▼ 今月データ（目標用）
-  const monthData = records.filter(r=>{
-    const d = new Date(r.date);
-    return d.getMonth()===now.getMonth() &&
-           d.getFullYear()===now.getFullYear();
-  });
-
-  let monthTotal = 0;
-  monthData.forEach(r=>monthTotal += Number(r.price)||0);
-
-  // ▼ フィルター対象
-  const data = records.filter(r=>{
-    const d = new Date(r.date);
-
-    if(mode==="day"){
-      return d.toDateString()===now.toDateString();
-    }
-    if(mode==="month"){
-      return d.getMonth()===now.getMonth() &&
-             d.getFullYear()===now.getFullYear();
-    }
-    if(mode==="year"){
-      return d.getFullYear()===now.getFullYear();
-    }
-  });
-
-  // ▼ 達成率
-  const rate = Math.floor(monthTotal / GOAL * 100);
-
-  // ▼ 残り日数
-  const lastDay = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
-  const remainingDays = lastDay - now.getDate() + 1;
-
-  // ▼ 必要日割り
-  const remainAmount = GOAL - monthTotal;
-  const dailyNeed = remainAmount > 0
-    ? Math.floor(remainAmount / remainingDays)
-    : 0;
-
-  document.getElementById("total").innerText = "¥"+monthTotal.toLocaleString();
-  document.getElementById("rate").innerText = rate+"%";
-  document.getElementById("dailyNeed").innerText = "¥"+dailyNeed.toLocaleString();
-
-  // ▼ 集計
-  let castMap = {};
-  let japan = 0;
-  let overseas = 0;
-
-  data.forEach(r=>{
-    const price = Number(r.price)||0;
-
-    if(!castMap[r.cast]) castMap[r.cast]=0;
-    castMap[r.cast]+=price;
-
-    if(r.nationality==="日本") japan+=price;
-    else overseas+=price;
-  });
-
-  drawCharts(castMap, japan, overseas, data);
-}
-
-let castChart, countryChart, trendChart;
-
-function drawCharts(castMap, japan, overseas, data){
-
-  if(castChart) castChart.destroy();
-  if(countryChart) countryChart.destroy();
-  if(trendChart) trendChart.destroy();
-
-  // キャスト
-  castChart = new Chart(document.getElementById("castChart"),{
-    type:"doughnut",
-    data:{
-      labels:Object.keys(castMap),
-      datasets:[{data:Object.values(castMap)}]
-    }
-  });
-
-  // 国別
-  countryChart = new Chart(document.getElementById("countryChart"),{
-    type:"doughnut",
-    data:{
-      labels:["日本","海外"],
-      datasets:[{data:[japan,overseas]}]
-    }
-  });
-
-  // 日別推移
-  const map = {};
-  data.forEach(r=>{
-    if(!map[r.date]) map[r.date]=0;
-    map[r.date]+=Number(r.price)||0;
-  });
-
-  const labels = Object.keys(map).sort();
-  const values = labels.map(d=>map[d]);
-
-  trendChart = new Chart(document.getElementById("trendChart"),{
-    type:"line",
-    data:{
-      labels:labels,
-      datasets:[{data:values}]
-    }
-  });
-}
-
-// 初期
-setMode("day");
-
-</script>
-
+</div>
 </body>
 </html>

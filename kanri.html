@@ -7,196 +7,414 @@
 
 <style>
 body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display";
-  color:#e6eeff;
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display";
+color:#eaf2ff;
 
-  background:
-    radial-gradient(circle at 20% 10%, rgba(120,160,255,0.15), transparent 40%),
-    radial-gradient(circle at 80% 90%, rgba(255,120,200,0.15), transparent 40%),
-    #0b0f1a;
+background:
+radial-gradient(circle at 20% 10%, rgba(90,130,255,0.18), transparent 55%),
+radial-gradient(circle at 80% 90%, rgba(255,90,180,0.10), transparent 60%),
+#02030a;
+}
+
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background-image:url("https://www.transparenttextures.com/patterns/noise.png");
+opacity:0.03;
+pointer-events:none;
 }
 
 .container{
-  padding:20px;
-  max-width:500px;
-  margin:auto;
+padding:18px;
+max-width:720px;
+margin:auto;
 }
 
 h1{
-  text-align:center;
-  font-size:22px;
-  margin-bottom:20px;
+text-align:center;
+font-weight:500;
+margin:10px 0 12px;
 }
 
-/* ガラスカード */
-.card{
-  backdrop-filter: blur(25px);
-  background: rgba(255,255,255,0.06);
-  border-radius:20px;
-  padding:16px;
-  margin-bottom:16px;
-  border:1px solid rgba(255,255,255,0.1);
-  box-shadow:0 10px 30px rgba(0,0,0,0.4);
-}
-
-/* 入力 */
-input, select{
-  width:100%;
-  padding:12px;
-  margin-bottom:12px;
-  border-radius:14px;
-  border:none;
-  background:rgba(255,255,255,0.08);
-  color:white;
-  font-size:15px;
-}
-
-/* ボタン（Vision風） */
+/* ボタン */
 .button{
-  width:100%;
-  padding:14px;
-  border-radius:16px;
-  border:none;
-  color:white;
-  font-weight:600;
-  backdrop-filter: blur(20px);
-  background:rgba(255,255,255,0.1);
-  transition:0.2s;
+width:100%;
+padding:12px;
+border-radius:16px;
+
+background:rgba(255,255,255,0.03);
+backdrop-filter: blur(35px);
+
+border:1px solid rgba(255,255,255,0.06);
+
+color:rgba(255,255,255,0.85);
+
+margin-bottom:10px;
 }
 
-/* ホバー半透明 */
-.button:hover{
-  background:rgba(255,255,255,0.2);
-  transform:scale(1.02);
+/* FAB */
+.fab{
+position:fixed;
+right:18px;
+bottom:18px;
+
+width:58px;
+height:58px;
+border-radius:50%;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:26px;
+
+background:rgba(255,255,255,0.05);
+backdrop-filter: blur(30px);
+
+border:1px solid rgba(255,255,255,0.08);
+
+color:white;
+
+box-shadow:0 20px 60px rgba(0,0,0,0.8);
 }
 
-/* メインボタン */
-.button.primary{
-  background:linear-gradient(135deg,#6aa2ff,#ff7ad9);
-  box-shadow:0 6px 20px rgba(100,140,255,0.4);
-}
-
-/* リスト */
+/* LIST */
 .list div{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+padding:10px 12px;
+border-radius:16px;
 
-  padding:14px;
-  margin-bottom:10px;
-  border-radius:16px;
+margin-bottom:8px;
 
-  background:rgba(255,255,255,0.05);
-  backdrop-filter: blur(20px);
-  border:1px solid rgba(255,255,255,0.08);
+background:rgba(255,255,255,0.02);
+backdrop-filter: blur(25px);
 
-  cursor:pointer;
-  transition:0.2s;
+border:1px solid rgba(255,255,255,0.05);
+
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
-.list div:hover{
-  transform:scale(1.02);
-  background:rgba(255,255,255,0.1);
+.left{
+display:flex;
+flex-direction:column;
+gap:2px;
+}
+
+.meta{
+font-size:11px;
+color:rgba(160,170,210,0.7);
+}
+
+.cast{
+font-size:13px;
 }
 
 .price{
-  color:#ff9de6;
-  font-weight:600;
+font-size:14px;
+font-weight:600;
+background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
 }
 
-.hidden{ display:none; }
+/* CHIP */
+.label{
+font-size:11px;
+color:rgba(160,170,210,0.8);
+margin:10px 0 6px;
+}
 
+.chip-group{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-bottom:10px;
+}
+
+.chip{
+padding:9px 13px;
+border-radius:999px;
+background:rgba(255,255,255,0.04);
+border:1px solid rgba(255,255,255,0.06);
+color:rgba(255,255,255,0.75);
+font-size:12px;
+transition:0.2s;
+}
+
+.chip.active{
+background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+color:white;
+}
+
+/* DETAIL */
+#detailPage{ display:none; }
+
+.card{
+padding:16px;
+border-radius:20px;
+background:rgba(255,255,255,0.03);
+backdrop-filter: blur(35px);
+border:1px solid rgba(255,255,255,0.06);
+}
+
+input,select{
+width:100%;
+padding:10px;
+margin:6px 0;
+border-radius:12px;
+border:none;
+background:rgba(255,255,255,0.06);
+color:white;
+}
+
+.smallBtn{
+width:100%;
+padding:10px;
+border-radius:12px;
+margin-top:10px;
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.08);
+color:white;
+}
+
+/* hidden */
+.hidden{ display:none; }
 </style>
 </head>
 
 <body>
+
 <div class="container">
 
 <h1>来客名簿</h1>
 
 <button class="button" onclick="goDashboard()">ダッシュボードへ</button>
 
-<div id="listPage">
-  <div class="list" id="list"></div>
+<div id="listPage" class="list"></div>
+
+<!-- 詳細 -->
+<div id="detailPage">
+
+<div class="card">
+
+<input id="date" placeholder="日付">
+<input id="time" placeholder="時間（10 / 20）">
+<input id="cast" placeholder="キャスト">
+<input id="price" placeholder="金額">
+
+<!-- 日本 / 海外 -->
+<div class="label">顧客区分</div>
+<div class="chip-group">
+<button class="chip" onclick="setCountry('日本',this)">日本</button>
+<button class="chip" onclick="setCountry('海外',this)">海外</button>
 </div>
 
-<div id="formPage" class="hidden">
+<!-- 海外のみ -->
+<div id="countrySelectBox" class="hidden">
+<select id="countrySelect">
+<option>香港</option>
+<option>台湾</option>
+<option>アメリカ</option>
+<option>オーストラリア</option>
+<option>その他</option>
+</select>
+</div>
 
-  <div class="card">
+<!-- 区分 -->
+<div class="label">区分</div>
+<div class="chip-group" id="typeGroup">
+<button class="chip" onclick="setChip('type','新規',this)">新規</button>
+<button class="chip" onclick="setChip('type','再来',this)">再来</button>
+</div>
 
-    <input type="date" id="date">
+<!-- 指名 -->
+<div class="label">指名</div>
+<div class="chip-group" id="shimeiGroup">
+<button class="chip" onclick="setChip('shimei','フリー',this)">フリー</button>
+<button class="chip" onclick="setChip('shimei','NET',this)">NET</button>
+<button class="chip" onclick="setChip('shimei','P',this)">P</button>
+<button class="chip" onclick="setChip('shimei','リピ',this)">リピ</button>
+</div>
 
-    <input type="text" id="cast" placeholder="キャスト名">
+<!-- オプション -->
+<div class="label">オプション</div>
+<div class="chip-group">
+<button class="chip" onclick="toggleOp('AN',this)">AN</button>
+<button class="chip" onclick="toggleOp('SL',this)">SL</button>
+<button class="chip" onclick="toggleOp('NL',this)">NL</button>
+<button class="chip" onclick="toggleOp('K',this)">K</button>
+<button class="chip" onclick="toggleOp('CP',this)">CP</button>
+</div>
 
-    <input type="number" id="price" placeholder="料金">
+<button class="smallBtn" onclick="save()">保存</button>
+<button class="smallBtn" onclick="back()">戻る</button>
 
-    <select id="countryType">
-      <option>日本</option>
-      <option>海外</option>
-    </select>
-
-    <button class="button primary" onclick="saveData()">保存</button>
-    <button class="button" onclick="back()">戻る</button>
-
-  </div>
+</div>
+</div>
 
 </div>
 
-<button class="button primary" onclick="goForm()">＋追加</button>
-
-</div>
+<div class="fab" onclick="add()">＋</div>
 
 <script>
 
 let records = JSON.parse(localStorage.getItem("records") || "[]");
+let editIndex = null;
 
+let form = {
+country:"日本",
+type:"",
+shimei:"",
+op:[]
+};
+
+/* ===== リスト ===== */
 function render(){
-  const list = document.getElementById("list");
-  list.innerHTML = "";
+const list = document.getElementById("listPage");
+list.innerHTML = "";
 
-  records.slice().reverse().forEach(r=>{
-    const d = new Date(r.date);
-    const md = `${d.getMonth()+1}/${d.getDate()}`;
+records.slice().reverse().forEach((r,i)=>{
 
-    const div = document.createElement("div");
+const div = document.createElement("div");
 
-    div.innerHTML = `
-      <div>${md} ${r.cast}</div>
-      <div class="price">¥${Number(r.price).toLocaleString()}</div>
-    `;
+div.innerHTML = `
+<div class="left">
+<div class="meta">${r.date} ・ ${r.time}時 ・ ${r.country}</div>
+<div class="cast">${r.cast}</div>
+</div>
+<div class="price">¥${r.price}</div>
+`;
 
-    list.appendChild(div);
-  });
+div.onclick = ()=>open(i);
+
+list.appendChild(div);
+});
 }
 
-function goForm(){
-  document.getElementById("formPage").classList.remove("hidden");
+/* ===== 詳細 ===== */
+function open(i){
+
+const real = records.length - 1 - i;
+const r = records[real];
+
+editIndex = real;
+
+date.value = r.date;
+time.value = r.time;
+cast.value = r.cast;
+price.value = r.price;
+
+setCountry(r.country,null);
+
+form.type = r.type;
+form.shimei = r.shimei;
+form.op = r.op || [];
+
+sync();
+
+document.getElementById("listPage").style.display="none";
+document.getElementById("detailPage").style.display="block";
 }
 
+/* ===== 国 ===== */
+function setCountry(v,el){
+
+form.country = v;
+
+document.querySelectorAll(".chip-group:first-of-type .chip")
+.forEach(c=>c.classList.remove("active"));
+
+if(el) el.classList.add("active");
+
+if(v === "海外"){
+document.getElementById("countrySelectBox").classList.remove("hidden");
+}else{
+document.getElementById("countrySelectBox").classList.add("hidden");
+}
+}
+
+/* ===== チップ ===== */
+function setChip(key,value,el){
+
+form[key]=value;
+
+document.querySelectorAll(`#${key}Group .chip`)
+.forEach(c=>c.classList.remove("active"));
+
+el.classList.add("active");
+}
+
+/* ===== オプション ===== */
+function toggleOp(v,el){
+if(form.op.includes(v)){
+form.op=form.op.filter(x=>x!==v);
+el.classList.remove("active");
+}else{
+form.op.push(v);
+el.classList.add("active");
+}
+}
+
+/* ===== 状態反映 ===== */
+function sync(){
+document.querySelectorAll("#typeGroup .chip")
+.forEach(c=>{ if(c.innerText===form.type) c.classList.add("active"); });
+
+document.querySelectorAll("#shimeiGroup .chip")
+.forEach(c=>{ if(c.innerText===form.shimei) c.classList.add("active"); });
+}
+
+/* ===== 保存 ===== */
+function save(){
+
+records[editIndex]={
+date:date.value,
+time:time.value,
+cast:cast.value,
+price:price.value,
+country:form.country === "海外"
+? countrySelect.value
+: "日本",
+type:form.type,
+shimei:form.shimei,
+op:form.op
+};
+
+localStorage.setItem("records",JSON.stringify(records));
+
+back();
+render();
+}
+
+/* ===== 戻る ===== */
 function back(){
-  document.getElementById("formPage").classList.add("hidden");
+document.getElementById("detailPage").style.display="none";
+document.getElementById("listPage").style.display="block";
 }
 
-function saveData(){
-
-  const data = {
-    date: document.getElementById("date").value,
-    cast: document.getElementById("cast").value,
-    price: Number(document.getElementById("price").value),
-    nationality: document.getElementById("countryType").value
-  };
-
-  records.push(data);
-
-  localStorage.setItem("records", JSON.stringify(records));
-
-  back();
-  render();
-}
-
+/* ===== ダッシュボード ===== */
 function goDashboard(){
-  location.href = "money.html";
+window.location.href="dashboard.html";
+}
+
+/* ===== 仮追加 ===== */
+function add(){
+records.push({
+date:"2026-04-18",
+time:"10",
+cast:"未入力",
+price:0,
+country:"日本",
+type:"新規",
+shimei:"フリー",
+op:[]
+});
+
+localStorage.setItem("records",JSON.stringify(records));
+render();
 }
 
 render();

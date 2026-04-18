@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>経営ダッシュボード</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont;
+  background:#0b0f1a;
+  color:white;
+}
+.container{ padding:20px; }
+
+.card{
+  background:rgba(255,255,255,0.05);
+  padding:16px;
+  border-radius:16px;
+  margin-bottom:16px;
+}
+
+.big{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.flex{
+  display:flex;
+  gap:8px;
+}
+
+button{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+}
+
+.active{
+  background:linear-gradient(135deg,#6aa2ff,#ff7ad9);
+  color:white;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h2>経営ダッシュボード</h2>
+
+<div class="flex">
+  <button onclick="setMode('day')" id="btnDay">今日</button>
+  <button onclick="setMode('month')" id="btnMonth">今月</button>
+  <button onclick="setMode('year')" id="btnYear">今年</button>
+</div>
+
+<div class="card">
+  <div>目標（今月）</div>
+  <div class="big">¥20,000,000</div>
+</div>
+
+<div class="card">
+  <div>今月売上</div>
+  <div id="total" class="big">¥0</div>
+</div>
+
+<div class="card">
+  <div>達成率</div>
+  <div id="rate" class="big">0%</div>
+</div>
+
+<div class="card">
+  <div>必要日割り売上</div>
+  <div id="dailyNeed" class="big">¥0</div>
+</div>
+
+<div class="card">
+  <canvas id="castChart"></canvas>
+</div>
+
+<div class="card">
+  <canvas id="countryChart"></canvas>
+</div>
+
+<div class="card">
+  <canvas id="trendChart"></canvas>
+</div>
+
+</div>
+
+<script>
+
+const GOAL = 20000000;
+
+let records = JSON.parse(localStorage.getItem("records") || "[]");
+let mode = "day";
+
+function setMode(m){
+  mode = m;
+
+  document.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+  if(m==="day") btnDay.classList.add("active");
+  if(m==="month") btnMonth.classList.add("active");
+  if(m==="year") btnYear.classList.add("active");
+
+  render();
+}
+
+function render(){
+
+  const now = new Date();
+
+  // ▼ 今月データ（目標用）
+  const monthData = records.filter(r=>{
+    const d = new Date(r.date);
+    return d.getMonth()===now.getMonth() &&
+           d.getFullYear()===now.getFullYear();
+  });
+
+  let monthTotal = 0;
+  monthData.forEach(r=>monthTotal += Number(r.price)||0);
+
+  // ▼ フィルター対象
+  const data = records.filter(r=>{
+    const d = new Date(r.date);
+
+    if(mode==="day"){
+      return d.toDateString()===now.toDateString();
+    }
+    if(mode==="month"){
+      return d.getMonth()===now.getMonth() &&
+             d.getFullYear()===now.getFullYear();
+    }
+    if(mode==="year"){
+      return d.getFullYear()===now.getFullYear();
+    }
+  });
+
+  // ▼ 達成率
+  const rate = Math.floor(monthTotal / GOAL * 100);
+
+  // ▼ 残り日数
+  const lastDay = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  const remainingDays = lastDay - now.getDate() + 1;
+
+  // ▼ 必要日割り
+  const remainAmount = GOAL - monthTotal;
+  const dailyNeed = remainAmount > 0
+    ? Math.floor(remainAmount / remainingDays)
+    : 0;
+
+  document.getElementById("total").innerText = "¥"+monthTotal.toLocaleString();
+  document.getElementById("rate").innerText = rate+"%";
+  document.getElementById("dailyNeed").innerText = "¥"+dailyNeed.toLocaleString();
+
+  // ▼ 集計
+  let castMap = {};
+  let japan = 0;
+  let overseas = 0;
+
+  data.forEach(r=>{
+    const price = Number(r.price)||0;
+
+    if(!castMap[r.cast]) castMap[r.cast]=0;
+    castMap[r.cast]+=price;
+
+    if(r.nationality==="日本") japan+=price;
+    else overseas+=price;
+  });
+
+  drawCharts(castMap, japan, overseas, data);
+}
+
+let castChart, countryChart, trendChart;
+
+function drawCharts(castMap, japan, overseas, data){
+
+  if(castChart) castChart.destroy();
+  if(countryChart) countryChart.destroy();
+  if(trendChart) trendChart.destroy();
+
+  // キャスト
+  castChart = new Chart(document.getElementById("castChart"),{
+    type:"doughnut",
+    data:{
+      labels:Object.keys(castMap),
+      datasets:[{data:Object.values(castMap)}]
+    }
+  });
+
+  // 国別
+  countryChart = new Chart(document.getElementById("countryChart"),{
+    type:"doughnut",
+    data:{
+      labels:["日本","海外"],
+      datasets:[{data:[japan,overseas]}]
+    }
+  });
+
+  // 日別推移
+  const map = {};
+  data.forEach(r=>{
+    if(!map[r.date]) map[r.date]=0;
+    map[r.date]+=Number(r.price)||0;
+  });
+
+  const labels = Object.keys(map).sort();
+  const values = labels.map(d=>map[d]);
+
+  trendChart = new Chart(document.getElementById("trendChart"),{
+    type:"line",
+    data:{
+      labels:labels,
+      datasets:[{data:values}]
+    }
+  });
+}
+
+// 初期
+setMode("day");
+
+</script>
+
+</body>
+</html>

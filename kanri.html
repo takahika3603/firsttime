@@ -82,19 +82,26 @@ box-shadow:0 20px 60px rgba(0,0,0,0.8);
 
 /* LIST */
 .list div{
-padding:10px 12px;
+padding:12px 14px;
 border-radius:16px;
 
 margin-bottom:8px;
 
-background:rgba(255,255,255,0.02);
-backdrop-filter: blur(25px);
-
-border:1px solid rgba(255,255,255,0.05);
-
 display:flex;
-justify-content:space-between;
 align-items:center;
+gap:14px;
+
+background:rgba(255,255,255,0.03);
+backdrop-filter: blur(30px);
+
+border:1px solid rgba(255,255,255,0.06);
+
+transition:0.2s;
+}
+
+.list div:hover{
+transform:scale(1.02);
+background:rgba(255,255,255,0.06);
 }
 
 .left{
@@ -278,34 +285,22 @@ list.innerHTML = "";
 
 records.slice().reverse().forEach((r,i)=>{
 
+const d = new Date(r.date);
+const day = d.getDate();
+
 const div = document.createElement("div");
 
-const d = new Date(r.date);
-const day = d.getDate(); // 18日形式
-
 div.innerHTML = `
-<div style="display:flex; gap:14px; align-items:center;">
-  
-  <div style="font-size:12px; color:rgba(200,210,255,0.8);">
-    ${day}日
-  </div>
-
-  <div style="font-size:12px; color:rgba(200,210,255,0.8);">
-    ${r.time}時
-  </div>
-
-  <div style="font-size:13px;">
-    ${r.cast}
-  </div>
-
-  <div style="margin-left:auto;
-              font-weight:600;
-              background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
-              -webkit-background-clip:text;
-              -webkit-text-fill-color:transparent;">
-    ${Number(r.price).toLocaleString()}円
-  </div>
-
+${day}日
+${r.time}時
+${r.cast}
+<div style="
+margin-left:auto;
+font-weight:600;
+background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;">
+${Number(r.price).toLocaleString()}円
 </div>
 `;
 

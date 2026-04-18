@@ -7,90 +7,74 @@
 
 <style>
 body{
-  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial;
   margin:0;
-  background:#f7f8fc;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue";
+  color:#e6eeff;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(120,160,255,0.15), transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(255,120,200,0.15), transparent 40%),
+    #0b0f1a;
 }
 
-.container{
-  padding:16px;
-}
+.container{ padding:20px; }
 
-h1{
-  text-align:center;
-  font-size:20px;
-}
+h1{ text-align:center; font-size:22px; margin-bottom:20px; letter-spacing:1px; }
 
 .card{
-  background:white;
-  border-radius:16px;
+  backdrop-filter: blur(20px);
+  background: rgba(255,255,255,0.06);
+  border-radius:20px;
   padding:16px;
   margin-bottom:12px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  border:1px solid rgba(255,255,255,0.1);
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
 }
 
-label{
-  font-size:12px;
-  color:#666;
-}
+label{ font-size:11px; color:#9fb0ff; }
 
 input, select{
   width:100%;
-  padding:10px;
+  padding:12px;
   margin-top:4px;
   margin-bottom:12px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  font-size:16px;
+  border-radius:14px;
+  border:none;
+  background:rgba(255,255,255,0.08);
+  color:white;
+  font-size:15px;
 }
 
-.flex{
-  display:flex;
-  gap:8px;
-}
-
-.flex select{
-  flex:1;
-}
+.flex{ display:flex; gap:8px; }
+.flex select{ flex:1; }
 
 .button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:12px;
-  background:#4f8cff;
-  color:white;
-  font-size:16px;
+  width:100%; padding:14px; border:none; border-radius:16px;
+  background:linear-gradient(135deg,#6aa2ff,#ff7ad9);
+  color:white; font-size:15px; font-weight:600;
+  box-shadow:0 6px 20px rgba(100,140,255,0.4);
 }
 
+.button.sub{ background:rgba(255,255,255,0.1); box-shadow:none; }
+
 .fab{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  background:#4f8cff;
-  color:white;
-  font-size:28px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow:0 6px 16px rgba(0,0,0,0.2);
+  position:fixed; bottom:24px; right:24px;
+  width:64px; height:64px; border-radius:50%;
+  background:linear-gradient(135deg,#6aa2ff,#ff7ad9);
+  color:white; font-size:30px; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 10px 30px rgba(100,140,255,0.5);
 }
 
 .list div{
-  background:white;
-  padding:12px;
-  border-radius:12px;
-  margin-bottom:8px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.05);
-  font-size:13px;
+  backdrop-filter: blur(20px);
+  background: rgba(255,255,255,0.05);
+  padding:14px; border-radius:16px; margin-bottom:10px;
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 6px 20px rgba(0,0,0,0.3);
+  font-size:13px; cursor:pointer;
 }
 
-.hidden{
-  display:none;
-}
+.hidden{ display:none; }
+.highlight{ color:#ff9de6; font-weight:600; }
 
 </style>
 </head>
@@ -100,26 +84,47 @@ input, select{
 
 <h1>来客名簿</h1>
 
-<!-- リスト画面 -->
+<!-- リスト -->
 <div id="listPage">
   <div class="list" id="list"></div>
 </div>
 
-<!-- 入力画面 -->
+<!-- 入力 -->
 <div id="formPage" class="hidden">
   <div class="card">
 
     <label>日付</label>
     <input type="date" id="date">
 
+    <label>キャスト名</label>
+    <input type="text" id="cast">
+
+    <label>顧客区分</label>
+    <select id="countryType" onchange="toggleCountry()">
+      <option>日本</option>
+      <option>海外</option>
+    </select>
+
+    <div id="overseasBlock" class="hidden">
+      <select id="nationality" onchange="toggleOther()">
+        <option>香港</option>
+        <option>台湾</option>
+        <option>アメリカ</option>
+        <option>オーストラリア</option>
+        <option>その他</option>
+      </select>
+
+      <input type="text" id="otherNationality" placeholder="その他を入力" class="hidden">
+    </div>
+
+    <label>料金（総額）</label>
+    <input type="number" id="price" placeholder="例：15000">
+
     <label>区分</label>
     <select id="type">
       <option>新規</option>
       <option>再来</option>
     </select>
-
-    <label>キャスト名</label>
-    <input type="text" id="cast">
 
     <label>指名種別</label>
     <select id="shimei">
@@ -143,6 +148,10 @@ input, select{
       <select id="op1"><option>なし</option><option>AN</option><option>SL</option><option>NL</option><option>K</option><option>CP</option></select>
       <select id="op2"><option>なし</option><option>AN</option><option>SL</option><option>NL</option><option>K</option><option>CP</option></select>
     </div>
+    <div class="flex">
+      <select id="op3"><option>なし</option><option>AN</option><option>SL</option><option>NL</option><option>K</option><option>CP</option></select>
+      <select id="op4"><option>なし</option><option>AN</option><option>SL</option><option>NL</option><option>K</option><option>CP</option></select>
+    </div>
 
     <label>延長</label>
     <select id="extend">
@@ -151,38 +160,83 @@ input, select{
     </select>
 
     <button class="button" onclick="saveData()">保存</button>
-    <button class="button" style="margin-top:8px;background:#ccc;color:#333" onclick="back()">戻る</button>
+    <button class="button sub" style="margin-top:8px" onclick="back()">戻る</button>
 
   </div>
 </div>
 
+<!-- 詳細 -->
+<div id="detailPage" class="hidden">
+  <div class="card" id="detail"></div>
+  <button class="button sub" onclick="backFromDetail()">戻る</button>
 </div>
 
-<!-- 追加ボタン -->
+</div>
+
 <div class="fab" onclick="goForm()">＋</div>
 
 <script>
 let records = JSON.parse(localStorage.getItem("records") || "[]");
 
 function goForm(){
-  document.getElementById("listPage").classList.add("hidden");
+  hideAll();
   document.getElementById("formPage").classList.remove("hidden");
 }
 
 function back(){
-  document.getElementById("formPage").classList.add("hidden");
+  hideAll();
   document.getElementById("listPage").classList.remove("hidden");
+}
+
+function backFromDetail(){
+  hideAll();
+  document.getElementById("listPage").classList.remove("hidden");
+}
+
+function hideAll(){
+  document.getElementById("listPage").classList.add("hidden");
+  document.getElementById("formPage").classList.add("hidden");
+  document.getElementById("detailPage").classList.add("hidden");
+}
+
+function toggleCountry(){
+  const type = document.getElementById("countryType").value;
+  const block = document.getElementById("overseasBlock");
+
+  if(type === "海外"){
+    block.classList.remove("hidden");
+  } else {
+    block.classList.add("hidden");
+  }
+}
+
+function toggleOther(){
+  const sel = document.getElementById("nationality").value;
+  const other = document.getElementById("otherNationality");
+  if(sel === "その他"){
+    other.classList.remove("hidden");
+  } else {
+    other.classList.add("hidden");
+  }
 }
 
 function saveData(){
   const data = {
     date: document.getElementById("date").value,
-    type: document.getElementById("type").value,
     cast: document.getElementById("cast").value,
+    price: document.getElementById("price").value,
+    nationality: document.getElementById("countryType").value === "日本"
+      ? "日本"
+      : (document.getElementById("nationality").value === "その他"
+          ? document.getElementById("otherNationality").value
+          : document.getElementById("nationality").value),
+    type: document.getElementById("type").value,
     shimei: document.getElementById("shimei").value,
     time: document.getElementById("time").value,
     op1: document.getElementById("op1").value,
     op2: document.getElementById("op2").value,
+    op3: document.getElementById("op3").value,
+    op4: document.getElementById("op4").value,
     extend: document.getElementById("extend").value
   };
 
@@ -197,16 +251,42 @@ function render(){
   const list = document.getElementById("list");
   list.innerHTML = "";
 
-  records.slice().reverse().forEach((r, i) => {
+  records.slice().reverse().forEach((r, index) => {
     const div = document.createElement("div");
+
+    const d = new Date(r.date);
+    const md = `${d.getMonth()+1}/${d.getDate()}`;
+
     div.innerHTML = `
-      <b>${r.date}</b> / ${r.type}<br>
-      ${r.cast}（${r.shimei}）<br>
-      ${r.time} / 延長:${r.extend}<br>
-      OP:${r.op1}, ${r.op2}
+      <span class="highlight">${md}</span>
+      ${r.cast}<br>
+      ¥${r.price}
     `;
+
+    div.onclick = () => showDetail(index);
     list.appendChild(div);
   });
+}
+
+function showDetail(index){
+  const r = records.slice().reverse()[index];
+
+  const detail = document.getElementById("detail");
+
+  detail.innerHTML = `
+    <b>${r.date}</b><br><br>
+    キャスト：${r.cast}<br>
+    顧客区分：${r.nationality}<br>
+    料金：¥${r.price}<br><br>
+    区分：${r.type}<br>
+    指名：${r.shimei}<br>
+    時間：${r.time}<br>
+    延長：${r.extend}<br>
+    オプション：${r.op1}, ${r.op2}, ${r.op3}, ${r.op4}
+  `;
+
+  hideAll();
+  document.getElementById("detailPage").classList.remove("hidden");
 }
 
 render();

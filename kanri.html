@@ -43,10 +43,14 @@ margin:10px 0 12px;
 width:100%;
 padding:12px;
 border-radius:16px;
+
 background:rgba(255,255,255,0.03);
 backdrop-filter: blur(35px);
+
 border:1px solid rgba(255,255,255,0.06);
+
 color:rgba(255,255,255,0.85);
+
 margin-bottom:10px;
 }
 
@@ -55,53 +59,65 @@ margin-bottom:10px;
 position:fixed;
 right:18px;
 bottom:18px;
+
 width:58px;
 height:58px;
 border-radius:50%;
+
 display:flex;
 align-items:center;
 justify-content:center;
+
 font-size:26px;
+
 background:rgba(255,255,255,0.05);
 backdrop-filter: blur(30px);
+
 border:1px solid rgba(255,255,255,0.08);
+
 color:white;
+
 box-shadow:0 20px 60px rgba(0,0,0,0.8);
 }
 
 /* LIST */
 .list div{
-padding:12px 14px;
+padding:10px 12px;
 border-radius:16px;
+
 margin-bottom:8px;
 
-display:flex;
-align-items:center;
-gap:14px;
+background:rgba(255,255,255,0.02);
+backdrop-filter: blur(25px);
 
-background:rgba(255,255,255,0.03);
-backdrop-filter: blur(30px);
-border:1px solid rgba(255,255,255,0.06);
-transition:0.2s;
+border:1px solid rgba(255,255,255,0.05);
+
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
-.list div:hover{
-transform:scale(1.02);
-background:rgba(255,255,255,0.06);
+.left{
+display:flex;
+flex-direction:column;
+gap:2px;
+}
+
+.meta{
+font-size:11px;
+color:rgba(160,170,210,0.7);
+}
+
+.cast{
+font-size:13px;
 }
 
 .price{
-margin-left:auto;
+font-size:14px;
 font-weight:600;
 background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
 -webkit-background-clip:text;
 -webkit-text-fill-color:transparent;
-font-size:14px;
-}
-
-.text{
-font-size:13px;
-color:rgba(230,240,255,0.9);
 }
 
 /* CHIP */
@@ -164,6 +180,7 @@ border:1px solid rgba(255,255,255,0.08);
 color:white;
 }
 
+/* hidden */
 .hidden{ display:none; }
 </style>
 </head>
@@ -178,23 +195,58 @@ color:white;
 
 <div id="listPage" class="list"></div>
 
-<!-- DETAIL -->
+<!-- 詳細 -->
 <div id="detailPage">
 
 <div class="card">
 
 <input id="date" placeholder="日付">
+<input id="time" placeholder="時間（10 / 20）">
 <input id="cast" placeholder="キャスト">
 <input id="price" placeholder="金額">
 
-<!-- コース -->
-<div class="label">コース</div>
-<div class="chip-group" id="timeGroup">
-<button class="chip" onclick="setChip('time','60分',this)">60分</button>
-<button class="chip" onclick="setChip('time','75分',this)">75分</button>
-<button class="chip" onclick="setChip('time','90分',this)">90分</button>
-<button class="chip" onclick="setChip('time','120分',this)">120分</button>
-<button class="chip" onclick="setChip('time','極液',this)">極液</button>
+<!-- 日本 / 海外 -->
+<div class="label">顧客区分</div>
+<div class="chip-group">
+<button class="chip" onclick="setCountry('日本',this)">日本</button>
+<button class="chip" onclick="setCountry('海外',this)">海外</button>
+</div>
+
+<!-- 海外のみ -->
+<div id="countrySelectBox" class="hidden">
+<select id="countrySelect">
+<option>香港</option>
+<option>台湾</option>
+<option>アメリカ</option>
+<option>オーストラリア</option>
+<option>その他</option>
+</select>
+</div>
+
+<!-- 区分 -->
+<div class="label">区分</div>
+<div class="chip-group" id="typeGroup">
+<button class="chip" onclick="setChip('type','新規',this)">新規</button>
+<button class="chip" onclick="setChip('type','再来',this)">再来</button>
+</div>
+
+<!-- 指名 -->
+<div class="label">指名</div>
+<div class="chip-group" id="shimeiGroup">
+<button class="chip" onclick="setChip('shimei','フリー',this)">フリー</button>
+<button class="chip" onclick="setChip('shimei','NET',this)">NET</button>
+<button class="chip" onclick="setChip('shimei','P',this)">P</button>
+<button class="chip" onclick="setChip('shimei','リピ',this)">リピ</button>
+</div>
+
+<!-- オプション -->
+<div class="label">オプション</div>
+<div class="chip-group">
+<button class="chip" onclick="toggleOp('AN',this)">AN</button>
+<button class="chip" onclick="toggleOp('SL',this)">SL</button>
+<button class="chip" onclick="toggleOp('NL',this)">NL</button>
+<button class="chip" onclick="toggleOp('K',this)">K</button>
+<button class="chip" onclick="toggleOp('CP',this)">CP</button>
 </div>
 
 <button class="smallBtn" onclick="save()">保存</button>
@@ -213,7 +265,9 @@ let records = JSON.parse(localStorage.getItem("records") || "[]");
 let editIndex = null;
 
 let form = {
-time:"",
+country:"日本",
+type:"",
+shimei:"",
 op:[]
 };
 
@@ -224,19 +278,14 @@ list.innerHTML = "";
 
 records.slice().reverse().forEach((r,i)=>{
 
-const d = new Date(r.date);
-const day = d.getDate();
-
 const div = document.createElement("div");
 
 div.innerHTML = `
-<div class="text">
-${day}日 ${r.time} ${r.cast} ${r.course || ""} 
+<div class="left">
+<div class="meta">${r.date} ・ ${r.time}時 ・ ${r.country}</div>
+<div class="cast">${r.cast}</div>
 </div>
-
-<div class="price">
-${Number(r.price).toLocaleString()}円
-</div>
+<div class="price">¥${r.price}</div>
 `;
 
 div.onclick = ()=>open(i);
@@ -245,7 +294,7 @@ list.appendChild(div);
 });
 }
 
-/* ===== 開く ===== */
+/* ===== 詳細 ===== */
 function open(i){
 
 const real = records.length - 1 - i;
@@ -254,14 +303,37 @@ const r = records[real];
 editIndex = real;
 
 date.value = r.date;
+time.value = r.time;
 cast.value = r.cast;
 price.value = r.price;
 
-form.time = r.time;
+setCountry(r.country,null);
+
+form.type = r.type;
+form.shimei = r.shimei;
+form.op = r.op || [];
+
 sync();
 
 document.getElementById("listPage").style.display="none";
 document.getElementById("detailPage").style.display="block";
+}
+
+/* ===== 国 ===== */
+function setCountry(v,el){
+
+form.country = v;
+
+document.querySelectorAll(".chip-group:first-of-type .chip")
+.forEach(c=>c.classList.remove("active"));
+
+if(el) el.classList.add("active");
+
+if(v === "海外"){
+document.getElementById("countrySelectBox").classList.remove("hidden");
+}else{
+document.getElementById("countrySelectBox").classList.add("hidden");
+}
 }
 
 /* ===== チップ ===== */
@@ -269,10 +341,30 @@ function setChip(key,value,el){
 
 form[key]=value;
 
-document.querySelectorAll("#timeGroup .chip")
+document.querySelectorAll(`#${key}Group .chip`)
 .forEach(c=>c.classList.remove("active"));
 
 el.classList.add("active");
+}
+
+/* ===== オプション ===== */
+function toggleOp(v,el){
+if(form.op.includes(v)){
+form.op=form.op.filter(x=>x!==v);
+el.classList.remove("active");
+}else{
+form.op.push(v);
+el.classList.add("active");
+}
+}
+
+/* ===== 状態反映 ===== */
+function sync(){
+document.querySelectorAll("#typeGroup .chip")
+.forEach(c=>{ if(c.innerText===form.type) c.classList.add("active"); });
+
+document.querySelectorAll("#shimeiGroup .chip")
+.forEach(c=>{ if(c.innerText===form.shimei) c.classList.add("active"); });
 }
 
 /* ===== 保存 ===== */
@@ -280,10 +372,15 @@ function save(){
 
 records[editIndex]={
 date:date.value,
+time:time.value,
 cast:cast.value,
 price:price.value,
-time:form.time,
-course:form.time
+country:form.country === "海外"
+? countrySelect.value
+: "日本",
+type:form.type,
+shimei:form.shimei,
+op:form.op
 };
 
 localStorage.setItem("records",JSON.stringify(records));
@@ -300,29 +397,24 @@ document.getElementById("listPage").style.display="block";
 
 /* ===== ダッシュボード ===== */
 function goDashboard(){
-location.href="dashboard.html";
+window.location.href="dashboard.html";
 }
 
 /* ===== 仮追加 ===== */
 function add(){
 records.push({
 date:"2026-04-18",
+time:"10",
 cast:"未入力",
 price:0,
-time:"60分",
-course:"60分"
+country:"日本",
+type:"新規",
+shimei:"フリー",
+op:[]
 });
 
 localStorage.setItem("records",JSON.stringify(records));
 render();
-}
-
-/* ===== 初期 ===== */
-function sync(){
-document.querySelectorAll("#timeGroup .chip")
-.forEach(c=>{
-if(c.innerText===form.time) c.classList.add("active");
-});
 }
 
 render();

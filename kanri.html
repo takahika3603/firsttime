@@ -280,12 +280,33 @@ records.slice().reverse().forEach((r,i)=>{
 
 const div = document.createElement("div");
 
+const d = new Date(r.date);
+const day = d.getDate(); // 18日形式
+
 div.innerHTML = `
-<div class="left">
-<div class="meta">${r.date} ・ ${r.time}時 ・ ${r.country}</div>
-<div class="cast">${r.cast}</div>
+<div style="display:flex; gap:14px; align-items:center;">
+  
+  <div style="font-size:12px; color:rgba(200,210,255,0.8);">
+    ${day}日
+  </div>
+
+  <div style="font-size:12px; color:rgba(200,210,255,0.8);">
+    ${r.time}時
+  </div>
+
+  <div style="font-size:13px;">
+    ${r.cast}
+  </div>
+
+  <div style="margin-left:auto;
+              font-weight:600;
+              background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+              -webkit-background-clip:text;
+              -webkit-text-fill-color:transparent;">
+    ${Number(r.price).toLocaleString()}円
+  </div>
+
 </div>
-<div class="price">¥${r.price}</div>
 `;
 
 div.onclick = ()=>open(i);

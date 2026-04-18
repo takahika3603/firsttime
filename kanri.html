@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>来客記録</title>
+
+<style>
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial;
+  margin:0;
+  background:#f7f8fc;
+}
+
+.container{
+  padding:16px;
+}
+
+h1{
+  text-align:center;
+  font-size:20px;
+}
+
+.card{
+  background:white;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+label{
+  font-size:12px;
+  color:#666;
+}
+
+input, select{
+  width:100%;
+  padding:10px;
+  margin-top:4px;
+  margin-bottom:12px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  font-size:16px;
+}
+
+.flex{
+  display:flex;
+  gap:8px;
+}
+
+.flex select{
+  flex:1;
+}
+
+.button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#4f8cff;
+  color:white;
+  font-size:16px;
+}
+
+.fab{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:#4f8cff;
+  color:white;
+  font-size:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 6px 16px rgba(0,0,0,0.2);
+}
+
+.list div{
+  background:white;
+  padding:12px;
+  border-radius:12px;
+  margin-bottom:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  font-size:13px;
+}
+
+.hidden{
+  display:none;
+}
+
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>来客名簿</h1>
+
+<!-- リスト画面 -->
+<div id="listPage">
+  <div class="list" id="list"></div>
+</div>
+
+<!-- 入力画面 -->
+<div id="formPage" class="hidden">
+  <div class="card">
+
+    <label>日付</label>
+    <input type="date" id="date">
+
+    <label>区分</label>
+    <select id="type">
+      <option>新規</option>
+      <option>再来</option>
+    </select>
+
+    <label>キャスト名</label>
+    <input type="text" id="cast">
+
+    <label>指名種別</label>
+    <select id="shimei">
+      <option>フリー</option>
+      <option>NET指名</option>
+      <option>P指名</option>
+      <option>リピート</option>
+    </select>
+
+    <label>時間</label>
+    <select id="time">
+      <option>60分</option>
+      <option>75分</option>
+      <option>90分</option>
+      <option>120分</option>
+      <option>それ以上</option>
+    </select>
+
+    <label>オプション</label>
+    <div class="flex">
+      <select id="op1"><option>なし</option><option>AN</option><option>SL</option><option>NL</option><option>K</option><option>CP</option></select>
+      <select id="op2"><option>なし</option><option>AN</option><option>SL</option><option>NL</option><option>K</option><option>CP</option></select>
+    </div>
+
+    <label>延長</label>
+    <select id="extend">
+      <option>なし</option>
+      <option>あり</option>
+    </select>
+
+    <button class="button" onclick="saveData()">保存</button>
+    <button class="button" style="margin-top:8px;background:#ccc;color:#333" onclick="back()">戻る</button>
+
+  </div>
+</div>
+
+</div>
+
+<!-- 追加ボタン -->
+<div class="fab" onclick="goForm()">＋</div>
+
+<script>
+let records = JSON.parse(localStorage.getItem("records") || "[]");
+
+function goForm(){
+  document.getElementById("listPage").classList.add("hidden");
+  document.getElementById("formPage").classList.remove("hidden");
+}
+
+function back(){
+  document.getElementById("formPage").classList.add("hidden");
+  document.getElementById("listPage").classList.remove("hidden");
+}
+
+function saveData(){
+  const data = {
+    date: document.getElementById("date").value,
+    type: document.getElementById("type").value,
+    cast: document.getElementById("cast").value,
+    shimei: document.getElementById("shimei").value,
+    time: document.getElementById("time").value,
+    op1: document.getElementById("op1").value,
+    op2: document.getElementById("op2").value,
+    extend: document.getElementById("extend").value
+  };
+
+  records.push(data);
+  localStorage.setItem("records", JSON.stringify(records));
+
+  back();
+  render();
+}
+
+function render(){
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  records.slice().reverse().forEach((r, i) => {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <b>${r.date}</b> / ${r.type}<br>
+      ${r.cast}（${r.shimei}）<br>
+      ${r.time} / 延長:${r.extend}<br>
+      OP:${r.op1}, ${r.op2}
+    `;
+    list.appendChild(div);
+  });
+}
+
+render();
+</script>
+
+</body>
+</html>

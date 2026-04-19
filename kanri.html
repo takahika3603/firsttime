@@ -260,10 +260,9 @@ form = {
   };
 
   editIndex = null;
-
+document.getElementById("deleteBtn").style.display = "none";
   document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
   document.getElementById("countrySelectBox").classList.add("hidden");
-  document.getElementById("deleteBtn").style.display = "none";
   // ↓ここ追加（今日の日付を自動入力）
   const today = new Date();
   const yyyy = today.getFullYear();
@@ -280,6 +279,7 @@ form = {
 function back(){
   document.getElementById("listPage").style.display="block";
   document.getElementById("detailPage").style.display="none";
+  document.getElementById("deleteBtn").style.display = "none";
 }
 
 /* ===== チップ ===== */

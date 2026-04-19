@@ -188,8 +188,12 @@ document.getElementById("daily").innerText =
 Math.ceil((target-totalSales)/daysLeft).toLocaleString()+"円";
 
 /* 来客 */
-const overseasCount = thisMonth.filter(r => r.country !== "日本").length;
+const jpCount = thisMonth.filter(r => r.country === "日本").length;
+const overseasCount = thisMonth.filter(r => r.country && r.country !== "日本").length;
 
+const totalCount = jpCount + overseasCount;
+
+document.getElementById("count").innerText = totalCount;
 document.getElementById("overseasCount").innerText = overseasCount;
 
 /* ======================

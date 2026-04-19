@@ -205,8 +205,21 @@ const reC = thisMonth.filter(r=>r.type==="再来").length;
 new Chart(document.getElementById("chart1"),{
 type:"doughnut",
 data:{
-labels:["新規","再来"],
-datasets:[{data:[newC,reC]}]
+  labels:["新規","再来"],
+  datasets:[{
+    data:[newC,reC],
+    backgroundColor:[
+      "rgba(255,255,255,0.85)",
+      "rgba(255,255,255,0.25)"
+    ],
+    borderWidth:0
+  }]
+},
+options:{
+  cutout:"82%",
+  plugins:{
+    legend:{ display:false }
+  }
 }
 });
 
@@ -223,8 +236,21 @@ else overseas+=+r.price||0;
 new Chart(document.getElementById("chart2"),{
 type:"doughnut",
 data:{
-labels:["日本","海外"],
-datasets:[{data:[jp,overseas]}]
+  labels:["日本","海外"],
+  datasets:[{
+    data:[jp,overseas],
+    backgroundColor:[
+      "rgba(255,255,255,0.85)",
+      "rgba(180,180,180,0.3)"
+    ],
+    borderWidth:0
+  }]
+},
+options:{
+  cutout:"82%",
+  plugins:{
+    legend:{ display:false }
+  }
 }
 });
 
@@ -239,8 +265,21 @@ castMap[r.cast]=(castMap[r.cast]||0)+(+r.price||0);
 new Chart(document.getElementById("chart3"),{
 type:"doughnut",
 data:{
-labels:Object.keys(castMap),
-datasets:[{data:Object.values(castMap)}]
+  labels:Object.keys(castMap),
+  datasets:[{
+    data:Object.values(castMap),
+    backgroundColor:Object.keys(castMap).map((_,i)=>{
+      const g = 220 - i*15;
+      return `rgba(${g},${g},${g},0.8)`;
+    }),
+    borderWidth:0
+  }]
+},
+options:{
+  cutout:"82%",
+  plugins:{
+    legend:{ display:false }
+  }
 }
 });
 

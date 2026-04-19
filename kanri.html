@@ -50,7 +50,7 @@ h1{
   background:rgba(255,255,255,0.03);
 }
 
-.list div:hover{
+.list > div:hover{
   transform:scale(1.02);
   background:rgba(255,255,255,0.06);
 }
@@ -147,7 +147,7 @@ input,select{
 <div id="detailPage">
 <div class="card">
 
-<input id="date" placeholder="日付">
+<input id="date" type="date">
 <input id="cast" placeholder="キャスト">
 <input id="price" placeholder="金額">
 
@@ -220,7 +220,6 @@ input,select{
 <div class="fab" onclick="add()">＋</div>
 
 <script>
-
 let records = JSON.parse(localStorage.getItem("records") || "[]");
 
 let form = {
@@ -231,6 +230,10 @@ let form = {
   shimei:"",
   op:[]
 };
+
+ /* ===== 初期化 ===== */
+createTimeChips();
+render();
 
 /* ===== 時間チップ生成 ===== */
 function createTimeChips(){
@@ -246,6 +249,16 @@ function createTimeChips(){
 
 /* ===== 画面切替 ===== */
 function add(){
+
+  // ↓ここ追加（今日の日付を自動入力）
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth()+1).padStart(2,'0');
+  const dd = String(today.getDate()).padStart(2,'0');
+
+  document.getElementById("date").value = `${yyyy}-${mm}-${dd}`;
+  // ↑ここまで追加
+
   document.getElementById("listPage").style.display="none";
   document.getElementById("detailPage").style.display="block";
 }
@@ -319,31 +332,29 @@ function render(){
   list.innerHTML="";
 
   records.slice().reverse().forEach(r=>{
-    const div=document.createElement("div");
+  const div=document.createElement("div");
 
-    div.innerHTML = `
-    <span>
-      ${r.date}｜${r.course}｜${r.shimei}｜${r.cast}
-    </span>
+  const formattedDate = r.date ? r.date.slice(5).replace("-", "/") : "";
 
-    <span style="
-      margin-left:auto;
-      font-weight:600;
-      background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-    ">
-      ${Number(r.price).toLocaleString()}円
-    </span>
-    `;
+  div.innerHTML = `
+  <span>
+    ${formattedDate}｜${r.course}｜${r.shimei}｜${r.cast}
+  </span>
 
-    list.appendChild(div); // ←これ絶対必要
-  });
+  <span style="
+    margin-left:auto;
+    font-weight:600;
+    background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  ">
+    ${r.price ? Number(r.price).toLocaleString() + "円" : ""}
+  </span>
+  `;
+
+  list.appendChild(div);
+});
 }
-
-/* ===== 初期化 ===== */
-createTimeChips();
-render();
 
 </script>
 

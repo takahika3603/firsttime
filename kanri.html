@@ -515,21 +515,29 @@ function filterData(){
 
     const formattedDate = r.date ? r.date.slice(5).replace("-", "/") : "";
 
-    div.innerHTML = `
-    <span>
-      ${formattedDate}｜${r.course}｜${r.shimei}｜${r.cast}
-    </span>
+div.innerHTML = `
+<span style="display:flex; align-items:center; gap:8px; width:100%;">
 
-    <span style="
-      margin-left:auto;
-      font-weight:600;
-      background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-    ">
-      ${r.price ? Number(r.price).toLocaleString() + "円" : ""}
-    </span>
-    `;
+  <span style="width:20px; opacity:0.6;">
+    ${records.length - index}
+  </span>
+
+  <span>
+    ${formattedDate}｜${r.course}｜${r.shimei}｜${r.cast}
+  </span>
+
+  <span style="
+    margin-left:auto;
+    font-weight:600;
+    background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  ">
+    ${r.price ? Number(r.price).toLocaleString() + "円" : ""}
+  </span>
+
+</span>
+`;
 
     div.onclick = () => editRecord(index); // ←OK
 

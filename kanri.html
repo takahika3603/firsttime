@@ -174,7 +174,6 @@ input,select{
 
 <h1>来客名簿</h1>
 <div style="display:flex; gap:8px; margin-bottom:10px;">
-<div id="listPage" class="list"></div>
   <!-- 月フィルター -->
   <select class="smallBtn" id="monthFilter" onchange="filterData()">
     <option value="">全ての月</option>
@@ -196,7 +195,7 @@ input,select{
   <input type="date" class="smallBtn" id="dateFilter" onchange="filterData()">
 
 </div>
-
+<div id="listPage" class="list"></div>
 <!-- 詳細 -->
 <div id="detailPage">
 <div class="card">
@@ -339,7 +338,8 @@ document.getElementById("deleteBtn").style.display = "none";
   // ↑ここまで追加
 
   const detailPage = document.getElementById("detailPage");
-  document.getElementById("detailPage").style.display="block";
+  document.getElementById("listPage").style.display="none";
+document.getElementById("detailPage").style.display="block";
 }
 
 function back(){

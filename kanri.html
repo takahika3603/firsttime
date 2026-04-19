@@ -320,36 +320,20 @@ function render(){
     const div=document.createElement("div");
 
 div.innerHTML = `
-<div style="min-width:50px;">${r.date}</div>
+<span>
+  ${r.date}｜${r.course}｜${r.shimei}｜${r.cast}
+</span>
 
-<div style="min-width:60px;">${r.course}</div>
-
-<div style="min-width:50px;">${r.shimei}</div>
-
-<div style="
-  flex:1;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-">
-  ${r.cast}
-</div>
-
-<div style="
+<span style="
   margin-left:auto;
-  white-space:nowrap;
   font-weight:600;
   background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 ">
   ${Number(r.price).toLocaleString()}円
-</div>
+</span>
 `;
-
-    list.appendChild(div);
-  });
-}
 
 /* ===== 初期化 ===== */
 createTimeChips();

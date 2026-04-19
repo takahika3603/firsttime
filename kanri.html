@@ -33,7 +33,7 @@ h1{
 }
 
 /* LIST */
-.list div{
+.list > div{
   padding:12px 14px;
   border-radius:16px;
   margin-bottom:8px;
@@ -44,6 +44,8 @@ h1{
   display:flex;
   align-items:center;
   gap:14px;
+
+  font-size:12px;  /* ←これ */
 
   background:rgba(255,255,255,0.03);
 }
@@ -319,21 +321,25 @@ function render(){
   records.slice().reverse().forEach(r=>{
     const div=document.createElement("div");
 
-div.innerHTML = `
-<span>
-  ${r.date}｜${r.course}｜${r.shimei}｜${r.cast}
-</span>
+    div.innerHTML = `
+    <span>
+      ${r.date}｜${r.course}｜${r.shimei}｜${r.cast}
+    </span>
 
-<span style="
-  margin-left:auto;
-  font-weight:600;
-  background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-">
-  ${Number(r.price).toLocaleString()}円
-</span>
-`;
+    <span style="
+      margin-left:auto;
+      font-weight:600;
+      background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    ">
+      ${Number(r.price).toLocaleString()}円
+    </span>
+    `;
+
+    list.appendChild(div); // ←これ絶対必要
+  });
+}
 
 /* ===== 初期化 ===== */
 createTimeChips();

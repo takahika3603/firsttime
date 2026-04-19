@@ -132,6 +132,39 @@ input,select{
 
 /* hidden */
 .hidden{ display:none; }
+  /* ナビボタン全体 */
+.nav-buttons{
+  position:fixed;
+  bottom:120px;
+  right:20px;
+  display:flex;
+  flex-direction:row; /* ←ここ変更 */
+  gap:10px;
+  z-index:999;
+}
+
+/* ボタン本体 */
+.nav-btn{
+  padding:10px 14px;
+  border-radius:12px;
+  text-decoration:none;
+  color:white;
+  font-size:12px;
+
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+
+  backdrop-filter: blur(20px);
+
+  transition:0.2s;
+}
+
+/* ホバー（浮く感じ） */
+.nav-btn:hover{
+  transform:translateY(-2px);
+  background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+  border:1px solid transparent;
+}
 </style>
 </head>
 
@@ -219,7 +252,18 @@ input,select{
 </div>
 
 <div class="fab" onclick="add()">＋</div>
+<!-- 追加：ナビボタン -->
+<div class="nav-buttons">
 
+  <a href="top.html" class="nav-btn">
+    TOPへ
+  </a>
+
+  <a href="money.html" class="nav-btn">
+    ダッシュボード
+  </a>
+
+</div>
 <script>
 let records = JSON.parse(localStorage.getItem("records") || "[]");
 

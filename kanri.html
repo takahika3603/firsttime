@@ -173,8 +173,29 @@ input,select{
 <div class="container">
 
 <h1>来客名簿</h1>
+<div style="display:flex; gap:8px; margin-bottom:10px;">
 
-<div id="listPage" class="list"></div>
+  <!-- 月フィルター -->
+  <select class="smallBtn" id="monthFilter" onchange="filterData()">
+    <option value="">全ての月</option>
+    <option value="01">1月</option>
+    <option value="02">2月</option>
+    <option value="03">3月</option>
+    <option value="04">4月</option>
+    <option value="05">5月</option>
+    <option value="06">6月</option>
+    <option value="07">7月</option>
+    <option value="08">8月</option>
+    <option value="09">9月</option>
+    <option value="10">10月</option>
+    <option value="11">11月</option>
+    <option value="12">12月</option>
+  </select>
+
+  <!-- 日付フィルター -->
+  <input type="date" class="smallBtn" id="dateFilter" onchange="filterData()">
+
+</div>
 
 <!-- 詳細 -->
 <div id="detailPage">
@@ -265,7 +286,8 @@ input,select{
 
 </div>
 <script>
-let records = JSON.parse(localStorage.getItem("records") || "[]");
+let allRecords = JSON.parse(localStorage.getItem("records") || "[]");
+let records = [...allRecords];
 
 let form = {
   time:"",
@@ -400,12 +422,13 @@ function deleteRecord(){
   if(confirm("このデータを削除しますか？")){
     records.splice(editIndex, 1);
 
-    localStorage.setItem("records", JSON.stringify(records));
+localStorage.setItem("records", JSON.stringify(records));
 
-    editIndex = null;
+allRecords = JSON.parse(localStorage.getItem("records") || "[]");
+records = [...allRecords];
 
-    back();
-    render();
+back();
+render();
   }
 }
  function editRecord(index){
@@ -463,7 +486,25 @@ document.getElementById("deleteBtn").style.display = "block";
   }
 }
 /* ===== 描画 ===== */
-function render(){
+function filterData(){
+
+  const month = document.getElementById("monthFilter").value;
+  const date = document.getElementById("dateFilter").value;
+
+  const filtered = allRecords.filter(r => {
+
+    if(!r.date) return false;
+
+    const matchMonth = month ? r.date.slice(5,7) === month : true;
+    const matchDate = date ? r.date === date : true;
+
+    return matchMonth && matchDate;
+  });
+
+  records = filtered;
+  render();
+}
+  function render(){
   const list=document.getElementById("listPage");
   list.innerHTML="";
 

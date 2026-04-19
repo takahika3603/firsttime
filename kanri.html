@@ -230,7 +230,7 @@ let form = {
   shimei:"",
   op:[]
 };
-
+let editIndex = null;
  /* ===== 初期化 ===== */
 createTimeChips();
 render();
@@ -249,7 +249,19 @@ function createTimeChips(){
 
 /* ===== 画面切替 ===== */
 function add(){
+form = {
+    time:"",
+    course:"",
+    country:"日本",
+    type:"",
+    shimei:"",
+    op:[]
+  };
 
+  editIndex = null;
+
+  document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+  document.getElementById("countrySelectBox").classList.add("hidden");
   // ↓ここ追加（今日の日付を自動入力）
   const today = new Date();
   const yyyy = today.getFullYear();
@@ -313,47 +325,113 @@ function save(){
     price:document.getElementById("price").value,
     time:form.time,
     course:form.course,
-    country:form.country,
+    country: form.country === "海外"
+  ? document.getElementById("countrySelect").value
+  : "日本",
     type:form.type,
     shimei:form.shimei,
     op:form.op
   };
 
-  records.push(record);
+  if(editIndex !== null){
+    records[editIndex] = record; // ←上書き
+    editIndex = null;
+  }else{
+    records.push(record); // ←新規
+  }
+
   localStorage.setItem("records",JSON.stringify(records));
 
   back();
   render();
 }
 
+ function editRecord(index){
+  const r = records[index];
+
+  editIndex = index;
+
+  document.getElementById("date").value = r.date || "";
+  document.getElementById("cast").value = r.cast || "";
+  document.getElementById("price").value = r.price || "";
+
+  form.time = r.time;
+  form.course = r.course;
+
+  // ★ここ修正
+  if(r.country === "日本"){
+    form.country = "日本";
+  }else{
+    form.country = "海外";
+  }
+
+  form.type = r.type;
+  form.shimei = r.shimei;
+  form.op = r.op || [];
+
+  document.getElementById("listPage").style.display="none";
+  document.getElementById("detailPage").style.display="block";
+
+  reflectChips();
+
+  // ★これ追加（国も復元）
+  if(r.country !== "日本"){
+    document.getElementById("countrySelect").value = r.country;
+  }
+}
+  function reflectChips(){
+  document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+
+  document.querySelectorAll(".chip").forEach(c=>{
+    if(c.innerText == form.course) c.classList.add("active");
+    if(c.innerText == form.shimei) c.classList.add("active");
+    if(c.innerText == form.type) c.classList.add("active");
+    if(c.innerText == form.time+"時") c.classList.add("active");
+
+    if(form.country == "日本" && c.innerText=="日本") c.classList.add("active");
+    if(form.country == "海外" && c.innerText=="海外") c.classList.add("active");
+
+    if(form.op.includes(c.innerText)) c.classList.add("active");
+  });
+
+  if(form.country==="海外"){
+    document.getElementById("countrySelectBox").classList.remove("hidden");
+  }else{
+    document.getElementById("countrySelectBox").classList.add("hidden");
+  }
+}
 /* ===== 描画 ===== */
 function render(){
   const list=document.getElementById("listPage");
   list.innerHTML="";
 
-  records.slice().reverse().forEach(r=>{
-  const div=document.createElement("div");
+  records.slice().reverse().forEach((r, i) => {
+    const index = records.length - 1 - i;
 
-  const formattedDate = r.date ? r.date.slice(5).replace("-", "/") : "";
+    const div=document.createElement("div"); // ←これ追加
 
-  div.innerHTML = `
-  <span>
-    ${formattedDate}｜${r.course}｜${r.shimei}｜${r.cast}
-  </span>
+    const formattedDate = r.date ? r.date.slice(5).replace("-", "/") : "";
 
-  <span style="
-    margin-left:auto;
-    font-weight:600;
-    background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-  ">
-    ${r.price ? Number(r.price).toLocaleString() + "円" : ""}
-  </span>
-  `;
+    div.innerHTML = `
+    <span>
+      ${formattedDate}｜${r.course}｜${r.shimei}｜${r.cast}
+    </span>
 
-  list.appendChild(div);
-});
+    <span style="
+      margin-left:auto;
+      font-weight:600;
+      background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    ">
+      ${r.price ? Number(r.price).toLocaleString() + "円" : ""}
+    </span>
+    `;
+
+    div.onclick = () => editRecord(index); // ←OK
+
+    list.appendChild(div);
+  });
 }
 
 </script>

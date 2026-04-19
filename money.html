@@ -129,7 +129,7 @@ canvas{
 
 <!-- 来客数 -->
 <div class="card">
-来客数：<span id="count"></span>名
+来客数：<span id="count"></span>名（海外：<span id="overseasCount"></span>名）
 </div>
 
 <!-- 新規 / 再来 -->
@@ -188,7 +188,9 @@ document.getElementById("daily").innerText =
 Math.ceil((target-totalSales)/daysLeft).toLocaleString()+"円";
 
 /* 来客 */
-document.getElementById("count").innerText = thisMonth.length;
+const overseasCount = thisMonth.filter(r => r.country !== "日本").length;
+
+document.getElementById("overseasCount").innerText = overseasCount;
 
 /* ======================
 新規 / 再来

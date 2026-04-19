@@ -3,159 +3,288 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ダッシュボード</title>
+<title>Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display";
-color:#e6eeff;
-
-background:
-radial-gradient(circle at 20% 10%, rgba(120,160,255,0.15), transparent 40%),
-radial-gradient(circle at 80% 90%, rgba(255,120,200,0.15), transparent 40%),
-#0b0f1a;
+  margin:0;
+  font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", "Hiragino Sans";
+  background: radial-gradient(circle at top, #0b0f1a, #05070c);
+  color:white;
+  overflow-x:hidden;
 }
 
+/* 背景ぼかしレイヤー */
+.glow{
+  position:fixed;
+  width:400px;
+  height:400px;
+  background:radial-gradient(circle, rgba(106,162,255,0.25), transparent 60%);
+  filter:blur(60px);
+  top:-100px;
+  right:-100px;
+}
+
+/* レイアウト */
 .container{
-padding:20px;
-max-width:600px;
-margin:auto;
+  padding:20px;
 }
 
-h1{
-text-align:center;
-margin-bottom:20px;
-}
-
-/* グリッド（2×2） */
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:12px;
-margin-bottom:20px;
-}
-
-/* カード */
+/* ガラスカード */
 .card{
-backdrop-filter: blur(20px);
-background: rgba(255,255,255,0.06);
-border-radius:18px;
-padding:16px;
-border:1px solid rgba(255,255,255,0.1);
-box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  background:rgba(255,255,255,0.06);
+  backdrop-filter: blur(30px);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:20px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  transition:0.3s;
+}
+
+.card:hover{
+  transform:translateY(-2px);
+}
+
+/* ヘッダー */
+.topBar{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.btn{
+  padding:10px 14px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.08);
+  text-decoration:none;
+  color:white;
+  font-size:12px;
+  border:1px solid rgba(255,255,255,0.1);
+}
+
+/* KPI */
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.big{
+  font-size:22px;
+  font-weight:700;
 }
 
 /* タイトル */
-.label{
-font-size:12px;
-color:#9fb0ff;
-margin-bottom:6px;
+h3{
+  margin:0 0 10px;
+  font-size:14px;
+  opacity:0.8;
 }
 
-/* 数字 */
-.value{
-font-size:20px;
-font-weight:600;
-}
-
-/* グラフカード */
-.chart-card{
-backdrop-filter: blur(20px);
-background: rgba(255,255,255,0.05);
-border-radius:20px;
-padding:16px;
-margin-bottom:16px;
-border:1px solid rgba(255,255,255,0.08);
-}
-
-/* 見出し */
-.chart-title{
-font-size:14px;
-margin-bottom:10px;
-color:#cbd6ff;
-}
-
-/* 仮キャンバス */
-.canvas-box{
-width:100%;
-height:220px;
-display:flex;
-align-items:center;
-justify-content:center;
-color:#6f7fbf;
-font-size:13px;
-border-radius:12px;
-background:rgba(255,255,255,0.03);
-}
-
-/* ボタン */
-.button{
-width:100%;
-padding:12px;
-border-radius:14px;
-border:none;
-background:rgba(255,255,255,0.1);
-color:white;
-margin-bottom:16px;
-backdrop-filter: blur(20px);
-transition:0.2s;
-}
-
-.button:hover{
-background:rgba(255,255,255,0.2);
+/* canvas */
+canvas{
+  width:100% !important;
+  height:220px !important;
 }
 </style>
 </head>
 
 <body>
+
+<div class="glow"></div>
+
 <div class="container">
 
-<h1>ダッシュボード</h1>
+<div class="topBar">
+  <a class="btn" href="index.html">← 名簿へ戻る</a>
+</div>
 
-<button class="button">← 名簿に戻る</button>
-
-<!-- 2×2 KPI -->
+<!-- KPI -->
 <div class="grid">
 
 <div class="card">
-<div class="label">目標金額</div>
-<div class="value" id="goal">¥20,000,000</div>
+目標
+<div class="big">¥2,000,000</div>
 </div>
 
 <div class="card">
-<div class="label">今月売上</div>
-<div class="value" id="total">¥0</div>
+売上
+<div class="big" id="sales">0円</div>
 </div>
 
 <div class="card">
-<div class="label">進捗率</div>
-<div class="value" id="rate">0%</div>
+進捗
+<div class="big" id="progress">0%</div>
 </div>
 
 <div class="card">
-<div class="label">必要日割り売上</div>
-<div class="value" id="daily">¥0</div>
+必要日割
+<div class="big" id="daily">0円</div>
 </div>
 
 </div>
 
-<!-- 国別ドーナツ -->
-<div class="chart-card">
-<div class="chart-title">日本 vs 外国人 売上比率</div>
-<div class="canvas-box">
-（ここにドーナツグラフ）
-</div>
+<!-- 来客数 -->
+<div class="card">
+来客数：<span id="count"></span>名
 </div>
 
-<!-- キャストドーナツ -->
-<div class="chart-card">
-<div class="chart-title">キャスト別 売上構成</div>
-<div class="canvas-box">
-（ここにドーナツグラフ）
+<!-- 新規 / 再来 -->
+<div class="card">
+<h3>新規 vs 再来</h3>
+<canvas id="chart1"></canvas>
 </div>
+
+<!-- 日本 / 海外 -->
+<div class="card">
+<h3>日本 vs 海外 売上</h3>
+<canvas id="chart2"></canvas>
+</div>
+
+<!-- キャスト売上 -->
+<div class="card">
+<h3>キャスト売上</h3>
+<canvas id="chart3"></canvas>
+</div>
+
+<!-- ★追加：リピート率ランキング -->
+<div class="card">
+<h3>リピート率ランキング</h3>
+<canvas id="chart4"></canvas>
 </div>
 
 </div>
+
+<script>
+
+const records = JSON.parse(localStorage.getItem("records") || "[]");
+
+const now = new Date();
+const month = String(now.getMonth()+1).padStart(2,"0");
+
+const thisMonth = records.filter(r =>
+  r.date && r.date.slice(5,7) === month
+);
+
+/* ======================
+売上
+====================== */
+const totalSales = thisMonth.reduce((s,r)=>s+(+r.price||0),0);
+
+document.getElementById("sales").innerText =
+"¥" + totalSales.toLocaleString();
+
+/* 進捗 */
+const target = 2000000;
+document.getElementById("progress").innerText =
+((totalSales/target)*100).toFixed(1)+"%";
+
+/* 日割 */
+const daysLeft = 30 - now.getDate();
+document.getElementById("daily").innerText =
+Math.ceil((target-totalSales)/daysLeft).toLocaleString()+"円";
+
+/* 来客 */
+document.getElementById("count").innerText = thisMonth.length;
+
+/* ======================
+新規 / 再来
+====================== */
+const newC = thisMonth.filter(r=>r.type==="新規").length;
+const reC = thisMonth.filter(r=>r.type==="再来").length;
+
+new Chart(document.getElementById("chart1"),{
+type:"doughnut",
+data:{
+labels:["新規","再来"],
+datasets:[{data:[newC,reC]}]
+}
+});
+
+/* ======================
+日本 / 海外
+====================== */
+let jp=0, overseas=0;
+
+thisMonth.forEach(r=>{
+if(r.country==="日本") jp+=+r.price||0;
+else overseas+=+r.price||0;
+});
+
+new Chart(document.getElementById("chart2"),{
+type:"doughnut",
+data:{
+labels:["日本","海外"],
+datasets:[{data:[jp,overseas]}]
+}
+});
+
+/* ======================
+キャスト売上
+====================== */
+const castMap = {};
+thisMonth.forEach(r=>{
+castMap[r.cast]=(castMap[r.cast]||0)+(+r.price||0);
+});
+
+new Chart(document.getElementById("chart3"),{
+type:"doughnut",
+data:{
+labels:Object.keys(castMap),
+datasets:[{data:Object.values(castMap)}]
+}
+});
+
+/* ======================
+★リピート率ランキング
+====================== */
+const castStats = {};
+
+thisMonth.forEach(r=>{
+if(!castStats[r.cast]){
+castStats[r.cast]={total:0,re:0};
+}
+castStats[r.cast].total++;
+if(r.type==="再来") castStats[r.cast].re++;
+});
+
+const labels=[];
+const rates=[];
+
+Object.keys(castStats).forEach(name=>{
+const d = castStats[name];
+const rate = d.total ? d.re/d.total : 0;
+labels.push(name);
+rates.push(rate);
+});
+
+/* 降順ソート */
+const sorted = labels.map((n,i)=>({
+name:n,
+rate:rates[i]
+})).sort((a,b)=>b.rate-a.rate);
+
+new Chart(document.getElementById("chart4"),{
+type:"bar",
+data:{
+labels:sorted.map(s=>s.name),
+datasets:[{
+label:"リピート率",
+data:sorted.map(s=>s.rate*100)
+}]
+},
+options:{
+indexAxis:"y",
+scales:{
+x:{ max:100 }
+}
+}
+});
+
+</script>
+
 </body>
 </html>

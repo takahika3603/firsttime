@@ -211,6 +211,7 @@ input,select{
 
 <button class="smallBtn" onclick="save()">保存</button>
 <button class="smallBtn" onclick="back()">戻る</button>
+  <button id="deleteBtn" class="smallBtn" onclick="deleteRecord()" style="background:#ff4d4d;">削除</button>
 
 </div>
 </div>
@@ -262,6 +263,7 @@ form = {
 
   document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
   document.getElementById("countrySelectBox").classList.add("hidden");
+  document.getElementById("deleteBtn").style.display = "none";
   // ↓ここ追加（今日の日付を自動入力）
   const today = new Date();
   const yyyy = today.getFullYear();
@@ -345,12 +347,28 @@ function save(){
   back();
   render();
 }
+function deleteRecord(){
+  if(editIndex === null){
+    alert("削除できるデータがありません");
+    return;
+  }
 
+  if(confirm("このデータを削除しますか？")){
+    records.splice(editIndex, 1);
+
+    localStorage.setItem("records", JSON.stringify(records));
+
+    editIndex = null;
+
+    back();
+    render();
+  }
+}
  function editRecord(index){
   const r = records[index];
 
   editIndex = index;
-
+document.getElementById("deleteBtn").style.display = "block";
   document.getElementById("date").value = r.date || "";
   document.getElementById("cast").value = r.cast || "";
   document.getElementById("price").value = r.price || "";

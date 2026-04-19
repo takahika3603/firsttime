@@ -37,13 +37,15 @@ h1{
   padding:12px 14px;
   border-radius:16px;
   margin-bottom:8px;
+
+  width:100%;                 /* ←これ追加 */
+  box-sizing:border-box;      /* ←これ追加 */
+
   display:flex;
   align-items:center;
   gap:14px;
+
   background:rgba(255,255,255,0.03);
-  backdrop-filter: blur(30px);
-  border:1px solid rgba(255,255,255,0.06);
-  transition:0.2s;
 }
 
 .list div:hover{
@@ -317,20 +319,33 @@ function render(){
   records.slice().reverse().forEach(r=>{
     const div=document.createElement("div");
 
-    div.innerHTML=`
-    <div style="display:flex; width:100%; align-items:center;">
-      <div style="width:60px;">${r.date}</div>
-      <div style="width:70px;">${r.course}</div>
-      <div style="width:60px;">${r.shimei}</div>
-      <div style="flex:1;">${r.cast}</div>
-      <div style="margin-left:auto; font-weight:600;
-      background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;">
-      ${Number(r.price).toLocaleString()}円
-      </div>
-    </div>
-    `;
+    div.innerHTML = `
+<div style="display:flex; width:100%; align-items:center;">
+
+  <div style="min-width:50px;">${r.date}</div>
+
+  <div style="min-width:60px;">${r.course}</div>
+
+  <div style="min-width:50px;">${r.shimei}</div>
+
+  <div style="
+    flex:1;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  ">
+    ${r.cast}
+  </div>
+
+  <div style="
+    margin-left:auto;
+    white-space:nowrap;
+  ">
+    ${Number(r.price).toLocaleString()}円
+  </div>
+
+</div>
+`;
 
     list.appendChild(div);
   });

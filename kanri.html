@@ -3,188 +3,127 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>来客名簿</title>
 
 <style>
 body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display";
-color:#eaf2ff;
-
-background:
-radial-gradient(circle at 20% 10%, rgba(90,130,255,0.18), transparent 55%),
-radial-gradient(circle at 80% 90%, rgba(255,90,180,0.10), transparent 60%),
-#02030a;
-}
-
-body::before{
-content:"";
-position:fixed;
-inset:0;
-background-image:url("https://www.transparenttextures.com/patterns/noise.png");
-opacity:0.03;
-pointer-events:none;
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Meiryo";
+  background:#0f1117;
+  color:white;
 }
 
 .container{
-padding:18px;
-max-width:720px;
-margin:auto;
+  padding:16px;
 }
 
 h1{
-text-align:center;
-font-weight:500;
-margin:10px 0 12px;
+  font-size:20px;
+  margin-bottom:10px;
 }
 
-/* ボタン */
 .button{
-width:100%;
-padding:12px;
-border-radius:16px;
-
-background:rgba(255,255,255,0.03);
-backdrop-filter: blur(35px);
-
-border:1px solid rgba(255,255,255,0.06);
-
-color:rgba(255,255,255,0.85);
-
-margin-bottom:10px;
-}
-
-/* FAB */
-.fab{
-position:fixed;
-right:18px;
-bottom:18px;
-
-width:58px;
-height:58px;
-border-radius:50%;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-font-size:26px;
-
-background:rgba(255,255,255,0.05);
-backdrop-filter: blur(30px);
-
-border:1px solid rgba(255,255,255,0.08);
-
-color:white;
-
-box-shadow:0 20px 60px rgba(0,0,0,0.8);
+  padding:10px;
+  border-radius:12px;
+  border:none;
+  background:#1a1d26;
+  color:white;
+  margin-bottom:10px;
 }
 
 /* LIST */
 .list div{
-padding:12px 14px;
-border-radius:16px;
-
-margin-bottom:8px;
-
-display:flex;
-align-items:center;
-gap:14px;
-
-background:rgba(255,255,255,0.03);
-backdrop-filter: blur(30px);
-
-border:1px solid rgba(255,255,255,0.06);
-
-transition:0.2s;
+  padding:12px 14px;
+  border-radius:16px;
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  background:rgba(255,255,255,0.03);
+  backdrop-filter: blur(30px);
+  border:1px solid rgba(255,255,255,0.06);
+  transition:0.2s;
 }
 
 .list div:hover{
-transform:scale(1.02);
-background:rgba(255,255,255,0.06);
-}
-
-.left{
-display:flex;
-flex-direction:column;
-gap:2px;
-}
-
-.meta{
-font-size:11px;
-color:rgba(160,170,210,0.7);
-}
-
-.cast{
-font-size:13px;
-}
-
-.price{
-font-size:14px;
-font-weight:600;
-background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
+  transform:scale(1.02);
+  background:rgba(255,255,255,0.06);
 }
 
 /* CHIP */
 .label{
-font-size:11px;
-color:rgba(160,170,210,0.8);
-margin:10px 0 6px;
+  font-size:11px;
+  color:rgba(160,170,210,0.7);
+  margin:10px 0 6px;
 }
 
 .chip-group{
-display:flex;
-flex-wrap:wrap;
-gap:8px;
-margin-bottom:10px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:10px;
 }
 
 .chip{
-padding:9px 13px;
-border-radius:999px;
-background:rgba(255,255,255,0.04);
-border:1px solid rgba(255,255,255,0.06);
-color:rgba(255,255,255,0.75);
-font-size:12px;
-transition:0.2s;
+  padding:9px 13px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.75);
+  font-size:12px;
+  transition:0.2s;
 }
 
 .chip.active{
-background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
-color:white;
+  background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+  color:white;
 }
 
 /* DETAIL */
 #detailPage{ display:none; }
 
 .card{
-padding:16px;
-border-radius:20px;
-background:rgba(255,255,255,0.03);
-backdrop-filter: blur(35px);
-border:1px solid rgba(255,255,255,0.06);
+  padding:16px;
+  border-radius:20px;
+  background:rgba(255,255,255,0.03);
+  backdrop-filter: blur(35px);
+  border:1px solid rgba(255,255,255,0.06);
 }
 
 input,select{
-width:100%;
-padding:10px;
-margin:6px 0;
-border-radius:12px;
-border:none;
-background:rgba(255,255,255,0.06);
-color:white;
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border-radius:12px;
+  border:none;
+  background:rgba(255,255,255,0.06);
+  color:white;
 }
 
 .smallBtn{
-width:100%;
-padding:10px;
-border-radius:12px;
-margin-top:10px;
-background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.08);
-color:white;
+  width:100%;
+  padding:10px;
+  border-radius:12px;
+  margin-top:10px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  color:white;
+}
+
+/* FAB */
+.fab{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
 }
 
 /* hidden */
@@ -198,33 +137,43 @@ color:white;
 
 <h1>来客名簿</h1>
 
-<button class="button" onclick="goDashboard()">ダッシュボードへ</button>
-
 <div id="listPage" class="list"></div>
 
 <!-- 詳細 -->
 <div id="detailPage">
-
 <div class="card">
 
 <input id="date" placeholder="日付">
-<input id="time" placeholder="時間（10 / 20）">
 <input id="cast" placeholder="キャスト">
 <input id="price" placeholder="金額">
 
-<!-- 日本 / 海外 -->
+<!-- 時間 -->
+<div class="label">時間</div>
+<div class="chip-group" id="timeGroup"></div>
+
+<!-- コース -->
+<div class="label">コース</div>
+<div class="chip-group">
+<button class="chip" onclick="setChip('course','60分',this)">60分</button>
+<button class="chip" onclick="setChip('course','75分',this)">75分</button>
+<button class="chip" onclick="setChip('course','90分',this)">90分</button>
+<button class="chip" onclick="setChip('course','120分',this)">120分</button>
+<button class="chip" onclick="setChip('course','極液',this)">極液</button>
+</div>
+
+<!-- 顧客区分 -->
 <div class="label">顧客区分</div>
 <div class="chip-group">
 <button class="chip" onclick="setCountry('日本',this)">日本</button>
 <button class="chip" onclick="setCountry('海外',this)">海外</button>
 </div>
 
-<!-- 海外のみ -->
 <div id="countrySelectBox" class="hidden">
 <select id="countrySelect">
 <option>香港</option>
 <option>台湾</option>
-<option>アメリカ</option>
+<option>韓国</option>
+<option>中国</option>
 <option>オーストラリア</option>
 <option>その他</option>
 </select>
@@ -232,14 +181,14 @@ color:white;
 
 <!-- 区分 -->
 <div class="label">区分</div>
-<div class="chip-group" id="typeGroup">
+<div class="chip-group">
 <button class="chip" onclick="setChip('type','新規',this)">新規</button>
 <button class="chip" onclick="setChip('type','再来',this)">再来</button>
 </div>
 
 <!-- 指名 -->
 <div class="label">指名</div>
-<div class="chip-group" id="shimeiGroup">
+<div class="chip-group">
 <button class="chip" onclick="setChip('shimei','フリー',this)">フリー</button>
 <button class="chip" onclick="setChip('shimei','NET',this)">NET</button>
 <button class="chip" onclick="setChip('shimei','P',this)">P</button>
@@ -269,170 +218,126 @@ color:white;
 <script>
 
 let records = JSON.parse(localStorage.getItem("records") || "[]");
-let editIndex = null;
 
 let form = {
-country:"日本",
-type:"",
-shimei:"",
-op:[]
+  time:"",
+  course:"",
+  country:"日本",
+  type:"",
+  shimei:"",
+  op:[]
 };
 
-/* ===== リスト ===== */
-function render(){
-const list = document.getElementById("listPage");
-list.innerHTML = "";
-
-records.slice().reverse().forEach((r,i)=>{
-
-const d = new Date(r.date);
-const day = d.getDate();
-
-const div = document.createElement("div");
-
-div.innerHTML = `
-${day}日
-${r.time}時
-${r.cast}
-<div style="
-margin-left:auto;
-font-weight:600;
-background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;">
-${Number(r.price).toLocaleString()}円
-</div>
-`;
-
-div.onclick = ()=>open(i);
-
-list.appendChild(div);
-});
+/* ===== 時間チップ生成 ===== */
+function createTimeChips(){
+  const group = document.getElementById("timeGroup");
+  for(let i=8;i<=23;i++){
+    const btn = document.createElement("button");
+    btn.className="chip";
+    btn.innerText=i+"時";
+    btn.onclick=()=>setChip("time",i,btn);
+    group.appendChild(btn);
+  }
 }
 
-/* ===== 詳細 ===== */
-function open(i){
-
-const real = records.length - 1 - i;
-const r = records[real];
-
-editIndex = real;
-
-date.value = r.date;
-time.value = r.time;
-cast.value = r.cast;
-price.value = r.price;
-
-setCountry(r.country,null);
-
-form.type = r.type;
-form.shimei = r.shimei;
-form.op = r.op || [];
-
-sync();
-
-document.getElementById("listPage").style.display="none";
-document.getElementById("detailPage").style.display="block";
+/* ===== 画面切替 ===== */
+function add(){
+  document.getElementById("listPage").style.display="none";
+  document.getElementById("detailPage").style.display="block";
 }
 
-/* ===== 国 ===== */
-function setCountry(v,el){
-
-form.country = v;
-
-document.querySelectorAll(".chip-group:first-of-type .chip")
-.forEach(c=>c.classList.remove("active"));
-
-if(el) el.classList.add("active");
-
-if(v === "海外"){
-document.getElementById("countrySelectBox").classList.remove("hidden");
-}else{
-document.getElementById("countrySelectBox").classList.add("hidden");
-}
+function back(){
+  document.getElementById("listPage").style.display="block";
+  document.getElementById("detailPage").style.display="none";
 }
 
 /* ===== チップ ===== */
-function setChip(key,value,el){
-
-form[key]=value;
-
-document.querySelectorAll(`#${key}Group .chip`)
-.forEach(c=>c.classList.remove("active"));
-
-el.classList.add("active");
+function setChip(type,value,el){
+  form[type]=value;
+  const group=el.parentNode;
+  group.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+  el.classList.add("active");
 }
 
-/* ===== オプション ===== */
-function toggleOp(v,el){
-if(form.op.includes(v)){
-form.op=form.op.filter(x=>x!==v);
-el.classList.remove("active");
-}else{
-form.op.push(v);
-el.classList.add("active");
-}
+function setCountry(val,el){
+  form.country=val;
+
+  document.querySelectorAll(".chip-group .chip").forEach(c=>{
+    if(c.innerText==="日本"||c.innerText==="海外"){
+      c.classList.remove("active");
+    }
+  });
+
+  el.classList.add("active");
+
+  const box=document.getElementById("countrySelectBox");
+  if(val==="海外"){
+    box.classList.remove("hidden");
+  }else{
+    box.classList.add("hidden");
+  }
 }
 
-/* ===== 状態反映 ===== */
-function sync(){
-document.querySelectorAll("#typeGroup .chip")
-.forEach(c=>{ if(c.innerText===form.type) c.classList.add("active"); });
-
-document.querySelectorAll("#shimeiGroup .chip")
-.forEach(c=>{ if(c.innerText===form.shimei) c.classList.add("active"); });
+function toggleOp(val,el){
+  if(form.op.includes(val)){
+    form.op=form.op.filter(v=>v!==val);
+    el.classList.remove("active");
+  }else{
+    form.op.push(val);
+    el.classList.add("active");
+  }
 }
 
 /* ===== 保存 ===== */
 function save(){
+  const record={
+    date:document.getElementById("date").value,
+    cast:document.getElementById("cast").value,
+    price:document.getElementById("price").value,
+    time:form.time,
+    course:form.course,
+    country:form.country,
+    type:form.type,
+    shimei:form.shimei,
+    op:form.op
+  };
 
-records[editIndex]={
-date:date.value,
-time:time.value,
-cast:cast.value,
-price:price.value,
-country:form.country === "海外"
-? countrySelect.value
-: "日本",
-type:form.type,
-shimei:form.shimei,
-op:form.op
-};
+  records.push(record);
+  localStorage.setItem("records",JSON.stringify(records));
 
-localStorage.setItem("records",JSON.stringify(records));
-
-back();
-render();
+  back();
+  render();
 }
 
-/* ===== 戻る ===== */
-function back(){
-document.getElementById("detailPage").style.display="none";
-document.getElementById("listPage").style.display="block";
+/* ===== 描画 ===== */
+function render(){
+  const list=document.getElementById("listPage");
+  list.innerHTML="";
+
+  records.slice().reverse().forEach(r=>{
+    const div=document.createElement("div");
+
+    div.innerHTML=`
+    <div style="display:flex; width:100%; align-items:center;">
+      <div style="width:60px;">${r.date}</div>
+      <div style="width:70px;">${r.course}</div>
+      <div style="width:60px;">${r.shimei}</div>
+      <div style="flex:1;">${r.cast}</div>
+      <div style="margin-left:auto; font-weight:600;
+      background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;">
+      ${Number(r.price).toLocaleString()}円
+      </div>
+    </div>
+    `;
+
+    list.appendChild(div);
+  });
 }
 
-/* ===== ダッシュボード ===== */
-function goDashboard(){
-window.location.href="dashboard.html";
-}
-
-/* ===== 仮追加 ===== */
-function add(){
-records.push({
-date:"2026-04-18",
-time:"10",
-cast:"未入力",
-price:0,
-country:"日本",
-type:"新規",
-shimei:"フリー",
-op:[]
-});
-
-localStorage.setItem("records",JSON.stringify(records));
-render();
-}
-
+/* ===== 初期化 ===== */
+createTimeChips();
 render();
 
 </script>

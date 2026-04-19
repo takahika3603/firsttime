@@ -174,7 +174,7 @@ input,select{
 
 <h1>来客名簿</h1>
 <div style="display:flex; gap:8px; margin-bottom:10px;">
-
+<div id="listPage" class="list"></div>
   <!-- 月フィルター -->
   <select class="smallBtn" id="monthFilter" onchange="filterData()">
     <option value="">全ての月</option>
@@ -338,7 +338,7 @@ document.getElementById("deleteBtn").style.display = "none";
   document.getElementById("date").value = `${yyyy}-${mm}-${dd}`;
   // ↑ここまで追加
 
-  document.getElementById("listPage").style.display="none";
+  const detailPage = document.getElementById("detailPage");
   document.getElementById("detailPage").style.display="block";
 }
 

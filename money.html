@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard</title>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -101,6 +100,18 @@ canvas{
 <div class="topBar">
   <a class="btn" href="index.html">← 名簿へ戻る</a>
 </div>
+   <div class="card">
+  <input type="month" id="monthFilter">
+  <input type="date" id="dayFilter">
+  <button onclick="applyFilter()">絞り込み</button>
+</div>
+  <div class="card">
+  <div style="display:flex; gap:10px; flex-wrap:wrap;">
+    <button onclick="showAll()">全期間</button>
+    <button onclick="showToday()">今日</button>
+    <button onclick="showThisMonth()">今月</button>
+  </div>
+</div>
 
 <!-- KPI -->
 <div class="grid">
@@ -161,18 +172,61 @@ canvas{
 <script>
 
 const records = JSON.parse(localStorage.getItem("records") || "[]");
+  let chart1, chart2, chart3, chart4;
+function applyFilter(){
 
-const now = new Date();
-const month = String(now.getMonth()+1).padStart(2,"0");
+  const monthValue = document.getElementById("monthFilter").value;
+  const dayValue = document.getElementById("dayFilter").value;
 
-const thisMonth = records.filter(r =>
-  r.date && r.date.slice(5,7) === month
-);
+  let filtered = records;
+
+  // 月で絞る
+  if(monthValue){
+    const m = monthValue.slice(5,7);
+    filtered = filtered.filter(r =>
+      r.date && r.date.slice(5,7) === m
+    );
+  }
+
+  // 日で絞る
+  if(dayValue){
+    filtered = filtered.filter(r =>
+      r.date === dayValue
+    );
+  }
+
+  updateDashboard(filtered);
+}
+function showAll(){
+  updateDashboard(records);
+}
+
+function showToday(){
+  const today = new Date().toISOString().slice(0,10);
+
+  const filtered = records.filter(r =>
+    r.date === today
+  );
+
+  updateDashboard(filtered);
+}
+
+function showThisMonth(){
+  const now = new Date();
+  const month = String(now.getMonth()+1).padStart(2,"0");
+
+  const filtered = records.filter(r =>
+    r.date && r.date.slice(5,7) === month
+  );
+
+  updateDashboard(filtered);
+}
+function updateDashboard(data){
 
 /* ======================
 売上
 ====================== */
-const totalSales = thisMonth.reduce((s,r)=>s+(+r.price||0),0);
+const totalSales = data.reduce((s,r)=>s+(+r.price||0),0);
 
 document.getElementById("sales").innerText =
 "¥" + totalSales.toLocaleString();
@@ -183,44 +237,32 @@ document.getElementById("progress").innerText =
 ((totalSales/target)*100).toFixed(1)+"%";
 
 /* 日割 */
-const daysLeft = 30 - now.getDate();
+const now = new Date();
+const lastDay = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+const daysLeft = lastDay - now.getDate();
 document.getElementById("daily").innerText =
 Math.ceil((target-totalSales)/daysLeft).toLocaleString()+"円";
 
 /* 来客 */
-const jpCount = thisMonth.filter(r => r.country === "日本").length;
-const overseasCount = thisMonth.filter(r => r.country && r.country !== "日本").length;
+const jpCount = data.filter(r => r.country === "日本").length;
+const overseasCount = data.filter(r => r.country && r.country !== "日本").length;
 
-const totalCount = jpCount + overseasCount;
-
-document.getElementById("count").innerText = totalCount;
+document.getElementById("count").innerText = jpCount + overseasCount;
 document.getElementById("overseasCount").innerText = overseasCount;
 
 /* ======================
 新規 / 再来
 ====================== */
-const newC = thisMonth.filter(r=>r.type==="新規").length;
-const reC = thisMonth.filter(r=>r.type==="再来").length;
+const newC = data.filter(r=>r.type==="新規").length;
+const reC = data.filter(r=>r.type==="再来").length;
 
-new Chart(document.getElementById("chart1"),{
+if(chart1) chart1.destroy();
+
+chart1 = new Chart(document.getElementById("chart1"),{
 type:"doughnut",
 data:{
   labels:["新規","再来"],
-  datasets:[{
-    data:[newC,reC],
-    backgroundColor:[
-      "rgba(255,255,255,0.85)",
-      "rgba(255,255,255,0.25)"
-    ],
-    borderWidth:0
-  }]
-},
-options:{
-  cutout:"86%",
-  maintainAspectRatio:true,
-  plugins:{
-    legend:{ display:false }
-  }
+  datasets:[{ data:[newC,reC] }]
 }
 });
 
@@ -229,30 +271,18 @@ options:{
 ====================== */
 let jp=0, overseas=0;
 
-thisMonth.forEach(r=>{
+data.forEach(r=>{
 if(r.country==="日本") jp+=+r.price||0;
 else overseas+=+r.price||0;
 });
 
-new Chart(document.getElementById("chart2"),{
+if(chart2) chart2.destroy();
+
+chart2 = new Chart(document.getElementById("chart2"),{
 type:"doughnut",
 data:{
   labels:["日本","海外"],
-  datasets:[{
-    data:[jp,overseas],
-    backgroundColor:[
-      "rgba(255,255,255,0.85)",
-      "rgba(180,180,180,0.3)"
-    ],
-    borderWidth:0
-  }]
-},
-options:{
-  cutout:"86%",
-  maintainAspectRatio:true,
-  plugins:{
-    legend:{ display:false }
-  }
+  datasets:[{ data:[jp,overseas] }]
 }
 });
 
@@ -260,38 +290,26 @@ options:{
 キャスト売上
 ====================== */
 const castMap = {};
-thisMonth.forEach(r=>{
+data.forEach(r=>{
 castMap[r.cast]=(castMap[r.cast]||0)+(+r.price||0);
 });
 
-new Chart(document.getElementById("chart3"),{
+if(chart3) chart3.destroy();
+
+chart3 = new Chart(document.getElementById("chart3"),{
 type:"doughnut",
 data:{
   labels:Object.keys(castMap),
-  datasets:[{
-    data:Object.values(castMap),
-    backgroundColor:Object.keys(castMap).map((_,i)=>{
-      const g = 220 - i*15;
-      return `rgba(${g},${g},${g},0.8)`;
-    }),
-    borderWidth:0
-  }]
-},
-options:{
-  cutout:"86%",
-  maintainAspectRatio:true,
-  plugins:{
-    legend:{ display:false }
-  }
+  datasets:[{ data:Object.values(castMap) }]
 }
 });
 
 /* ======================
-★リピート率ランキング
+リピート率
 ====================== */
 const castStats = {};
 
-thisMonth.forEach(r=>{
+data.forEach(r=>{
 if(!castStats[r.cast]){
 castStats[r.cast]={total:0,re:0};
 }
@@ -299,39 +317,25 @@ castStats[r.cast].total++;
 if(r.type==="再来") castStats[r.cast].re++;
 });
 
-const labels=[];
-const rates=[];
-
-Object.keys(castStats).forEach(name=>{
+const sorted = Object.keys(castStats).map(name=>{
 const d = castStats[name];
-const rate = d.total ? d.re/d.total : 0;
-labels.push(name);
-rates.push(rate);
-});
+return { name, rate: d.total ? d.re/d.total : 0 };
+}).sort((a,b)=>b.rate-a.rate);
 
-/* 降順ソート */
-const sorted = labels.map((n,i)=>({
-name:n,
-rate:rates[i]
-})).sort((a,b)=>b.rate-a.rate);
+if(chart4) chart4.destroy();
 
-new Chart(document.getElementById("chart4"),{
+chart4 = new Chart(document.getElementById("chart4"),{
 type:"bar",
 data:{
 labels:sorted.map(s=>s.name),
 datasets:[{
-label:"リピート率",
 data:sorted.map(s=>s.rate*100)
 }]
-},
-options:{
-indexAxis:"y",
-scales:{
-x:{ max:100 }
-}
 }
 });
 
+}
+updateDashboard(records);
 </script>
 
 </body>

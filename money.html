@@ -84,12 +84,9 @@ h3{
 }
 
 /* canvas */
-#chart1,
-#chart2,
-#chart3{
-  width: 176px !important;
-  height: 144px !important;
-  margin: 0 auto;
+canvas{
+  width:100% !important;
+  height:100% !important;
 }
   #chart4Wrap{
   width:100%;
@@ -212,117 +209,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   color:#cfe3ff;
   text-shadow:0 0 10px rgba(106,162,255,0.25);
 }
-  .visitorLabel{
-  font-size:10px;
-  opacity:0.6;
-}
-/* ドーナツだけサイズ調整（安定版） */
-#chart1,
-#chart2,
-/* キャスト売上 */
-#chart3{
-  max-width: 260px;
-  margin: 0 auto;
-  display: block;
-}
-
-/* ★ここに貼る */
-.castLayout{
-  display:flex;
-  width:100%;
-  gap:10px;
-}
-
-.castLeft{
-  flex:0 0 90px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  font-size:11px;
-  opacity:0.9;
-}
-
-.castLeft div{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  white-space:nowrap;
-}
-
-.dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  flex-shrink:0;
-}
-
-.castRight{
-  flex:1;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-.castRight canvas{
-  width:200px !important;
-  height:200px !important;
-}
-  /* カード余白を詰める */
-.card{
-  padding:10px 14px;
-  margin-bottom:10px;
-}
-
-/* グラフカードだけさらに締める */
-.card:has(canvas){
-  padding: 10px 16px;
-}
-
-/* グラフ高さ制御 */
-.card canvas{
-  max-height: 180px;
-  display: block;
-  margin: 0 auto;
-}
-.card:has(canvas){
-  padding-top: 6px;
-  padding-bottom: 6px;
-}
-.chartRow{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  width:100%;
-}
-
-.chartCanvasWrap{
-  display:flex;
-  justify-content:flex-start;
-  align-items:center;
-  gap:24px;
-
-  width:fit-content;
-  margin:0;
-}
-
-
-/* 自前凡例 */
-.chartLegend{
-  min-width:60px;
-}
-
-/* ドット付きにすると一気にプロ感出る */
-.chartLegend div{
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-.chartLegend div::before{
-  content:"●";
-  font-size:10px;
-  color:#6aa2ff;
-}
 </style>
 </head>
 
@@ -360,40 +246,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
     </div>
 
     <div class="selectWrap">
-      <select id="dayFilter" onchange="applyFilter()">
-  <option value="">全日</option>
-  <option value="01">1日</option>
-  <option value="02">2日</option>
-  <option value="03">3日</option>
-  <option value="04">4日</option>
-  <option value="05">5日</option>
-  <option value="06">6日</option>
-  <option value="07">7日</option>
-  <option value="08">8日</option>
-  <option value="09">9日</option>
-  <option value="10">10日</option>
-  <option value="11">11日</option>
-  <option value="12">12日</option>
-  <option value="13">13日</option>
-  <option value="14">14日</option>
-  <option value="15">15日</option>
-  <option value="16">16日</option>
-  <option value="17">17日</option>
-  <option value="18">18日</option>
-  <option value="19">19日</option>
-  <option value="20">20日</option>
-  <option value="21">21日</option>
-  <option value="22">22日</option>
-  <option value="23">23日</option>
-  <option value="24">24日</option>
-  <option value="25">25日</option>
-  <option value="26">26日</option>
-  <option value="27">27日</option>
-  <option value="28">28日</option>
-  <option value="29">29日</option>
-  <option value="30">30日</option>
-  <option value="31">31日</option>
-</select>
+      <input type="date" id="dayFilter" onchange="applyFilter()">
     </div>
 
   </div>
@@ -433,13 +286,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 
 <!-- 来客数 -->
 <div class="card">
-
-  <span class="visitorLabel">来客数：</span>
-  <span id="count"></span>名
-
-  <span class="visitorLabel">（海外：</span>
-  <span id="overseasCount"></span>名<span class="visitorLabel">）</span>
-
+来客数：<span id="count"></span>名（海外：<span id="overseasCount"></span>名）
 </div>
 <!-- 海外分析ボタン -->
 <div class="card" onclick="location.href='kaigai.html'" style="cursor:pointer;">
@@ -452,17 +299,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 </div>
 <!-- 新規 / 再来 -->
 <div class="card">
-  <h3>新規 vs 再来</h3>
-
-  <div class="chartRow">
-
-    <div class="chartCanvasWrap">
-      <!-- グラフ -->
-      <canvas id="chart1"></canvas>
-
-    </div>
-
-  </div>
+<h3>新規 vs 再来</h3>
+<canvas id="chart1"></canvas>
 </div>
 
 <!-- 日本 / 海外 -->
@@ -516,8 +354,8 @@ Chart.register({
       const newRate = ((data[0]/total)*100).toFixed(1);
       const reRate = ((data[1]/total)*100).toFixed(1);
 
-ctx.fillText(`新規 ${newRate}%`, width / 2 - 45, height / 2 - 8);
-ctx.fillText(`再来 ${reRate}%`, width / 2 - 45, height / 2 + 12);
+      ctx.fillText(`新規 ${newRate}%`, width / 2, height / 2 - 8);
+      ctx.fillText(`再来 ${reRate}%`, width / 2, height / 2 + 12);
     }
 
     // ======================
@@ -559,11 +397,11 @@ function applyFilter(){
   }
 
   // 日で絞る
-if(dayValue){
-  filtered = filtered.filter(r =>
-    r.date && r.date.slice(8,10) === dayValue
-  );
-}
+  if(dayValue){
+    filtered = filtered.filter(r =>
+      r.date === dayValue
+    );
+  }
 
   updateDashboard(filtered);
 }
@@ -615,13 +453,7 @@ data:{
   }]
 },
 options:{
-  cutout: '80%',
-  plugins:{
-    legend:{
-      display: true,
-      position: "top"
-    }
-  }
+  cutout: '80%'
 }
 });
 

@@ -451,12 +451,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 
   <div class="chartRow">
 
-    <!-- 左：ラベル -->
-    <div class="chartLegend">
-      <div>🟦 新規</div>
-      <div>🟪 再来</div>
-    </div>
-
     <!-- 右：グラフ -->
     <div class="chartCanvasWrap">
       <canvas id="chart1"></canvas>
@@ -615,7 +609,13 @@ data:{
   }]
 },
 options:{
-  cutout: '80%'
+  cutout: '80%',
+  plugins:{
+    legend:{
+      display: true,
+      position: "right"
+    }
+  }
 }
 });
 

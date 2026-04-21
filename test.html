@@ -532,16 +532,44 @@ function updateDashboard(data){
     else overseas += +r.price||0;
   });
 
-  if(chart2) chart2.destroy();
+if(chart2) chart2.destroy();
 
-  chart2 = new Chart(document.getElementById("chart2"),{
-    type:"doughnut",
-    data:{
-      labels:["日本","海外"],
-      datasets:[{ data:[jp,overseas] }]
+const totalJPOver = jp + overseas;
+
+const jpRate2 = totalJPOver ? (jp / totalJPOver * 100) : 0;
+const overseasRate2 = totalJPOver ? (overseas / totalJPOver * 100) : 0;
+
+chart2 = new Chart(document.getElementById("chart2"), {
+  type: "bar",
+  data: {
+    labels: ["日本", "海外"],
+    datasets: [{
+      data: [jpRate2, overseasRate2],
+      backgroundColor: [
+        "rgba(106,162,255,0.8)",
+        "rgba(255,120,180,0.8)"
+      ],
+      borderRadius: 10
+    }]
+  },
+  options: {
+    indexAxis: "y",
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        beginAtZero: true,
+        max: 100
+      },
+      y: {
+        stacked: false
+      }
+    },
+    plugins: {
+      legend: { display: false }
     }
-  });
-
+  }
+});
   // キャスト売上（ここに移動）
   const castMap = {};
   data.forEach(r=>{

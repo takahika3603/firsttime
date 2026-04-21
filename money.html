@@ -15,7 +15,6 @@ body{
   overflow-x:hidden;
 }
 
-/* 背景ぼかしレイヤー */
 .glow{
   position:fixed;
   width:400px;
@@ -26,12 +25,8 @@ body{
   right:-100px;
 }
 
-/* レイアウト */
-.container{
-  padding:20px;
-}
+.container{ padding:20px; }
 
-/* ガラスカード */
 .card{
   background:rgba(255,255,255,0.06);
   backdrop-filter: blur(30px);
@@ -39,15 +34,8 @@ body{
   border-radius:20px;
   padding:16px;
   margin-bottom:14px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.4);
-  transition:0.3s;
 }
 
-.card:hover{
-  transform:translateY(-2px);
-}
-
-/* ヘッダー */
 .topBar{
   display:flex;
   justify-content:space-between;
@@ -58,127 +46,37 @@ body{
   padding:10px 14px;
   border-radius:12px;
   background:rgba(255,255,255,0.08);
-  text-decoration:none;
   color:white;
   font-size:12px;
+  text-decoration:none;
   border:1px solid rgba(255,255,255,0.1);
-}
-
-/* KPI */
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.big{
-  font-size:22px;
-  font-weight:700;
-}
-
-/* タイトル */
-h3{
-  margin:0 0 10px;
-  font-size:14px;
-  opacity:0.8;
-}
-
-/* canvas */
-canvas{
-  width:100% !important;
-  aspect-ratio: 1 / 1;
-}
-  /* ===== フィルターUI ===== */
-.filterCard{
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:20px;
-  padding:16px;
-  margin-bottom:14px;
-  backdrop-filter: blur(30px);
-}
-
-.filterTitle{
-  font-size:12px;
-  opacity:0.6;
-  margin-bottom:10px;
 }
 
 .filterGroup{
   display:flex;
-  gap:12px;
+  gap:8px;
+  padding:12px;
+  border-radius:20px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
 }
 
-.selectWrap{
-  position:relative;
-  flex:1;
-}
+.selectWrap{ flex:1; }
 
 .selectWrap select,
 .selectWrap input{
   width:100%;
-  padding:14px 40px 14px 14px;
+  padding:12px;
   border-radius:14px;
-  border:1px solid rgba(255,255,255,0.12);
   background:rgba(255,255,255,0.06);
   color:white;
-  font-size:13px;
-  outline:none;
-  backdrop-filter: blur(20px);
-  transition:0.25s;
+  border:1px solid rgba(255,255,255,0.12);
 }
 
-.selectWrap::after{
-  content:"⌄";
-  position:absolute;
-  right:14px;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:14px;
-  opacity:0.6;
-  pointer-events:none;
-}
-
-.selectWrap select:hover,
-.selectWrap input:hover{
-  background:rgba(255,255,255,0.1);
-  transform:translateY(-1px);
-}
-
-.selectWrap select:focus,
-.selectWrap input:focus{
-  border-color:#6aa2ff;
-  background:rgba(255,255,255,0.12);
-  box-shadow:
-    0 0 0 2px rgba(106,162,255,0.2),
-    0 8px 20px rgba(0,0,0,0.4);
-}
-
-/* ネイティブ矢印消す */
-.selectWrap select{
-  appearance:none;
-  -webkit-appearance:none;
-}
-
-/* 日付アイコン調整 */
-input[type="date"]::-webkit-calendar-picker-indicator{
-  opacity:0.4;
-  filter:invert(1);
-}
-  /* KPIだけ小さくする */
-.kpiSmall{
-  font-size:14px;
-  font-weight:700;
-}
 .kpiBox{
   padding:10px;
   border-radius:22px;
-  background: rgba(120,170,255,0.08);
-  border: 1px solid rgba(120,170,255,0.18);
-  box-shadow:
-    0 10px 40px rgba(0,0,0,0.45),
-    0 0 40px rgba(106,162,255,0.08);
-  backdrop-filter: blur(35px);
+  background:rgba(120,170,255,0.08);
 }
 
 .kpiGrid{
@@ -188,10 +86,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 }
 
 .kpiItem{
-  padding:10px 8px;
+  padding:10px;
   border-radius:14px;
-  background: rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.04);
 }
 
 .kpiItem .label{
@@ -202,14 +99,49 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 .kpiItem .value{
   font-size:16px;
   font-weight:700;
-  margin-top:4px;
   color:#cfe3ff;
-  text-shadow:0 0 10px rgba(106,162,255,0.25);
-<!-- KPI統合カード -->
+}
+</style>
+</head>
+
+<body>
+
+<div class="glow"></div>
+
+<div class="container">
+
+<div class="topBar">
+  <a class="btn" href="kanri.html">← 名簿へ戻る</a>
+</div>
+
+<!-- フィルター -->
+<div class="filterGroup">
+  <div class="selectWrap">
+    <select id="monthFilter" onchange="applyFilter()">
+      <option value="">全期間</option>
+      <option value="01">1月</option>
+      <option value="02">2月</option>
+      <option value="03">3月</option>
+      <option value="04">4月</option>
+      <option value="05">5月</option>
+      <option value="06">6月</option>
+      <option value="07">7月</option>
+      <option value="08">8月</option>
+      <option value="09">9月</option>
+      <option value="10">10月</option>
+      <option value="11">11月</option>
+      <option value="12">12月</option>
+    </select>
+  </div>
+
+  <div class="selectWrap">
+    <input type="date" id="dayFilter" onchange="applyFilter()">
+  </div>
+</div>
+
+<!-- KPI -->
 <div class="card kpiBox">
-
   <div class="kpiGrid">
-
     <div class="kpiItem">
       <div class="label">目標</div>
       <div class="value">¥20,000,000</div>
@@ -228,127 +160,55 @@ input[type="date"]::-webkit-calendar-picker-indicator{
     <div class="kpiItem">
       <div class="label">必要日割</div>
       <div class="value" id="daily">0円</div>
-
     </div>
-
   </div>
-
 </div>
 
-<!-- 来客数 -->
 <div class="card">
 来客数：<span id="count"></span>名（海外：<span id="overseasCount"></span>名）
 </div>
-<!-- 海外分析ボタン -->
-<div class="card" onclick="location.href='kaigai.html'" style="cursor:pointer;">
-  <div style="font-size:14px; font-weight:600;">
-    海外分析
-  </div>
-  <div style="font-size:11px; opacity:0.7; margin-top:4px;">
-    国別・売上・指名を分析する
-  </div>
-</div>
-<!-- 新規 / 再来 -->
+
 <div class="card">
 <h3>新規 vs 再来</h3>
 <canvas id="chart1"></canvas>
 </div>
 
-<!-- 日本 / 海外 -->
 <div class="card">
-<h3>日本 vs 海外 売上</h3>
+<h3>日本 vs 海外</h3>
 <canvas id="chart2"></canvas>
 </div>
 
-<!-- キャスト売上 -->
 <div class="card">
 <h3>キャスト売上</h3>
 <canvas id="chart3"></canvas>
 </div>
 
-<!-- ★追加：リピート率ランキング -->
 <div class="card">
-<h3>リピート率ランキング</h3>
+<h3>リピート率</h3>
 <canvas id="chart4"></canvas>
 </div>
 
 </div>
 
 <script>
-
-Chart.register({
-  id: 'centerText',
-  beforeDraw(chart) {
-
-    // chart1 と chart2 だけ対象
-    if (chart.canvas.id !== "chart1" && chart.canvas.id !== "chart2") return;
-
-    const { width, height, ctx } = chart;
-    ctx.save();
-
-    const data = chart.data.datasets[0].data;
-    const total = data.reduce((a,b)=>a+b,0);
-
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillStyle = "rgba(255,255,255,0.8)";
-    ctx.font = "500 12px -apple-system";
-
-    // ======================
-    // chart1（新規 vs 再来）
-    // ======================
-    if(chart.canvas.id === "chart1"){
-
-      const newRate = ((data[0]/total)*100).toFixed(1);
-      const reRate = ((data[1]/total)*100).toFixed(1);
-
-      ctx.fillText(`新規 ${newRate}%`, width / 2, height / 2 - 8);
-      ctx.fillText(`再来 ${reRate}%`, width / 2, height / 2 + 12);
-    }
-
-    // ======================
-    // chart2（日本 vs 海外）
-    // ======================
-    if(chart.canvas.id === "chart2"){
-
-      const jpRate = ((data[0]/total)*100).toFixed(1);
-      const overseasRate = ((data[1]/total)*100).toFixed(1);
-
-      ctx.fillText(`日本 ${jpRate}%`, width / 2, height / 2 - 8);
-      ctx.fillText(`海外 ${overseasRate}%`, width / 2, height / 2 + 12);
-    }
-
-    ctx.restore();
-  }
-});
-
 const records = JSON.parse(localStorage.getItem("records") || "[]");
-  let chart1, chart2, chart3, chart4;
+let chart1, chart2, chart3, chart4;
+
 function applyFilter(){
 
   const monthValue = document.getElementById("monthFilter").value;
   const dayValue = document.getElementById("dayFilter").value;
-// ★追加：保存
-  localStorage.setItem("dashboardFilter", JSON.stringify({
-    month: monthValue,
-    day: dayValue
-  }));
 
   let filtered = records;
 
-  // 月で絞る
   if(monthValue){
-    const m = monthValue;
     filtered = filtered.filter(r =>
-      r.date && r.date.slice(5,7) === m
+      r.date && r.date.slice(5,7) === monthValue
     );
   }
 
-  // 日で絞る
   if(dayValue){
-    filtered = filtered.filter(r =>
-      r.date === dayValue
-    );
+    filtered = filtered.filter(r => r.date === dayValue);
   }
 
   updateDashboard(filtered);
@@ -356,36 +216,28 @@ function applyFilter(){
 
 function updateDashboard(data){
 
-/* ======================
-売上
-====================== */
 const totalSales = data.reduce((s,r)=>s+(+r.price||0),0);
 
-document.getElementById("sales").innerText =
-"¥" + totalSales.toLocaleString();
+document.getElementById("sales").innerText = "¥" + totalSales.toLocaleString();
 
-/* 進捗 */
 const target = 20000000;
 document.getElementById("progress").innerText =
 ((totalSales/target)*100).toFixed(1)+"%";
 
-/* 日割 */
 const now = new Date();
 const lastDay = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
 const daysLeft = Math.max(1, lastDay - now.getDate());
+
 document.getElementById("daily").innerText =
 Math.ceil((target-totalSales)/daysLeft).toLocaleString()+"円";
 
-/* 来客 */
-const jpCount = data.filter(r => r.country === "日本").length;
-const overseasCount = data.filter(r => r.country && r.country !== "日本").length;
+const jpCount = data.filter(r=>r.country==="日本").length;
+const overseasCount = data.filter(r=>r.country && r.country!=="日本").length;
 
 document.getElementById("count").innerText = jpCount + overseasCount;
 document.getElementById("overseasCount").innerText = overseasCount;
 
-/* ======================
-新規 / 再来
-====================== */  
+/* chart1 */
 const newC = data.filter(r=>r.type==="新規").length;
 const reC = data.filter(r=>r.type==="再来").length;
 
@@ -393,21 +245,11 @@ if(chart1) chart1.destroy();
 
 chart1 = new Chart(document.getElementById("chart1"),{
 type:"doughnut",
-data:{
-  labels:["新規","再来"],
-  datasets:[{
-    data:[newC,reC],
-    borderWidth: 0
-  }]
-},
-options:{
-  cutout: '80%'
-}
+data:{labels:["新規","再来"],datasets:[{data:[newC,reC]}]},
+options:{cutout:"80%"}
 });
 
-/* ======================
-日本 / 海外
-====================== */
+/* chart2 */
 let jp=0, overseas=0;
 
 data.forEach(r=>{
@@ -419,19 +261,12 @@ if(chart2) chart2.destroy();
 
 chart2 = new Chart(document.getElementById("chart2"),{
 type:"doughnut",
-data:{
-  labels:["日本","海外"],
-  datasets:[{ data:[jp,overseas] }]
-},
-options:{
-  cutout: '80%'
-}
+data:{labels:["日本","海外"],datasets:[{data:[jp,overseas]}]},
+options:{cutout:"80%"}
 });
 
-/* ======================
-キャスト売上
-====================== */
-const castMap = {};
+/* chart3 */
+const castMap={};
 data.forEach(r=>{
 castMap[r.cast]=(castMap[r.cast]||0)+(+r.price||0);
 });
@@ -440,31 +275,20 @@ if(chart3) chart3.destroy();
 
 chart3 = new Chart(document.getElementById("chart3"),{
 type:"doughnut",
-data:{
-  labels:Object.keys(castMap),
-  datasets:[{ data:Object.values(castMap) }]
-},
-options:{
-  cutout: '80%'
-}
+data:{labels:Object.keys(castMap),datasets:[{data:Object.values(castMap)}]}
 });
 
-/* ======================
-リピート率
-====================== */
-const castStats = {};
+/* chart4 */
+const stats={};
 
 data.forEach(r=>{
-if(!castStats[r.cast]){
-castStats[r.cast]={total:0,re:0};
-}
-castStats[r.cast].total++;
-if(r.type==="再来") castStats[r.cast].re++;
+if(!stats[r.cast]) stats[r.cast]={t:0,r:0};
+stats[r.cast].t++;
+if(r.type==="再来") stats[r.cast].r++;
 });
 
-const sorted = Object.keys(castStats).map(name=>{
-const d = castStats[name];
-return { name, rate: d.total ? d.re/d.total : 0 };
+const sorted = Object.keys(stats).map(n=>{
+return {name:n,rate:stats[n].r/stats[n].t};
 }).sort((a,b)=>b.rate-a.rate);
 
 if(chart4) chart4.destroy();
@@ -473,23 +297,15 @@ chart4 = new Chart(document.getElementById("chart4"),{
 type:"bar",
 data:{
 labels:sorted.map(s=>s.name),
-datasets:[{
-data:sorted.map(s=>s.rate*100)
-}]
-}
+datasets:[{data:sorted.map(s=>s.rate*100)}]
+},
+options:{indexAxis:"y"}
 });
-
 }
+
+window.addEventListener("DOMContentLoaded",()=>{
 updateDashboard(records);
-window.addEventListener("load", () => {
-  const saved = JSON.parse(localStorage.getItem("dashboardFilter"));
-
-  if(saved){
-    document.getElementById("monthFilter").value = saved.month || "";
-    document.getElementById("dayFilter").value = saved.day || "";
-  }
-
-  applyFilter();
+applyFilter();
 });
 </script>
 

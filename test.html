@@ -386,8 +386,21 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 </div>
 <!-- 日本 / 海外 -->
 <div class="card">
-<h3>日本 vs 海外 売上</h3>
-<canvas id="chart2"></canvas>
+  <h3>日本 vs 海外 売上</h3>
+
+  <div class="barWrap">
+
+    <div class="bar">
+      <div class="barNew" id="barJP"></div>
+      <div class="barRe" id="barOverseas"></div>
+    </div>
+
+    <div class="barLabel">
+      <span id="jpText">日本 0%</span>
+      <span id="overseasText">海外 0%</span>
+    </div>
+
+  </div>
 </div>
 
 <!-- キャスト売上 -->
@@ -525,51 +538,36 @@ function updateDashboard(data){
     `再来 ${reRate.toFixed(1)}%`;
 
   // 日本 vs 海外
-  let jp = 0, overseas = 0;
+ // 日本 vs 海外（売上ベース）
 
-  data.forEach(r=>{
-    if(r.country==="日本") jp += +r.price||0;
-    else overseas += +r.price||0;
-  });
+let jpSales = 0;
+let overseasSales = 0;
 
-if(chart2) chart2.destroy();
+data.forEach(r => {
+  const price = +r.price || 0;
 
-const totalJPOver = jp + overseas;
-
-const jpRate2 = totalJPOver ? (jp / totalJPOver * 100) : 0;
-const overseasRate2 = totalJPOver ? (overseas / totalJPOver * 100) : 0;
-
-chart2 = new Chart(document.getElementById("chart2"), {
-  type: "bar",
-  data: {
-    labels: ["日本", "海外"],
-    datasets: [{
-      data: [jpRate2, overseasRate2],
-      backgroundColor: [
-        "rgba(106,162,255,0.8)",
-        "rgba(255,120,180,0.8)"
-      ],
-      borderRadius: 10
-    }]
-  },
-  options: {
-    indexAxis: "y",
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        beginAtZero: true,
-        max: 100
-      },
-      y: {
-        stacked: false
-      }
-    },
-    plugins: {
-      legend: { display: false }
-    }
+  if (r.country === "日本") {
+    jpSales += price;
+  } else {
+    overseasSales += price;
   }
 });
+
+const total = jpSales + overseasSales;
+
+const jpRate = total ? (jpSales / total * 100) : 0;
+const overseasRate = total ? (overseasSales / total * 100) : 0;
+
+// バー反映
+document.getElementById("barJP").style.width = jpRate + "%";
+document.getElementById("barOverseas").style.width = overseasRate + "%";
+
+// 文字反映
+document.getElementById("jpText").innerText =
+  `日本 ${jpRate.toFixed(1)}%`;
+
+document.getElementById("overseasText").innerText =
+  `海外 ${overseasRate.toFixed(1)}%`;
   // キャスト売上（ここに移動）
   const castMap = {};
   data.forEach(r=>{

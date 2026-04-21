@@ -239,7 +239,18 @@ input,select{
 <option>その他</option>
 </select>
 </div>
-
+<!-- 導線 -->
+<div id="routeBox" class="hidden">
+  <div class="label">来店導線</div>
+  <div class="chip-group">
+    <button class="chip" onclick="setChip('route','YOASOBI',this)">YOASOBI</button>
+    <button class="chip" onclick="setChip('route','JPS',this)">JPS</button>
+    <button class="chip" onclick="setChip('route','通りすがり',this)">通りすがり</button>
+    <button class="chip" onclick="setChip('route','友人紹介',this)">友人紹介</button>
+    <button class="chip" onclick="setChip('route','協力店紹介',this)">協力店紹介</button>
+    <button class="chip" onclick="setChip('route','駅ちか',this)">駅ちか</button>
+  </div>
+</div>
 <!-- ④ 時間 -->
 <div class="label">時間</div>
 <div class="chip-group" id="timeGroup"></div>
@@ -318,7 +329,8 @@ let form = {
   type:"",
   shimei:"",
   op:[],
-  bikou:[] // ←これ追加（超重要）
+  bikou:[],
+  route:""
 };
 let editIndex = null;
  /* ===== 初期化 ===== */
@@ -346,13 +358,16 @@ form = {
   type:"",
   shimei:"",
   op:[],
-  bikou:[] // ←これ追加
+  bikou:[],
+  route:""// ←これ追加
 };
 
   editIndex = null;
 document.getElementById("deleteBtn").style.display = "none";
   document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
   document.getElementById("countrySelectBox").classList.add("hidden");
+  document.getElementById("cast").value = "";
+document.getElementById("price").value = "";
   // ↓ここ追加（今日の日付を自動入力）
   const today = new Date();
   const yyyy = today.getFullYear();
@@ -382,21 +397,28 @@ function setChip(type,value,el){
 }
 
 function setCountry(val,el){
-  form.country=val;
+  form.country = val;
 
+  // 日本・海外の選択状態リセット
   document.querySelectorAll(".chip-group .chip").forEach(c=>{
-    if(c.innerText==="日本"||c.innerText==="海外"){
+    if(c.innerText==="日本" || c.innerText==="海外"){
       c.classList.remove("active");
     }
   });
 
+  // 押したボタンを光らせる
   el.classList.add("active");
 
-  const box=document.getElementById("countrySelectBox");
-  if(val==="海外"){
+  const box = document.getElementById("countrySelectBox"); // 国選択
+  const route = document.getElementById("routeBox");       // ←導線（追加したやつ）
+
+  if(val === "海外"){
     box.classList.remove("hidden");
+    route.classList.remove("hidden"); // ←これが今回の目的
   }else{
     box.classList.add("hidden");
+    route.classList.add("hidden");    // ←日本なら消す
+    form.route = ""; // ←リセット（重要）
   }
 }
 
@@ -434,16 +456,17 @@ function save(){
     shimei:form.shimei,
     op:form.op,
     bikou: form.bikou,
+    route: form.route
   };
 
   if(editIndex !== null){
-    records[editIndex] = record; // ←上書き
-    editIndex = null;
-  }else{
-    records.push(record); // ←新規
-  }
+  allRecords[editIndex] = record; // ←変更
+  editIndex = null;
+}else{
+  allRecords.push(record); // ←ここも変更
+}
 
-  localStorage.setItem("records",JSON.stringify(records));
+  localStorage.setItem("records",JSON.stringify(allRecords));
 
   back();
   render();
@@ -455,9 +478,9 @@ function deleteRecord(){
   }
 
   if(confirm("このデータを削除しますか？")){
-    records.splice(editIndex, 1);
+   allRecords.splice(editIndex, 1);
 
-localStorage.setItem("records", JSON.stringify(records));
+localStorage.setItem("records", JSON.stringify(allrecords));
 
 allRecords = JSON.parse(localStorage.getItem("records") || "[]");
 records = [...allRecords];
@@ -488,7 +511,8 @@ document.getElementById("deleteBtn").style.display = "block";
   form.type = r.type;
   form.shimei = r.shimei;
   form.op = r.op || [];
-   form.bikou = r.bikou || [];
+  form.bikou = r.bikou || [];
+  form.route = r.route || "";
 
   document.getElementById("listPage").style.display="none";
   document.getElementById("detailPage").style.display="block";
@@ -515,14 +539,16 @@ document.getElementById("deleteBtn").style.display = "block";
 if(c.classList.contains("bikou") && form.bikou.includes(c.innerText)){
   c.classList.add("active");
 }
-
+if(c.innerText == form.route) c.classList.add("active");
     if(form.op.includes(c.innerText)) c.classList.add("active");
   });
-
+    
   if(form.country==="海外"){
     document.getElementById("countrySelectBox").classList.remove("hidden");
+    document.getElementById("routeBox").classList.remove("hidden");
   }else{
     document.getElementById("countrySelectBox").classList.add("hidden");
+    document.getElementById("routeBox").classList.add("hidden");
   }
 }
   
@@ -550,7 +576,7 @@ function filterData(){
   list.innerHTML="";
 
 records.slice().reverse().forEach((r, i) => {
-
+const originalIndex = allRecords.indexOf(r);
   const div=document.createElement("div");
 
   const formattedDate = r.date ? r.date.slice(5).replace("-", "/") : "";
@@ -579,7 +605,7 @@ records.slice().reverse().forEach((r, i) => {
 </span>
 `;
 
-div.onclick = () => editRecord(records.length - 1 - i); // ←OK
+div.onclick = () => editRecord(originalIndex);
 
     list.appendChild(div);
   });

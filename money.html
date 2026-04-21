@@ -288,35 +288,43 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   padding-top: 6px;
   padding-bottom: 6px;
 }
- .chartRow{
+.chartRow{
   display:flex;
+  justify-content:center;
   align-items:center;
-  justify-content:space-between;
   width:100%;
 }
 
-/* 左20% */
-.chartLegend{
-  flex:0 0 20%;
-  font-size:11px;
-  opacity:0.8;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  padding-left:4px;
-}
-
 .chartCanvasWrap{
-  flex:0 0 80%;
   display:flex;
-  justify-content:flex-end;
+  justify-content:center;
   align-items:center;
+  gap:24px;
+
+  /* ★これ追加 */
+  width:fit-content;
+  margin:0 auto;
+    /* ★追加：ブレ防止 */
+  transform: translateX(0);
 }
 
-/* グラフサイズ安定化 */
-#chart1{
-  width: 100% !important;
-  height: 180px !important;
+
+/* 自前凡例 */
+.chartLegend{
+  min-width:60px;
+}
+
+/* ドット付きにすると一気にプロ感出る */
+.chartLegend div{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.chartLegend div::before{
+  content:"●";
+  font-size:10px;
+  color:#6aa2ff;
 }
 </style>
 </head>
@@ -451,9 +459,17 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 
   <div class="chartRow">
 
-    <!-- 右：グラフ -->
     <div class="chartCanvasWrap">
+
+      <!-- 凡例（自前） -->
+      <div class="chartLegend">
+        <div>新規</div>
+        <div>再来</div>
+      </div>
+
+      <!-- グラフ -->
       <canvas id="chart1"></canvas>
+
     </div>
 
   </div>

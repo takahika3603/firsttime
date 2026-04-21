@@ -201,24 +201,17 @@ input,select{
 <div class="card">
 
 <input id="date" type="date">
+<!-- ① キャスト -->
 <input id="cast" placeholder="キャスト">
-<input id="price" placeholder="金額">
 
-<!-- 時間 -->
-<div class="label">時間</div>
-<div class="chip-group" id="timeGroup"></div>
-
-<!-- コース -->
-<div class="label">コース</div>
+<!-- ② 新規 / 再来 -->
+<div class="label">区分</div>
 <div class="chip-group">
-<button class="chip" onclick="setChip('course','60分',this)">60分</button>
-<button class="chip" onclick="setChip('course','75分',this)">75分</button>
-<button class="chip" onclick="setChip('course','90分',this)">90分</button>
-<button class="chip" onclick="setChip('course','120分',this)">120分</button>
-<button class="chip" onclick="setChip('course','極液',this)">極液</button>
+<button class="chip" onclick="setChip('type','新規',this)">新規</button>
+<button class="chip" onclick="setChip('type','再来',this)">再来</button>
 </div>
 
-<!-- 顧客区分 -->
+<!-- ③ 顧客区分 -->
 <div class="label">顧客区分</div>
 <div class="chip-group">
 <button class="chip" onclick="setCountry('日本',this)">日本</button>
@@ -236,14 +229,11 @@ input,select{
 </select>
 </div>
 
-<!-- 区分 -->
-<div class="label">区分</div>
-<div class="chip-group">
-<button class="chip" onclick="setChip('type','新規',this)">新規</button>
-<button class="chip" onclick="setChip('type','再来',this)">再来</button>
-</div>
+<!-- ④ 時間 -->
+<div class="label">時間</div>
+<div class="chip-group" id="timeGroup"></div>
 
-<!-- 指名 -->
+<!-- ⑤ 指名 -->
 <div class="label">指名</div>
 <div class="chip-group">
 <button class="chip" onclick="setChip('shimei','フリー',this)">フリー</button>
@@ -252,7 +242,18 @@ input,select{
 <button class="chip" onclick="setChip('shimei','リピ',this)">リピ</button>
 </div>
 
-<!-- オプション -->
+<!-- ⑥ コース -->
+<div class="label">コース</div>
+<div class="chip-group">
+<button class="chip" onclick="setChip('course','60分',this)">60分</button>
+<button class="chip" onclick="setChip('course','75分',this)">75分</button>
+<button class="chip" onclick="setChip('course','90分',this)">90分</button>
+  <button class="chip" onclick="setChip('course','極液',this)">極液</button>
+<button class="chip" onclick="setChip('course','120分',this)">120分</button>
+<button class="chip" onclick="setChip('course','その他',this)">その他</button>
+</div>
+
+<!-- ⑦ オプション -->
 <div class="label">オプション</div>
 <div class="chip-group">
 <button class="chip" onclick="toggleOp('AN',this)">AN</button>
@@ -262,6 +263,8 @@ input,select{
 <button class="chip" onclick="toggleOp('CP',this)">CP</button>
 </div>
 
+<!-- ⑧ 総額 -->
+<input id="price" placeholder="金額">
 <button class="smallBtn" onclick="save()">保存</button>
 <button class="smallBtn" onclick="back()">戻る</button>
   <button id="deleteBtn" class="smallBtn" onclick="deleteRecord()" style="background:#ff4d4d;">削除</button>

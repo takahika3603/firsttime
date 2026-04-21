@@ -490,9 +490,7 @@ if(dayValue){
 
 function updateDashboard(data){
 
-  /* ======================
-  売上
-  ====================== */
+  // 売上
   const totalSales = data.reduce((s,r)=>s+(+r.price||0),0);
 
   document.getElementById("sales").innerText =
@@ -502,18 +500,14 @@ function updateDashboard(data){
   document.getElementById("progress").innerText =
   ((totalSales/target)*100).toFixed(1)+"%";
 
-  /* ======================
-  来客
-  ====================== */
+  // 来客
   const jpCount = data.filter(r => r.country === "日本").length;
   const overseasCount = data.filter(r => r.country && r.country !== "日本").length;
 
   document.getElementById("count").innerText = jpCount + overseasCount;
   document.getElementById("overseasCount").innerText = overseasCount;
 
-  /* ======================
-  新規 vs 再来（ここが正解）
-  ====================== */
+  // 新規 vs 再来
   const newC = data.filter(r => r.type === "新規").length;
   const reC = data.filter(r => r.type === "再来").length;
 
@@ -531,9 +525,7 @@ function updateDashboard(data){
   document.getElementById("reText").innerText =
     `再来 ${reRate.toFixed(1)}%`;
 
-  /* ======================
-  日本 / 海外（ここに移動する）
-  ====================== */
+  // 日本 vs 海外
   let jp = 0, overseas = 0;
 
   data.forEach(r=>{
@@ -548,44 +540,31 @@ function updateDashboard(data){
     data:{
       labels:["日本","海外"],
       datasets:[{ data:[jp,overseas] }]
-    },
-    options:{
-      cutout:'80%'
     }
   });
 
-}
-/* ======================
-キャスト売上
-====================== */
-const castMap = {};
-data.forEach(r=>{
-  castMap[r.cast] = (castMap[r.cast] || 0) + (+r.price || 0);
-});
+  // キャスト売上（ここに移動）
+  const castMap = {};
+  data.forEach(r=>{
+    castMap[r.cast] = (castMap[r.cast] || 0) + (+r.price || 0);
+  });
 
-/* ★ここが追加ポイント（並び替え） */
-const sortedCast = Object.entries(castMap)
-  .sort((a, b) => b[1] - a[1]); // 売上が高い順
+  const sortedCast = Object.entries(castMap)
+    .sort((a,b)=>b[1]-a[1]);
 
-const castLabels = sortedCast.map(item => item[0]);
-const castValues = sortedCast.map(item => item[1]);
+  const castLabels = sortedCast.map(x=>x[0]);
+  const castValues = sortedCast.map(x=>x[1]);
 
-if(chart3) chart3.destroy();
+  if(chart3) chart3.destroy();
 
-chart3 = new Chart(document.getElementById("chart3"),{
-type:"doughnut",
-data:{
-  labels: castLabels,
-  datasets:[{
-    data: castValues
-  }]
-},
-options:{
-  cutout: '80%'
-}
-});
-
-/* ======================
+  chart3 = new Chart(document.getElementById("chart3"),{
+    type:"doughnut",
+    data:{
+      labels:castLabels,
+      datasets:[{ data:castValues }]
+    }
+  });
+  /* ======================
 リピート率
 ====================== */
 const castStats = {};

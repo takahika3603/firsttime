@@ -176,11 +176,97 @@ input,select{
   background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
   border:1px solid transparent;
 }
+.header{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+  padding:16px 0;
+}
+
+.menuBtn{
+  position:absolute;
+  right:20px;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.menu{
+  position:fixed;
+  top:70px;
+  right:20px;
+  width:240px;
+  background:rgba(255,255,255,0.06);
+  border-radius:16px;
+  backdrop-filter:blur(30px);
+  overflow:hidden;
+  z-index:999;
+}
+
+.menuItem{
+  padding:14px;
+  cursor:pointer;
+}
+
+.menuSubItem{
+  padding:12px 14px;
+  font-size:13px;
+  opacity:0.85;
+}
+
+.subMenu{
+  padding-left:16px;
+  border-left:1px solid rgba(255,255,255,0.08);
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  transition:0.3s;
+}
+
+.subMenu.open{
+  max-height:500px;
+  opacity:1;
+}
+
+.hidden{
+  display:none;
+}
 </style>
 </head>
 
 <body>
+<!-- ヘッダー -->
+<div class="header">
+  <h2>ページタイトル</h2>
+  <div class="menuBtn" onclick="toggleMenu()">☰</div>
+</div>
 
+<!-- メニュー -->
+<div id="menu" class="menu hidden">
+
+  <div class="menuTitle">MENU</div>
+
+  <div class="menuItem" onclick="location.href='top.html'">TOP</div>
+
+  <div class="menuItem" onclick="toggleSub('manualSub')">マニュアル ▶</div>
+  <div id="manualSub" class="subMenu">
+    <div class="menuSubItem" onclick="location.href='manual.html'">一覧</div>
+    <div class="menuSubItem" onclick="location.href='manual_sub1.html'">部屋セット</div>
+    <div class="menuSubItem" onclick="location.href='manual_sub2.html'">チャット予約</div>
+    <div class="menuSubItem" onclick="location.href='manual_sub3.html'">メルマガ</div>
+    <div class="menuSubItem" onclick="location.href='manual_sub4.html'">部屋繋ぎ</div>
+  </div>
+
+  <div class="menuItem" onclick="location.href='index.html'">個人KPI</div>
+
+  <div class="menuItem" onclick="toggleSub('salesSub')">売上管理 ▶</div>
+  <div id="salesSub" class="subMenu">
+    <div class="menuSubItem" onclick="location.href='kanri.html'">来客名簿</div>
+    <div class="menuSubItem" onclick="location.href='money.html'">ダッシュボード</div>
+    <div class="menuSubItem" onclick="location.href='kaigai.html'">海外分析</div>
+  </div>
+
+</div>
 <div class="container">
 
 <h1>来客名簿</h1>
@@ -480,7 +566,7 @@ function deleteRecord(){
   if(confirm("このデータを削除しますか？")){
    allRecords.splice(editIndex, 1);
 
-localStorage.setItem("records", JSON.stringify(allrecords));
+localStorage.setItem("records", JSON.stringify(allRecords));
 
 allRecords = JSON.parse(localStorage.getItem("records") || "[]");
 records = [...allRecords];
@@ -610,7 +696,32 @@ div.onclick = () => editRecord(originalIndex);
     list.appendChild(div);
   });
 }
+function toggleMenu(){
+  document.getElementById("menu").classList.toggle("hidden");
+}
 
+function toggleSub(id){
+
+  const target = document.getElementById(id);
+
+  document.querySelectorAll(".subMenu").forEach(el=>{
+    if(el !== target){
+      el.classList.remove("open");
+    }
+  });
+
+  target.classList.toggle("open");
+}
+
+/* 外クリックで閉じる */
+window.addEventListener("click", function(e){
+  if(!e.target.closest(".menu") && !e.target.closest(".menuBtn")){
+    document.getElementById("menu").classList.add("hidden");
+    document.querySelectorAll(".subMenu").forEach(el=>{
+      el.classList.remove("open");
+    });
+  }
+});
 </script>
 
 </body>

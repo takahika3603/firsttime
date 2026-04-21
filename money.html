@@ -502,7 +502,26 @@ data:{
   datasets:[{ data:Object.values(castMap) }]
 },
 options:{
-  cutout: '80%'
+  cutout: '80%',
+  onClick: (evt, elements) => {
+
+    if (!elements.length) return;
+
+    const index = elements[0].index;
+
+    const labels = chart3.data.labels;
+    const values = chart3.data.datasets[0].data;
+
+    const total = values.reduce((a,b)=>a+b,0);
+
+    const name = labels[index];
+    const value = values[index];
+    const rate = ((value / total) * 100).toFixed(1);
+
+    alert(
+      `キャスト: ${name}\n売上: ¥${value.toLocaleString()}\n構成比: ${rate}%`
+    );
+  }
 }
 });
 

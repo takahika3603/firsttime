@@ -205,64 +205,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   margin-top:4px;
   color:#cfe3ff;
   text-shadow:0 0 10px rgba(106,162,255,0.25);
-}
-/* ===== フィルターをカード化＋コンパクト化 ===== */
-.filterGroup{
-  display:flex;
-  gap:8px;
-
-  padding:12px;
-  border-radius:20px;
-
-  background:rgba(255,255,255,0.06);
-  backdrop-filter: blur(30px);
-  border:1px solid rgba(255,255,255,0.1);
-
-  box-shadow:0 10px 30px rgba(0,0,0,0.4);
-  margin-bottom:10px;
-}
-.selectWrap select,
-.selectWrap input{
-  padding:12px 38px 12px 12px;
-}
-  
-</style>
-</head>
-
-<body>
-
-<div class="glow"></div>
-
-<div class="container">
-
-<div class="topBar">
-  <a class="btn" href="kanri.html">← 名簿へ戻る</a>
-</div>
-  <div class="filterGroup">
-
-  <div class="selectWrap">
-    <select id="monthFilter" onchange="applyFilter()">
-      <option value="">全期間</option>
-      <option value="01">1月</option>
-      <option value="02">2月</option>
-      <option value="03">3月</option>
-      <option value="04">4月</option>
-      <option value="05">5月</option>
-      <option value="06">6月</option>
-      <option value="07">7月</option>
-      <option value="08">8月</option>
-      <option value="09">9月</option>
-      <option value="10">10月</option>
-      <option value="11">11月</option>
-      <option value="12">12月</option>
-    </select>
-  </div>
-
-  <div class="selectWrap">
-    <input type="date" id="dayFilter" onchange="applyFilter()">
-  </div>
-
-</div>
 <!-- KPI統合カード -->
 <div class="card kpiBox">
 
@@ -286,6 +228,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
     <div class="kpiItem">
       <div class="label">必要日割</div>
       <div class="value" id="daily">0円</div>
+
     </div>
 
   </div>
@@ -502,26 +445,7 @@ data:{
   datasets:[{ data:Object.values(castMap) }]
 },
 options:{
-  cutout: '80%',
-  onClick: (evt, elements) => {
-
-    if (!elements.length) return;
-
-    const index = elements[0].index;
-
-    const labels = chart3.data.labels;
-    const values = chart3.data.datasets[0].data;
-
-    const total = values.reduce((a,b)=>a+b,0);
-
-    const name = labels[index];
-    const value = values[index];
-    const rate = ((value / total) * 100).toFixed(1);
-
-    alert(
-      `キャスト: ${name}\n売上: ¥${value.toLocaleString()}\n構成比: ${rate}%`
-    );
-  }
+  cutout: '80%'
 }
 });
 
@@ -548,42 +472,16 @@ if(chart4) chart4.destroy();
 chart4 = new Chart(document.getElementById("chart4"),{
 type:"bar",
 data:{
-  labels:sorted.map(s=>s.name),
-  datasets:[{
-    data:sorted.map(s=>s.rate*100),
-    barThickness:6   // ←ここでOK（ただし下の設定も追加）
-  }]
-},
-options:{
-  indexAxis: 'y',
-
-  scales:{
-    x:{
-      beginAtZero:true
-    },
-    y:{
-      ticks:{
-        font:{ size:11 }
-      }
-    }
-  },
-
-  // ★これ追加すると「線の太さが確実に細くなる」
-  elements:{
-    bar:{
-      borderRadius:6
-    }
-  },
-
-  // ★余白も詰める（これやると“密度上がって綺麗”になる）
-  layout:{
-    padding:2
-  }
+labels:sorted.map(s=>s.name),
+datasets:[{
+data:sorted.map(s=>s.rate*100)
+}]
 }
 });
 
-window.addEventListener("DOMContentLoaded", () => {
-
+}
+updateDashboard(records);
+window.addEventListener("load", () => {
   const saved = JSON.parse(localStorage.getItem("dashboardFilter"));
 
   if(saved){
@@ -591,10 +489,6 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("dayFilter").value = saved.day || "";
   }
 
-  // ★これ追加（初期データ表示）
-  updateDashboard(records);
-
-  // ★その後フィルター適用
   applyFilter();
 });
 </script>

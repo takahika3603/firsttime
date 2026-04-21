@@ -244,6 +244,15 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   margin-top:6px;
   opacity:0.8;
 }
+  .labelSmall{
+  font-size:11px;
+  opacity:0.6;
+}
+
+.valueBig{
+  font-size:18px;
+  font-weight:700;
+}
 </style>
 </head>
 
@@ -353,9 +362,16 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 
 </div>
 
-<!-- 来客数 -->
-<div class="card">
-来客数：<span id="count"></span>名（海外：<span id="overseasCount"></span>名）
+<div class="card visitorBox">
+
+  <span class="labelSmall">来客数：</span>
+  <span id="count" class="valueBig"></span>
+  <span class="valueBig">名</span>
+
+  <span class="labelSmall">（海外：</span>
+  <span id="overseasCount" class="valueBig"></span>
+  <span class="labelSmall">名）</span>
+
 </div>
 <!-- 海外分析ボタン -->
 <div class="card" onclick="location.href='kaigai.html'" style="cursor:pointer;">

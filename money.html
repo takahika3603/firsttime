@@ -527,10 +527,13 @@ if(chart4) chart4.destroy();
 chart4 = new Chart(document.getElementById("chart4"),{
 type:"bar",
 data:{
-labels:sorted.map(s=>s.name),
-datasets:[{
-data:sorted.map(s=>s.rate*100)
-}]
+  labels:sorted.map(s=>s.name),
+  datasets:[{
+    data:sorted.map(s=>s.rate*100)
+  }]
+},
+options:{
+  indexAxis: "y",  // ←これが縦並びの本体
 }
 });
 

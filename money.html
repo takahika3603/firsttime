@@ -20,7 +20,9 @@ body{
   position:fixed;
   width:400px;
   height:400px;
-  background:radial-gradient(circle, rgba(106,162,255,0.25), transparent 60%);
+  background:radial-gradient(
+circle, rgba(106,162,255,0.25), transparent 60%);
+  
   filter:blur(60px);
   top:-100px;
   right:-100px;
@@ -33,7 +35,9 @@ body{
 
 /* ガラスカード */
 .card{
-  background:rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.
+06);
+  
   backdrop-filter: blur(30px);
   border:1px solid rgba(255,255,255,0.1);
   border-radius:20px;
@@ -57,7 +61,9 @@ body{
 .btn{
   padding:10px 14px;
   border-radius:12px;
-  background:rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.
+08);
+  
   text-decoration:none;
   color:white;
   font-size:12px;
@@ -93,7 +99,9 @@ canvas{
 }
   /* ===== フィルターUI ===== */
 .filterCard{
-  background:rgba(255,255,255,0.05);
+  background:rgba(255,255,255,0.
+05);
+  
   border:1px solid rgba(255,255,255,0.08);
   border-radius:20px;
   padding:16px;
@@ -123,7 +131,9 @@ canvas{
   padding:14px 40px 14px 14px;
   border-radius:14px;
   border:1px solid rgba(255,255,255,0.12);
-  background:rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.
+06);
+  
   color:white;
   font-size:13px;
   outline:none;
@@ -144,14 +154,18 @@ canvas{
 
 .selectWrap select:hover,
 .selectWrap input:hover{
-  background:rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.
+1);
+  
   transform:translateY(-1px);
 }
 
 .selectWrap select:focus,
 .selectWrap input:focus{
   border-color:#6aa2ff;
-  background:rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.
+12);
+  
   box-shadow:
     0 0 0 2px rgba(106,162,255,0.2),
     0 8px 20px rgba(0,0,0,0.4);
@@ -164,7 +178,9 @@ canvas{
 }
 
 /* 日付アイコン調整 */
-input[type="date"]::-webkit-calendar-picker-indicator{
+input[type="date"]::-webkit-
+calendar-picker-indicator{
+  
   opacity:0.4;
   filter:invert(1);
 }
@@ -209,6 +225,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   color:#cfe3ff;
   text-shadow:0 0 10px rgba(106,162,255,0.25);
 }
+  .visitorLabel{
+  font-size:10px;
+  opacity:0.6;
+    
+}
 </style>
 </head>
 
@@ -224,72 +245,78 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   <div class="filterCard">
 
   <div class="filterTitle">期間フィルター</div>
+      <select id="dayFilter" onchange="applyFilter()">
+  <option value="">全日</option>
+  <option value="01">1日</option>
+  <option value="02">2日</option>
+  <option value="03">3日</option>
+  <option value="04">4日</option>
+  <option value="05">5日</option>
+  <option value="06">6日</option>
+  <option value="07">7日</option>
+  <option value="08">8日</option>
+  <option value="09">9日</option>
+  <option value="10">10日</option>
+  <option value="11">11日</option>
+  <option value="12">12日</option>
+  <option value="13">13日</option>
+  <option value="14">14日</option>
+  <option value="15">15日</option>
+  <option value="16">16日</option>
+  <option value="17">17日</option>
+  <option value="18">18日</option>
+  <option value="19">19日</option>
+  <option value="20">20日</option>
+  <option value="21">21日</option>
+  <option value="22">22日</option>
+  <option value="23">23日</option>
+  <option value="24">24日</option>
+  <option value="25">25日</option>
+  <option value="26">26日</option>
+  <option value="27">27日</option>
+  <option value="28">28日</option>
+  <option value="29">29日</option>
+  <option value="30">30日</option>
+  <option value="31">31日</option>
+</select>
 
-  <div class="filterGroup">
-
-    <div class="selectWrap">
-      <select id="monthFilter" onchange="applyFilter()">
-        <option value="">全期間</option>
-        <option value="01">1月</option>
-        <option value="02">2月</option>
-        <option value="03">3月</option>
-        <option value="04">4月</option>
-        <option value="05">5月</option>
-        <option value="06">6月</option>
-        <option value="07">7月</option>
-        <option value="08">8月</option>
-        <option value="09">9月</option>
-        <option value="10">10月</option>
-        <option value="11">11月</option>
-        <option value="12">12月</option>
-      </select>
-    </div>
-
-    <div class="selectWrap">
-      <input type="date" id="dayFilter" onchange="applyFilter()">
-    </div>
-
-  </div>
-
-</div>
-
-
-
-<!-- KPI統合カード -->
-<div class="card kpiBox">
-
-  <div class="kpiGrid">
-
-    <div class="kpiItem">
-      <div class="label">目標</div>
-      <div class="value">¥20,000,000</div>
-    </div>
-
-    <div class="kpiItem">
-      <div class="label">売上</div>
-      <div class="value" id="sales">0円</div>
-    </div>
-
-    <div class="kpiItem">
-      <div class="label">進捗</div>
-      <div class="value" id="progress">0%</div>
-    </div>
-
-    <div class="kpiItem">
-      <div class="label">必要日割</div>
-      <div class="value" id="daily">0円</div>
     </div>
 
   </div>
 
 </div>
 
-<!-- 来客数 -->
-<div class="card">
-来客数：<span id="count"></span>名（海外：<span id="overseasCount"></span>名）
+
+
+<div class="kpiGrid">
+
+  <!-- ① 目標 -->
+  <div class="kpiItem">
+    <div class="label">目標</div>
+    <div class="value">¥20,000,000</div>
+  </div>
+
+  <!-- ② 来客数 -->
+  <div class="kpiItem">
+    <div class="label">来客数</div>
+    <div class="value">
+      <span id="count"></span>名
+    </div>
+  </div>
+
+  <!-- ③ 海外 -->
+  <div class="kpiItem">
+    <div class="label">海外</div>
+    <div class="value">
+      <span id="overseasCount"></span>名
+    </div>
+  </div>
+
 </div>
 <!-- 海外分析ボタン -->
-<div class="card" onclick="location.href='kaigai.html'" style="cursor:pointer;">
+<div class="card" onclick="location.href='
+kaigai.html'" style="cursor:pointer;">
+  
   <div style="font-size:14px; font-weight:600;">
     海外分析
   </div>
@@ -351,8 +378,12 @@ Chart.register({
     // ======================
     if(chart.canvas.id === "chart1"){
 
-      const newRate = ((data[0]/total)*100).toFixed(1);
-      const reRate = ((data[1]/total)*100).toFixed(1);
+      const newRate = ((data[0]/total)*100).toFixed(
+1);
+      
+      const reRate = ((data[1]/total)*100).toFixed(
+1);
+      
 
       ctx.fillText(`新規 ${newRate}%`, width / 2, height / 2 - 8);
       ctx.fillText(`再来 ${reRate}%`, width / 2, height / 2 + 12);
@@ -363,8 +394,12 @@ Chart.register({
     // ======================
     if(chart.canvas.id === "chart2"){
 
-      const jpRate = ((data[0]/total)*100).toFixed(1);
-      const overseasRate = ((data[1]/total)*100).toFixed(1);
+      const jpRate = ((data[0]/total)*100).toFixed(
+1);
+      
+      const overseasRate = ((data[1]/total)*100).toFixed(
+1);
+      
 
       ctx.fillText(`日本 ${jpRate}%`, width / 2, height / 2 - 8);
       ctx.fillText(`海外 ${overseasRate}%`, width / 2, height / 2 + 12);
@@ -374,7 +409,9 @@ Chart.register({
   }
 });
 
-const records = JSON.parse(localStorage.getItem("records") || "[]");
+const records = JSON.parse(localStorage.
+getItem("records") || "[]");
+  
   let chart1, chart2, chart3, chart4;
 function applyFilter(){
 
@@ -382,6 +419,7 @@ function applyFilter(){
   const dayValue = document.getElementById("dayFilter").value;
 // ★追加：保存
   localStorage.setItem("dashboardFilter", JSON.stringify({
+    
     month: monthValue,
     day: dayValue
   }));
@@ -397,11 +435,12 @@ function applyFilter(){
   }
 
   // 日で絞る
-  if(dayValue){
-    filtered = filtered.filter(r =>
-      r.date === dayValue
-    );
-  }
+if(dayValue){
+  filtered = filtered.filter(r =>
+    r.date && r.date.slice(8,10) === dayValue
+                             
+  );
+}
 
   updateDashboard(filtered);
 }

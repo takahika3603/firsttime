@@ -352,7 +352,7 @@ input,select{
 
 <div style="display:flex; gap:8px; margin-bottom:10px;">
   <!-- 月フィルター -->
-  <select class="smallBtn" id="monthFilter" onchange="filterData()">
+  <select class="smallBtn" id="monthFilter" onchange="filterData(); saveFilterState()">
     <option value="">全ての月</option>
     <option value="01">1月</option>
     <option value="02">2月</option>
@@ -369,7 +369,7 @@ input,select{
   </select>
 
   <!-- 日付フィルター -->
-  <input type="date" class="smallBtn" id="dateFilter" onchange="filterData()">
+ <input type="date" class="smallBtn" id="dateFilter" onchange="filterData(); saveFilterState()">
 
 </div>
 <!-- KPI -->
@@ -893,6 +893,7 @@ function updateKPI(data){
       document.getElementById("dailyNeed").innerText =
         "達成済み 🎉";
     }
+    
 
   }else{
 
@@ -903,6 +904,23 @@ function updateKPI(data){
   }
 
 }
+/* ★★★ ここに入れる ★★★ */
+function saveFilterState(){
+  const state = {
+    month: document.getElementById("monthFilter").value,
+    date: document.getElementById("dateFilter").value
+  };
+  localStorage.setItem("filterState", JSON.stringify(state));
+}
+
+function restoreFilterState(){
+  const saved = JSON.parse(localStorage.getItem("filterState"));
+  if(!saved) return;
+
+  document.getElementById("monthFilter").value = saved.month || "";
+  document.getElementById("dateFilter").value = saved.date || "";
+}
+/* ★★★ ここまで ★★★ */
 /* 外クリックで閉じる */
 window.addEventListener("click", function(e){
   if(!e.target.closest(".menu") && !e.target.closest(".menuBtn")){
@@ -910,7 +928,12 @@ window.addEventListener("click", function(e){
     document.querySelectorAll(".subMenu").forEach(el=>{
       el.classList.remove("open");
     });
+    
   }
+});
+  window.addEventListener("load", function(){
+  restoreFilterState();
+  filterData();
 });
 </script>
 

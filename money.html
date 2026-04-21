@@ -35,8 +35,7 @@ circle, rgba(106,162,255,0.25), transparent 60%);
 
 /* ガラスカード */
 .card{
-  background:rgba(255,255,255,0.
-06);
+  background:rgba(255,255,255,0.06);
   
   backdrop-filter: blur(30px);
   border:1px solid rgba(255,255,255,0.1);
@@ -99,8 +98,7 @@ canvas{
 }
   /* ===== フィルターUI ===== */
 .filterCard{
-  background:rgba(255,255,255,0.
-05);
+  background:rgba(255,255,255,0.05);
   
   border:1px solid rgba(255,255,255,0.08);
   border-radius:20px;
@@ -131,8 +129,7 @@ canvas{
   padding:14px 40px 14px 14px;
   border-radius:14px;
   border:1px solid rgba(255,255,255,0.12);
-  background:rgba(255,255,255,0.
-06);
+  background:rgba(255,255,255,0.06);
   
   color:white;
   font-size:13px;
@@ -154,8 +151,7 @@ canvas{
 
 .selectWrap select:hover,
 .selectWrap input:hover{
-  background:rgba(255,255,255,0.
-1);
+  background:rgba(255,255,255,0.1);
   
   transform:translateY(-1px);
 }
@@ -163,8 +159,7 @@ canvas{
 .selectWrap select:focus,
 .selectWrap input:focus{
   border-color:#6aa2ff;
-  background:rgba(255,255,255,0.
-12);
+  background:rgba(255,255,255,0.12);
   
   box-shadow:
     0 0 0 2px rgba(106,162,255,0.2),
@@ -242,52 +237,79 @@ calendar-picker-indicator{
 <div class="topBar">
   <a class="btn" href="kanri.html">← 名簿へ戻る</a>
 </div>
-  <div class="filterCard">
+<div class="filterCard">
 
   <div class="filterTitle">期間フィルター</div>
-      <select id="dayFilter" onchange="applyFilter()">
-  <option value="">全日</option>
-  <option value="01">1日</option>
-  <option value="02">2日</option>
-  <option value="03">3日</option>
-  <option value="04">4日</option>
-  <option value="05">5日</option>
-  <option value="06">6日</option>
-  <option value="07">7日</option>
-  <option value="08">8日</option>
-  <option value="09">9日</option>
-  <option value="10">10日</option>
-  <option value="11">11日</option>
-  <option value="12">12日</option>
-  <option value="13">13日</option>
-  <option value="14">14日</option>
-  <option value="15">15日</option>
-  <option value="16">16日</option>
-  <option value="17">17日</option>
-  <option value="18">18日</option>
-  <option value="19">19日</option>
-  <option value="20">20日</option>
-  <option value="21">21日</option>
-  <option value="22">22日</option>
-  <option value="23">23日</option>
-  <option value="24">24日</option>
-  <option value="25">25日</option>
-  <option value="26">26日</option>
-  <option value="27">27日</option>
-  <option value="28">28日</option>
-  <option value="29">29日</option>
-  <option value="30">30日</option>
-  <option value="31">31日</option>
-</select>
 
+  <div class="filterGroup">
+
+    <!-- 月 -->
+    <div class="selectWrap">
+      <select id="monthFilter" onchange="applyFilter()">
+        <option value="">全月</option>
+        <option value="01">1月</option>
+        <option value="02">2月</option>
+        <option value="03">3月</option>
+        <option value="04">4月</option>
+        <option value="05">5月</option>
+        <option value="06">6月</option>
+        <option value="07">7月</option>
+        <option value="08">8月</option>
+        <option value="09">9月</option>
+        <option value="10">10月</option>
+        <option value="11">11月</option>
+        <option value="12">12月</option>
+      </select>
+    </div>
+
+    <!-- 日 -->
+    <div class="selectWrap">
+      <select id="dayFilter" onchange="applyFilter()">
+        <option value="">全日</option>
+        <option value="01">1日</option>
+        <option value="02">2日</option>
+        <option value="03">3日</option>
+        <option value="04">4日</option>
+        <option value="05">5日</option>
+        <option value="06">6日</option>
+        <option value="07">7日</option>
+        <option value="08">8日</option>
+        <option value="09">9日</option>
+        <option value="10">10日</option>
+        <option value="11">11日</option>
+        <option value="12">12日</option>
+        <option value="13">13日</option>
+        <option value="14">14日</option>
+        <option value="15">15日</option>
+        <option value="16">16日</option>
+        <option value="17">17日</option>
+        <option value="18">18日</option>
+        <option value="19">19日</option>
+        <option value="20">20日</option>
+        <option value="21">21日</option>
+        <option value="22">22日</option>
+        <option value="23">23日</option>
+        <option value="24">24日</option>
+        <option value="25">25日</option>
+        <option value="26">26日</option>
+        <option value="27">27日</option>
+        <option value="28">28日</option>
+        <option value="29">29日</option>
+        <option value="30">30日</option>
+        <option value="31">31日</option>
+      </select>
     </div>
 
   </div>
-
 </div>
 
+<div class="card kpiBox">
 
+  <div>売上：<span id="sales"></span></div>
+  <div>進捗：<span id="progress"></span></div>
+  <div>日割：<span id="daily"></span></div>
 
+</div>
 <div class="kpiGrid">
 
   <!-- ① 目標 -->
@@ -314,8 +336,7 @@ calendar-picker-indicator{
 
 </div>
 <!-- 海外分析ボタン -->
-<div class="card" onclick="location.href='
-kaigai.html'" style="cursor:pointer;">
+<div class="card" onclick="location.href='kaigai.html'" style="cursor:pointer;">
   
   <div style="font-size:14px; font-weight:600;">
     海外分析
@@ -378,11 +399,9 @@ Chart.register({
     // ======================
     if(chart.canvas.id === "chart1"){
 
-      const newRate = ((data[0]/total)*100).toFixed(
-1);
+      const newRate = ((data[0]/total)*100).toFixed(1);
       
-      const reRate = ((data[1]/total)*100).toFixed(
-1);
+      const reRate = ((data[1]/total)*100).toFixed(1);
       
 
       ctx.fillText(`新規 ${newRate}%`, width / 2, height / 2 - 8);
@@ -394,11 +413,9 @@ Chart.register({
     // ======================
     if(chart.canvas.id === "chart2"){
 
-      const jpRate = ((data[0]/total)*100).toFixed(
-1);
+      const jpRate = ((data[0]/total)*100).toFixed(1);
       
-      const overseasRate = ((data[1]/total)*100).toFixed(
-1);
+      const overseasRate = ((data[1]/total)*100).toFixed(1);
       
 
       ctx.fillText(`日本 ${jpRate}%`, width / 2, height / 2 - 8);
@@ -482,18 +499,60 @@ const reC = data.filter(r=>r.type==="再来").length;
 
 if(chart1) chart1.destroy();
 
+const total = newC + reC;
+
 chart1 = new Chart(document.getElementById("chart1"),{
-type:"doughnut",
+type:"bar",
 data:{
-  labels:["新規","再来"],
-  datasets:[{
-    data:[newC,reC],
-    borderWidth: 0
-  }]
+  labels:["来客構成"],
+  datasets:[
+    {
+      label:"新規",
+      data:[newC],
+      backgroundColor:"rgba(106,162,255,0.9)",
+      borderRadius:10,
+      barThickness:18,
+      stack:"stack1"
+    },
+    {
+      label:"再来",
+      data:[reC],
+      backgroundColor:"rgba(255,255,255,0.15)",
+      borderRadius:10,
+      barThickness:18,
+      stack:"stack1"
+    }
+  ]
 },
 options:{
-  cutout: '80%'
-}
+  indexAxis:"y",
+  plugins:{
+    legend:{
+      labels:{
+        color:"rgba(255,255,255,0.7)",
+        font:{ size:11 }
+      }
+    },
+    tooltip:{
+      callbacks:{
+        label:(ctx)=>{
+          const val = ctx.raw;
+          const percent = ((val/total)*100).toFixed(1);
+          return `${ctx.dataset.label}: ${val}件 (${percent}%)`;
+        }
+      }
+    }
+  },
+  scales:{
+    x:{
+      stacked:true,
+      display:false
+    },
+    y:{
+      stacked:true,
+      display:false
+    }
+  }
 });
 
 /* ======================

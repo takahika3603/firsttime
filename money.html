@@ -479,16 +479,25 @@ options:{
 ====================== */
 const castMap = {};
 data.forEach(r=>{
-castMap[r.cast]=(castMap[r.cast]||0)+(+r.price||0);
+  castMap[r.cast] = (castMap[r.cast] || 0) + (+r.price || 0);
 });
+
+/* ★ここが追加ポイント（並び替え） */
+const sortedCast = Object.entries(castMap)
+  .sort((a, b) => b[1] - a[1]); // 売上が高い順
+
+const castLabels = sortedCast.map(item => item[0]);
+const castValues = sortedCast.map(item => item[1]);
 
 if(chart3) chart3.destroy();
 
 chart3 = new Chart(document.getElementById("chart3"),{
 type:"doughnut",
 data:{
-  labels:Object.keys(castMap),
-  datasets:[{ data:Object.values(castMap) }]
+  labels: castLabels,
+  datasets:[{
+    data: castValues
+  }]
 },
 options:{
   cutout: '80%'

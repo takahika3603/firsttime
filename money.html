@@ -581,8 +581,9 @@ options:{
   }
 }
 });
-updateDashboard(records);
-window.addEventListener("load", () => {
+
+window.addEventListener("DOMContentLoaded", () => {
+
   const saved = JSON.parse(localStorage.getItem("dashboardFilter"));
 
   if(saved){
@@ -590,6 +591,10 @@ window.addEventListener("load", () => {
     document.getElementById("dayFilter").value = saved.day || "";
   }
 
+  // ★これ追加（初期データ表示）
+  updateDashboard(records);
+
+  // ★その後フィルター適用
   applyFilter();
 });
 </script>

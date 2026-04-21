@@ -276,6 +276,42 @@ input,select{
   opacity:0.7;
   margin-top:6px;
 }
+.dashboardCard{
+  padding:18px;
+  border-radius:22px;
+  margin-bottom:12px;
+
+  background:linear-gradient(135deg, rgba(106,162,255,0.15), rgba(255,122,217,0.15));
+  backdrop-filter: blur(40px);
+
+  border:1px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.4),
+    inset 0 1px 1px rgba(255,255,255,0.08);
+
+  cursor:pointer;
+  transition:0.25s;
+}
+
+.dashboardCard:hover{
+  transform:translateY(-2px) scale(1.01);
+}
+
+.dashTitle{
+  font-size:16px;
+  font-weight:700;
+  margin-bottom:6px;
+
+  background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.dashSub{
+  font-size:12px;
+  opacity:0.7;
+}
 </style>
 </head>
 
@@ -336,7 +372,7 @@ input,select{
   <input type="date" class="smallBtn" id="dateFilter" onchange="filterData()">
 
 </div>
-<!-- KPI（総額 & 目標） -->
+<!-- KPI -->
 <div class="kpiGrid">
 
   <div class="kpiCard">
@@ -350,6 +386,13 @@ input,select{
     <div class="kpiSub" id="dailyNeed">日割り：0円</div>
   </div>
 
+</div>
+
+<!-- 👇ここに置く -->
+<div class="dashboardCard" onclick="location.href='money.html'">
+  <div class="dashTitle">分析ダッシュボード</div>
+  <div class="dashSub">売上・海外比率・詳細分析を見る →</div>
+</div>
 </div>
 <div id="listPage" class="list"></div>
 <!-- 詳細 -->

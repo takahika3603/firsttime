@@ -153,9 +153,17 @@ else overseas += +r.price||0;
 new Chart(document.getElementById("chart1"),{
 type:"doughnut",
 data:{
-labels:["日本","海外"],
-datasets:[{data:[jp,overseas]}]
+  labels:["日本","海外"],
+  datasets:[{
+    data:[jp,overseas]
+  }]
+},
+
+// ★ここを追加する（重要）
+options:{
+  cutout: "85%"
 }
+
 });
 
 /* ======================

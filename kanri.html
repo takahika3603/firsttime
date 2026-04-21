@@ -449,6 +449,8 @@ input,select{
   <button class="chip" onclick="toggleExtra('CP',1000,this)">CP +1000</button>
   <button class="chip" onclick="toggleExtra('延長15分',5000,this)">延長15分 +5000</button>
   <button class="chip" onclick="toggleExtra('延長30分',10000,this)">延長30分 +10000</button>
+  <button class="chip" onclick="toggleExtra('口コミ割引',-1000,this)">口コミ割引 -1000</button>
+<button class="chip" onclick="toggleExtra('CB',-1000,this)">CB -1000</button>
 </div>
 
 
@@ -717,7 +719,7 @@ if(c.classList.contains("bikou") && form.bikou.includes(c.innerText)){
 if(c.innerText == form.route) c.classList.add("active");
     if(form.op.includes(c.innerText)) c.classList.add("active");
          // 追加オプション反映
-if(form.extra && form.extra.includes(c.innerText.replace(/ \+.*/,""))){
+if(form.extra && form.extra.includes(c.innerText.replace(/ [+-].*/,""))){
   c.classList.add("active");
 }
   });

@@ -165,6 +165,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   opacity:0.4;
   filter:invert(1);
 }
+  /* KPIだけ小さくする */
+.kpiSmall{
+  font-size:14px;
+  font-weight:700;
+}
 </style>
 </head>
 
@@ -214,25 +219,25 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 <!-- KPI -->
 <div class="grid">
 
-<div class="card">
-目標
-<div class="big">¥20,000,000</div>
-</div>
+  <div class="card">
+    <div style="font-size:12px; opacity:0.6;">目標</div>
+    <div class="big kpiSmall">¥20,000,000</div>
+  </div>
 
-<div class="card">
-売上
-<div class="big" id="sales">0円</div>
-</div>
+  <div class="card">
+    <div style="font-size:12px; opacity:0.6;">売上</div>
+    <div class="big kpiSmall" id="sales">0円</div>
+  </div>
 
-<div class="card">
-進捗
-<div class="big" id="progress">0%</div>
-</div>
+  <div class="card">
+    <div style="font-size:12px; opacity:0.6;">進捗</div>
+    <div class="big kpiSmall" id="progress">0%</div>
+  </div>
 
-<div class="card">
-必要日割
-<div class="big" id="daily">0円</div>
-</div>
+  <div class="card">
+    <div style="font-size:12px; opacity:0.6;">必要日割</div>
+    <div class="big kpiSmall" id="daily">0円</div>
+  </div>
 
 </div>
 

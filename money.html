@@ -283,6 +283,11 @@ function applyFilter(){
 
   const monthValue = document.getElementById("monthFilter").value;
   const dayValue = document.getElementById("dayFilter").value;
+// ★追加：保存
+  localStorage.setItem("dashboardFilter", JSON.stringify({
+    month: monthValue,
+    day: dayValue
+  }));
 
   let filtered = records;
 
@@ -322,7 +327,7 @@ document.getElementById("progress").innerText =
 /* 日割 */
 const now = new Date();
 const lastDay = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
-const daysLeft = lastDay - now.getDate();
+const daysLeft = Math.max(1, lastDay - now.getDate());
 document.getElementById("daily").innerText =
 Math.ceil((target-totalSales)/daysLeft).toLocaleString()+"円";
 
@@ -419,6 +424,16 @@ data:sorted.map(s=>s.rate*100)
 
 }
 updateDashboard(records);
+window.addEventListener("load", () => {
+  const saved = JSON.parse(localStorage.getItem("dashboardFilter"));
+
+  if(saved){
+    document.getElementById("monthFilter").value = saved.month || "";
+    document.getElementById("dayFilter").value = saved.day || "";
+  }
+
+  applyFilter();
+});
 </script>
 
 </body>

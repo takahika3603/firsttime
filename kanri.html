@@ -229,6 +229,53 @@ input,select{
 .hidden{
   display:none;
 }
+.kpiGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.kpiCard{
+  padding:18px;
+  border-radius:22px;
+
+  background:rgba(255,255,255,0.05);
+  backdrop-filter: blur(40px);
+
+  border:1px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.4),
+    inset 0 1px 1px rgba(255,255,255,0.08);
+
+  transition:0.25s;
+}
+
+.kpiCard:hover{
+  transform:translateY(-2px) scale(1.01);
+}
+
+.kpiLabel{
+  font-size:11px;
+  opacity:0.6;
+  margin-bottom:6px;
+}
+
+.kpiValue{
+  font-size:22px;
+  font-weight:700;
+
+  background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.kpiSub{
+  font-size:11px;
+  opacity:0.7;
+  margin-top:6px;
+}
 </style>
 </head>
 
@@ -287,6 +334,21 @@ input,select{
 
   <!-- 日付フィルター -->
   <input type="date" class="smallBtn" id="dateFilter" onchange="filterData()">
+
+</div>
+<!-- KPI（総額 & 目標） -->
+<div class="kpiGrid">
+
+  <div class="kpiCard">
+    <div class="kpiLabel">総売上</div>
+    <div class="kpiValue" id="totalSales">¥0</div>
+  </div>
+
+  <div class="kpiCard">
+    <div class="kpiLabel">目標進捗</div>
+    <div class="kpiValue" id="goalProgress">0%</div>
+    <div class="kpiSub" id="dailyNeed">日割り：0円</div>
+  </div>
 
 </div>
 <div id="listPage" class="list"></div>
@@ -408,7 +470,8 @@ let editIndex = null;
  /* ===== 初期化 ===== */
 createTimeChips();
 render();
-
+updateKPI(records);
+  
 /* ===== 時間チップ生成 ===== */
 function createTimeChips(){
   const group = document.getElementById("timeGroup");
@@ -642,6 +705,7 @@ function filterData(){
 
   records = filtered;
   render();
+  updateKPI(records);
 }
   function render(){
   const list=document.getElementById("listPage");
@@ -698,7 +762,57 @@ function toggleSub(id){
 
   target.classList.toggle("open");
 }
+function updateKPI(data){
 
+  // 総売上
+  const total = data.reduce((sum,r)=>sum+(+r.price||0),0);
+  document.getElementById("totalSales").innerText =
+    "¥" + total.toLocaleString();
+
+  // 月フィルター取得
+  const month = document.getElementById("monthFilter").value;
+
+  // 月目標（固定でOK）
+  const monthlyTarget = 20000000;
+
+  if(month){
+
+    // 月の日数
+    const now = new Date();
+    const year = now.getFullYear();
+    const lastDay = new Date(year, parseInt(month), 0).getDate();
+
+    const today = now.getDate();
+
+    // 進捗
+    const progress = (total / monthlyTarget) * 100;
+
+    document.getElementById("goalProgress").innerText =
+      progress.toFixed(1) + "%";
+
+    // 未達なら日割り計算
+    const remain = monthlyTarget - total;
+
+    if(remain > 0){
+      const daysLeft = lastDay - today;
+      const perDay = Math.ceil(remain / daysLeft);
+
+      document.getElementById("dailyNeed").innerText =
+        "日割り：" + perDay.toLocaleString() + "円";
+    }else{
+      document.getElementById("dailyNeed").innerText =
+        "達成済み 🎉";
+    }
+
+  }else{
+
+    // フィルターなし（全体）
+    document.getElementById("goalProgress").innerText = "-";
+    document.getElementById("dailyNeed").innerText = "月指定で表示";
+
+  }
+
+}
 /* 外クリックで閉じる */
 window.addEventListener("click", function(e){
   if(!e.target.closest(".menu") && !e.target.closest(".menuBtn")){

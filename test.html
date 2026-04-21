@@ -210,6 +210,41 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   color:#cfe3ff;
   text-shadow:0 0 10px rgba(106,162,255,0.25);
 }
+  .barWrap{
+  margin-top:10px;
+}
+
+.bar{
+  display:flex;
+  height:18px;
+  width:100%;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(255,255,255,0.06);
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+}
+
+/* 新規 */
+.barNew{
+  background:linear-gradient(90deg,#6aa2ff,#8ec5ff);
+  width:0%;
+  transition:width 0.5s ease;
+}
+
+/* 再来 */
+.barRe{
+  background:linear-gradient(90deg,#ff78b4,#ff9bc8);
+  width:0%;
+  transition:width 0.5s ease;
+}
+
+.barLabel{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  margin-top:6px;
+  opacity:0.8;
+}
 </style>
 </head>
 
@@ -326,18 +361,30 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 <!-- 海外分析ボタン -->
 <div class="card" onclick="location.href='kaigai.html'" style="cursor:pointer;">
   <div style="font-size:14px; font-weight:600;">
-    海外分析
+    
+海外分析
   </div>
   <div style="font-size:11px; opacity:0.7; margin-top:4px;">
     国別・売上・指名を分析する
   </div>
 </div>
-<!-- 新規 / 再来 -->
 <div class="card">
-<h3>新規 vs 再来</h3>
-<canvas id="chart1"></canvas>
-</div>
+  <h3>新規 vs 再来</h3>
 
+  <div class="barWrap">
+
+    <div class="bar">
+      <div class="barNew" id="barNew"></div>
+      <div class="barRe" id="barRe"></div>
+    </div>
+
+    <div class="barLabel">
+      <span id="newText">新規 0%</span>
+      <span id="reText">再来 0%</span>
+    </div>
+
+  </div>
+</div>
 <!-- 日本 / 海外 -->
 <div class="card">
 <h3>日本 vs 海外 売上</h3>
@@ -443,101 +490,71 @@ if(dayValue){
 
 function updateDashboard(data){
 
-/* ======================
-売上
-====================== */
-const totalSales = data.reduce((s,r)=>s+(+r.price||0),0);
+  /* ======================
+  売上
+  ====================== */
+  const totalSales = data.reduce((s,r)=>s+(+r.price||0),0);
 
-document.getElementById("sales").innerText =
-"¥" + totalSales.toLocaleString();
+  document.getElementById("sales").innerText =
+  "¥" + totalSales.toLocaleString();
 
-/* 進捗 */
-const target = 20000000;
-document.getElementById("progress").innerText =
-((totalSales/target)*100).toFixed(1)+"%";
+  const target = 20000000;
+  document.getElementById("progress").innerText =
+  ((totalSales/target)*100).toFixed(1)+"%";
 
-/* 日割 */
-const now = new Date();
-const lastDay = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
-const daysLeft = Math.max(1, lastDay - now.getDate());
-document.getElementById("daily").innerText =
-Math.ceil((target-totalSales)/daysLeft).toLocaleString()+"円";
+  /* ======================
+  来客
+  ====================== */
+  const jpCount = data.filter(r => r.country === "日本").length;
+  const overseasCount = data.filter(r => r.country && r.country !== "日本").length;
 
-/* 来客 */
-const jpCount = data.filter(r => r.country === "日本").length;
-const overseasCount = data.filter(r => r.country && r.country !== "日本").length;
+  document.getElementById("count").innerText = jpCount + overseasCount;
+  document.getElementById("overseasCount").innerText = overseasCount;
 
-document.getElementById("count").innerText = jpCount + overseasCount;
-document.getElementById("overseasCount").innerText = overseasCount;
+  /* ======================
+  新規 vs 再来（ここが正解）
+  ====================== */
+  const newC = data.filter(r => r.type === "新規").length;
+  const reC = data.filter(r => r.type === "再来").length;
 
-const newC = data.filter(r => r.type === "新規").length;
-const reC = data.filter(r => r.type === "再来").length;
+  const total = newC + reC;
 
-const total = newC + reC;
-const newRate = total ? (newC / total * 100) : 0;
-const reRate = total ? (reC / total * 100) : 0;
+  const newRate = total ? (newC / total * 100) : 0;
+  const reRate = total ? (reC / total * 100) : 0;
 
-if(chart1) chart1.destroy();
+  document.getElementById("barNew").style.width = newRate + "%";
+  document.getElementById("barRe").style.width = reRate + "%";
 
-chart1 = new Chart(document.getElementById("chart1"), {
-  type: "bar",
-  data: {
-    labels: ["構成比"], // ← 1カテゴリだけ
-    datasets: [
-      {
-        label: "新規",
-        data: [newRate],
-        backgroundColor: "rgba(106,162,255,0.9)"
-      },
-      {
-        label: "再来",
-        data: [reRate],
-        backgroundColor: "rgba(255,120,180,0.9)"
-      }
-    ]
-  },
-  options: {
-    indexAxis: "y",
-    scales: {
-      x: {
-        stacked: true,
-        max: 100,
-        ticks: {
-          callback: v => v + "%"
-        }
-      },
-      y: {
-        stacked: true
-      }
+  document.getElementById("newText").innerText =
+    `新規 ${newRate.toFixed(1)}%`;
+
+  document.getElementById("reText").innerText =
+    `再来 ${reRate.toFixed(1)}%`;
+
+  /* ======================
+  日本 / 海外（ここに移動する）
+  ====================== */
+  let jp = 0, overseas = 0;
+
+  data.forEach(r=>{
+    if(r.country==="日本") jp += +r.price||0;
+    else overseas += +r.price||0;
+  });
+
+  if(chart2) chart2.destroy();
+
+  chart2 = new Chart(document.getElementById("chart2"),{
+    type:"doughnut",
+    data:{
+      labels:["日本","海外"],
+      datasets:[{ data:[jp,overseas] }]
     },
-    plugins: {
-      legend: { display: false }
+    options:{
+      cutout:'80%'
     }
-  }
-});
-/* ======================
-日本 / 海外
-====================== */
-let jp=0, overseas=0;
+  });
 
-data.forEach(r=>{
-if(r.country==="日本") jp+=+r.price||0;
-else overseas+=+r.price||0;
-});
-
-if(chart2) chart2.destroy();
-
-chart2 = new Chart(document.getElementById("chart2"),{
-type:"doughnut",
-data:{
-  labels:["日本","海外"],
-  datasets:[{ data:[jp,overseas] }]
-},
-options:{
-  cutout: '80%'
 }
-});
-
 /* ======================
 キャスト売上
 ====================== */

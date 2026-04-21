@@ -382,6 +382,9 @@ type:"doughnut",
 data:{
   labels:["日本","海外"],
   datasets:[{ data:[jp,overseas] }]
+},
+options:{
+  cutout: '80%'
 }
 });
 
@@ -400,6 +403,9 @@ type:"doughnut",
 data:{
   labels:Object.keys(castMap),
   datasets:[{ data:Object.values(castMap) }]
+},
+options:{
+  cutout: '80%'
 }
 });
 

@@ -86,7 +86,10 @@ h3{
 /* canvas */
 canvas{
   width:100% !important;
-  aspect-ratio: 1 / 1;
+  height:100% !important;
+}
+  #chart4Wrap{
+  width:100%;
 }
   /* ===== フィルターUI ===== */
 .filterCard{
@@ -314,8 +317,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 
 <!-- ★追加：リピート率ランキング -->
 <div class="card">
-<h3>リピート率ランキング</h3>
-<canvas id="chart4"></canvas>
+  <h3>リピート率ランキング</h3>
+
+  <div id="chart4Wrap">
+    <canvas id="chart4"></canvas>
+  </div>
 </div>
 
 </div>
@@ -523,18 +529,33 @@ return { name, rate: d.total ? d.re/d.total : 0 };
 }).sort((a,b)=>b.rate-a.rate);
 
 if(chart4) chart4.destroy();
+const count = Math.min(sorted.length, 20);
+const rowHeight = 20; // 1人あたりの高さ
+const height = Math.max(200, count * rowHeight);
 
+document.getElementById("chart4Wrap").style.height = height + "px";
 chart4 = new Chart(document.getElementById("chart4"),{
-type:"bar",
-data:{
-  labels:sorted.map(s=>s.name),
-  datasets:[{
-    data:sorted.map(s=>s.rate*100)
-  }]
-},
-options:{
-  responsive: true
-}
+  type:"bar",
+  data:{
+    labels: sorted.slice(0,20).map(s=>s.name),
+    datasets:[{
+      data: sorted.slice(0,20).map(s=>s.rate*100)
+    }]
+  },
+  options:{
+    indexAxis: "y",
+    responsive: true,
+    maintainAspectRatio: false, // ←これ重要
+    scales:{
+      x:{
+        beginAtZero:true,
+        max:100
+      }
+    },
+    plugins:{
+      legend:{ display:false }
+    }
+  }
 });
 
 }

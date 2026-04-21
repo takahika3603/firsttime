@@ -208,13 +208,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   </div>
 
 </div>
-  <div class="card">
-  <div style="display:flex; gap:10px; flex-wrap:wrap;">
-    <button onclick="showAll()">全期間</button>
-    <button onclick="showToday()">今日</button>
-    <button onclick="showThisMonth()">今月</button>
-  </div>
-</div>
+
+
 
 <!-- KPI -->
 <div class="grid">
@@ -308,30 +303,7 @@ function applyFilter(){
 
   updateDashboard(filtered);
 }
-function showAll(){
-  updateDashboard(records);
-}
 
-function showToday(){
-  const today = new Date().toISOString().slice(0,10);
-
-  const filtered = records.filter(r =>
-    r.date === today
-  );
-
-  updateDashboard(filtered);
-}
-
-function showThisMonth(){
-  const now = new Date();
-  const month = String(now.getMonth()+1).padStart(2,"0");
-
-  const filtered = records.filter(r =>
-    r.date && r.date.slice(5,7) === month
-  );
-
-  updateDashboard(filtered);
-}
 function updateDashboard(data){
 
 /* ======================

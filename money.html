@@ -286,24 +286,48 @@ Chart.register({
   id: 'centerText',
   beforeDraw(chart) {
 
-    if (chart.canvas.id !== "chart1") return;
+    // chart1 と chart2 だけ対象
+    if (chart.canvas.id !== "chart1" && chart.canvas.id !== "chart2") return;
 
     const { width, height, ctx } = chart;
     ctx.save();
 
     const data = chart.data.datasets[0].data;
     const total = data.reduce((a,b)=>a+b,0);
-
-    const newRate = ((data[0]/total)*100).toFixed(1);
-    const reRate = ((data[1]/total)*100).toFixed(1);
+    if(total === 0){
+  ctx.fillText("データなし", width/2, height/2);
+  ctx.restore();
+  return;
+}
 
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "rgba(255,255,255,0.8)";
     ctx.font = "500 12px -apple-system";
 
-    ctx.fillText(`新規 ${newRate}%`, width / 2, height / 2 - 8);
-    ctx.fillText(`再来 ${reRate}%`, width / 2, height / 2 + 12);
+    // ======================
+    // chart1（新規 vs 再来）
+    // ======================
+    if(chart.canvas.id === "chart1"){
+
+      const newRate = ((data[0]/total)*100).toFixed(1);
+      const reRate = ((data[1]/total)*100).toFixed(1);
+
+      ctx.fillText(`新規 ${newRate}%`, width / 2, height / 2 - 8);
+      ctx.fillText(`再来 ${reRate}%`, width / 2, height / 2 + 12);
+    }
+
+    // ======================
+    // chart2（日本 vs 海外）
+    // ======================
+    if(chart.canvas.id === "chart2"){
+
+      const jpRate = ((data[0]/total)*100).toFixed(1);
+      const overseasRate = ((data[1]/total)*100).toFixed(1);
+
+      ctx.fillText(`日本 ${jpRate}%`, width / 2, height / 2 - 8);
+      ctx.fillText(`海外 ${overseasRate}%`, width / 2, height / 2 + 12);
+    }
 
     ctx.restore();
   }

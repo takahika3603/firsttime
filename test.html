@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -369,21 +368,26 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   </div>
 </div>
 <div class="card">
-  <h3>日本 vs 海外 売上</h3>
+  <h3>新規 vs 再来</h3>
 
   <div class="barWrap">
 
     <div class="bar">
-      <div class="barNew" id="barJP"></div>
-      <div class="barRe" id="barOverseas"></div>
+      <div class="barNew" id="barNew"></div>
+      <div class="barRe" id="barRe"></div>
     </div>
 
     <div class="barLabel">
-      <span id="jpText">日本 0%</span>
-      <span id="overseasText">海外 0%</span>
+      <span id="newText">新規 0%</span>
+      <span id="reText">再来 0%</span>
     </div>
 
   </div>
+</div>
+<!-- 日本 / 海外 -->
+<div class="card">
+<h3>日本 vs 海外 売上</h3>
+<canvas id="chart2"></canvas>
 </div>
 
 <!-- キャスト売上 -->
@@ -520,26 +524,23 @@ function updateDashboard(data){
   document.getElementById("reText").innerText =
     `再来 ${reRate.toFixed(1)}%`;
 
-// 日本 vs 海外
-let jp = 0, overseas = 0;
+  // 日本 vs 海外
+  let jp = 0, overseas = 0;
 
-data.forEach(r=>{
-  if(r.country==="日本") jp += +r.price||0;
-  else overseas += +r.price||0;
-});
+  data.forEach(r=>{
+    if(r.country==="日本") jp += +r.price||0;
+    else overseas += +r.price||0;
+  });
 
-const totalSales = jp + overseas;
+  if(chart2) chart2.destroy();
 
-const jpRate = totalSales ? (jp / totalSales * 100) : 0;
-const overseasRate = totalSales ? (overseas / totalSales * 100) : 0;
-
-// バー反映
-document.getElementById("barJP").style.width = jpRate + "%";
-document.getElementById("barOverseas").style.width = overseasRate + "%";
-
-// テキスト反映
-document.getElementById("jpText").innerText = `日本 ${jpRate.toFixed(1)}%`;
-document.getElementById("overseasText").innerText = `海外 ${overseasRate.toFixed(1)}%`;
+  chart2 = new Chart(document.getElementById("chart2"),{
+    type:"doughnut",
+    data:{
+      labels:["日本","海外"],
+      datasets:[{ data:[jp,overseas] }]
+    }
+  });
 
   // キャスト売上（ここに移動）
   const castMap = {};

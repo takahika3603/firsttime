@@ -470,28 +470,50 @@ const overseasCount = data.filter(r => r.country && r.country !== "日本").leng
 document.getElementById("count").innerText = jpCount + overseasCount;
 document.getElementById("overseasCount").innerText = overseasCount;
 
-/* ======================
-新規 / 再来
-====================== */  
-const newC = data.filter(r=>r.type==="新規").length;
-const reC = data.filter(r=>r.type==="再来").length;
+const newC = data.filter(r => r.type === "新規").length;
+const reC = data.filter(r => r.type === "再来").length;
+
+const total = newC + reC;
+const newRate = total ? (newC / total * 100) : 0;
+const reRate = total ? (reC / total * 100) : 0;
 
 if(chart1) chart1.destroy();
 
-chart1 = new Chart(document.getElementById("chart1"),{
-type:"doughnut",
-data:{
-  labels:["新規","再来"],
-  datasets:[{
-    data:[newC,reC],
-    borderWidth: 0
-  }]
-},
-options:{
-  cutout: '80%'
-}
-});
+chart1 = new Chart(document.getElementById("chart1"), {
+  type: "bar",
+  data: {
+    labels: ["新規 vs 再来"],
+    datasets: [{
+      label: "構成比",
+      data: [newRate, reRate], // ★ここ重要
+      backgroundColor: [
+        "rgba(106,162,255,0.9)",
+        "rgba(255,120,180,0.9)"
+      ],
+      borderRadius: 12
+    }]
+  },
+  options: {
+    indexAxis: "y",
 
+    scales: {
+      x: {
+        stacked: true,
+        max: 100,
+        ticks: {
+          callback: v => v + "%"
+        }
+      },
+      y: {
+        stacked: true
+      }
+    },
+
+    plugins: {
+      legend: { display: false }
+    }
+  }
+});
 /* ======================
 日本 / 海外
 ====================== */

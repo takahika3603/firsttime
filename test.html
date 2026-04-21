@@ -482,20 +482,22 @@ if(chart1) chart1.destroy();
 chart1 = new Chart(document.getElementById("chart1"), {
   type: "bar",
   data: {
-    labels: ["新規 vs 再来"],
-    datasets: [{
-      label: "構成比",
-      data: [newRate, reRate], // ★ここ重要
-      backgroundColor: [
-        "rgba(106,162,255,0.9)",
-        "rgba(255,120,180,0.9)"
-      ],
-      borderRadius: 12
-    }]
+    labels: ["構成比"], // ← 1カテゴリだけ
+    datasets: [
+      {
+        label: "新規",
+        data: [newRate],
+        backgroundColor: "rgba(106,162,255,0.9)"
+      },
+      {
+        label: "再来",
+        data: [reRate],
+        backgroundColor: "rgba(255,120,180,0.9)"
+      }
+    ]
   },
   options: {
     indexAxis: "y",
-
     scales: {
       x: {
         stacked: true,
@@ -508,7 +510,6 @@ chart1 = new Chart(document.getElementById("chart1"), {
         stacked: true
       }
     },
-
     plugins: {
       legend: { display: false }
     }

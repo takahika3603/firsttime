@@ -437,9 +437,21 @@ input,select{
 <button class="bikou" onclick="toggleBikou('マンステ',this)">マンステ</button>
 <button class="bikou" onclick="toggleBikou('クレカ',this)">クレカ</button>
 <button class="bikou" onclick="toggleBikou('クーポン',this)">クーポン</button>
-  
+</div>
 <!-- ⑧ 総額 -->
 <input id="price" placeholder="金額">
+<div class="label">追加オプション（自動加算）</div>
+<div class="chip-group">
+  <button class="chip" onclick="toggleExtra('AN',3000,this)">AN +3000</button>
+  <button class="chip" onclick="toggleExtra('SL',2000,this)">SL +2000</button>
+  <button class="chip" onclick="toggleExtra('NL',3000,this)">NL +3000</button>
+  <button class="chip" onclick="toggleExtra('K',1000,this)">K +1000</button>
+  <button class="chip" onclick="toggleExtra('CP',1000,this)">CP +1000</button>
+  <button class="chip" onclick="toggleExtra('延長15分',5000,this)">延長15分 +5000</button>
+  <button class="chip" onclick="toggleExtra('延長30分',10000,this)">延長30分 +10000</button>
+</div>
+
+
 <button class="smallBtn" onclick="save()">保存</button>
 <button class="smallBtn" onclick="back()">戻る</button>
   <button id="deleteBtn" class="smallBtn" onclick="deleteRecord()" style="background:#ff4d4d;">削除</button>
@@ -466,7 +478,8 @@ let form = {
   shimei:"",
   op:[],
   bikou:[],
-  route:""
+  route:"",
+  extra:[]
 };
 let editIndex = null;
  /* ===== 初期化 ===== */
@@ -496,7 +509,8 @@ form = {
   shimei:"",
   op:[],
   bikou:[],
-  route:""// ←これ追加
+  route:"",
+  extra:[]// ←これ追加
 };
 
   editIndex = null;
@@ -578,6 +592,26 @@ function toggleOp(val,el){
     el.classList.add("active");
   }
 }
+
+function toggleExtra(name, price, el){
+
+  const input = document.getElementById("price");
+  let current = Number(input.value) || 0;
+
+  if(form.extra.includes(name)){
+    // OFF（引く）
+    form.extra = form.extra.filter(v=>v!==name);
+    current -= price;
+    el.classList.remove("active");
+  }else{
+    // ON（足す）
+    form.extra.push(name);
+    current += price;
+    el.classList.add("active");
+  }
+
+  input.value = current;
+}
 /* ===== 保存 ===== */
 function save(){
   const record={
@@ -593,7 +627,8 @@ function save(){
     shimei:form.shimei,
     op:form.op,
     bikou: form.bikou,
-    route: form.route
+    route: form.route,
+    extra: form.extra
   };
 
   if(editIndex !== null){
@@ -607,6 +642,7 @@ function save(){
 
   back();
   render();
+  updateKPI(records);
 }
 function deleteRecord(){
   if(editIndex === null){
@@ -624,6 +660,7 @@ records = [...allRecords];
 
 back();
 render();
+updateKPI(records);
   }
 }
  function editRecord(index){
@@ -650,6 +687,7 @@ document.getElementById("deleteBtn").style.display = "block";
   form.op = r.op || [];
   form.bikou = r.bikou || [];
   form.route = r.route || "";
+   form.extra = r.extra || [];
 
   document.getElementById("listPage").style.display="none";
   document.getElementById("detailPage").style.display="block";
@@ -678,8 +716,12 @@ if(c.classList.contains("bikou") && form.bikou.includes(c.innerText)){
 }
 if(c.innerText == form.route) c.classList.add("active");
     if(form.op.includes(c.innerText)) c.classList.add("active");
+         // 追加オプション反映
+if(form.extra && form.extra.includes(c.innerText.replace(/ \+.*/,""))){
+  c.classList.add("active");
+}
   });
-    
+ 
   if(form.country==="海外"){
     document.getElementById("countrySelectBox").classList.remove("hidden");
     document.getElementById("routeBox").classList.remove("hidden");
@@ -688,6 +730,7 @@ if(c.innerText == form.route) c.classList.add("active");
     document.getElementById("routeBox").classList.add("hidden");
   }
 }
+
   
 /* ===== 描画 ===== */
 function filterData(){

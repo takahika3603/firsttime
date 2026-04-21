@@ -206,6 +206,25 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   color:#cfe3ff;
   text-shadow:0 0 10px rgba(106,162,255,0.25);
 }
+/* ===== フィルターをカード化＋コンパクト化 ===== */
+.filterGroup{
+  display:flex;
+  gap:8px;
+
+  padding:8px;
+  border-radius:18px;
+
+  background: rgba(120,170,255,0.06);
+  border:1px solid rgba(120,170,255,0.12);
+  backdrop-filter: blur(25px);
+
+  margin-bottom:10px;
+}
+.selectWrap select,
+.selectWrap input{
+  padding:12px 38px 12px 12px;
+}
+  
 </style>
 </head>
 

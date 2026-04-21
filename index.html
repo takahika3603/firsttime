@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spatial Progress</title>
+<title>外国人口コミトラッカー</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -11,288 +11,179 @@
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans","Meiryo";
-  overflow-x:hidden;
-  color:rgba(255,255,255,0.85);
-
-  /* ■ 空間そのもの（背景レイヤー） */
-  background:
-    radial-gradient(circle at 50% 20%, rgba(255,255,255,0.08), transparent 60%),
-    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.04), transparent 55%),
-    radial-gradient(circle at 80% 70%, rgba(255,255,255,0.03), transparent 60%),
-    linear-gradient(#000, #05070c);
+  background:linear-gradient(#000,#05070c);
+  color:white;
 }
 
-/* ■ 空間の粒子 */
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background:
-    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.02), transparent 60%),
-    radial-gradient(circle at 70% 80%, rgba(255,255,255,0.015), transparent 65%);
-  filter: blur(0.5px);
-}
-
-/* ■ タイトル（空間固定） */
 h2{
   text-align:center;
-  margin:18px 0;
-  font-weight:400;
-  letter-spacing:2px;
-  color:rgba(255,255,255,0.9);
+  margin:20px 0;
 }
 
-/* ■ 空間グリッド */
 .wrapper{
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px,1fr));
-  gap:22px;
-  padding:24px;
-
-  perspective:1200px;
+  padding:20px;
 }
 
-/* ■ 空間カード（重要） */
 .box{
-  position:relative;
-  padding:18px;
-  border-radius:26px;
-
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-
-  backdrop-filter: blur(30px);
-
-  box-shadow:
-    0 40px 120px rgba(0,0,0,0.7),
-    inset 0 1px 0 rgba(255,255,255,0.05);
-
-  transition:0.35s cubic-bezier(.2,.8,.2,1);
-
-  transform:translateZ(0);
+  padding:20px;
+  border-radius:20px;
+  background:rgba(255,255,255,0.05);
 }
 
-/* ■ フォーカス（Vision Proの“前に出る”感覚） */
-.box:hover{
-  transform:translateY(-6px) scale(1.02);
-  border:1px solid rgba(255,255,255,0.18);
-  box-shadow:
-    0 60px 160px rgba(0,0,0,0.8),
-    0 0 80px rgba(255,255,255,0.05);
-}
-
-/* ■ タイトル */
-.box h3{
-  margin:0 0 8px;
-  font-size:14px;
-  font-weight:400;
-}
-
-/* ■ 数値（空間中心） */
 .percent{
-  font-size:28px;
-  font-weight:500;
-  margin:8px 0;
-  color:rgba(255,255,255,0.95);
+  font-size:32px;
+  text-align:center;
 }
 
-/* ■ 情報 */
-.info{
+.info,.msg{
+  text-align:center;
   font-size:12px;
-  color:rgba(255,255,255,0.55);
-  margin:6px 0;
+  margin:5px 0;
 }
 
-/* ■ 状態メッセージ */
-.msg{
-  height:18px;
-  font-size:12px;
-  color:rgba(255,255,255,0.65);
-}
-
-/* ■ 空間ボタン */
 button{
   width:100%;
-  padding:11px;
-  margin:5px 0;
-
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.12);
-
-  background:rgba(255,255,255,0.03);
-  color:rgba(255,255,255,0.8);
-
-  backdrop-filter: blur(25px);
-
-  transition:0.2s ease;
+  padding:12px;
+  margin:6px 0;
+  border-radius:12px;
+  background:#222;
+  color:white;
 }
 
-button:hover{
-  transform:translateY(-1px);
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.2);
-}
-
-button:active{
-  transform:scale(0.98);
-}
-
-/* ■ ドーナツ（浮遊） */
 canvas{
-  width:110px !important;
-  height:110px !important;
   display:block;
-  margin:14px auto;
-
-  filter: drop-shadow(0 15px 35px rgba(0,0,0,0.6));
-}
-
-/* ■ TOPボタン（空間固定） */
-.top-btn{
-  position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-
-  width:90%;
-  max-width:420px;
-  padding:14px;
-
-  border-radius:18px;
-
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.15);
-
-  backdrop-filter: blur(35px);
-
-  color:rgba(255,255,255,0.85);
+  margin:10px auto;
 }
 </style>
 </head>
 
 <body>
 
-<h2>Spatial Progress</h2>
+<h2>外国人口コミトラッカー</h2>
 
-<div class="wrapper" id="games"></div>
-
-<script>
-const GAME_COUNT = 4;
-
-const names = [
-"スケジュール",
-"口コミ獲得（日本人）",
-"口コミ獲得（外国人）",
-"飛込数"
-];
-
-let data = {};
-let charts = {};
-
-/* ■ データ */
-for(let i=1;i<=GAME_COUNT;i++){
-  data[i] = {
-    response: Number(localStorage.getItem(`response${i}`) || 0),
-    acquired: Number(localStorage.getItem(`acquired${i}`) || 0),
-    miss: Number(localStorage.getItem(`miss${i}`) || 0),
-    history: JSON.parse(localStorage.getItem(`history${i}`) || "[]")
-  };
-}
-
-/* ■ UI生成 */
-for(let i=1;i<=GAME_COUNT;i++){
-document.getElementById("games").innerHTML += `
+<div class="wrapper">
 <div class="box">
 
-<h3>${names[i-1]}</h3>
+<h3>口コミ獲得（外国人）</h3>
 
-<div class="percent" id="percent${i}">0%</div>
+<div class="percent" id="percent">0%</div>
+<canvas id="chart"></canvas>
 
-<canvas id="chart${i}"></canvas>
+<div class="info" id="info"></div>
+<div class="msg" id="msg"></div>
 
-<div class="info" id="info${i}"></div>
-<div class="msg" id="msg${i}"></div>
-
-<button onclick="addAcquired(${i})">獲得 +1</button>
-<button onclick="addMiss(${i})">ミス +1</button>
-<button onclick="showHistory(${i})">履歴</button>
-<button onclick="resetOnly(${i})">リセット</button>
+<button onclick="addAcquired()">口コミGET</button>
+<button onclick="addMiss()">未獲得（理由入力）</button>
+<button onclick="showHistory()">履歴を見る</button>
+<button onclick="resetAll()">リセット</button>
 
 </div>
-`;
+</div>
+
+<script>
+
+let data = {
+  response: Number(localStorage.getItem("response")||0),
+  acquired: Number(localStorage.getItem("acquired")||0),
+  miss: Number(localStorage.getItem("miss")||0),
+  history: JSON.parse(localStorage.getItem("history")||"[]")
+};
+
+let chart;
+
+/* 初期化 */
+function init(){
+  chart = new Chart(document.getElementById("chart"),{
+    type:'doughnut',
+    data:{
+      labels:['獲得','未獲得'],
+      datasets:[{data:[0,0]}]
+    },
+    options:{
+      cutout:'75%',
+      plugins:{legend:{display:false}}
+    }
+  });
+  update();
 }
 
-/* ■ Chart */
-function initChart(i){
-let ctx=document.getElementById(`chart${i}`);
+/* 更新 */
+function update(){
+  const total = data.response;
+  const percent = total===0?0:Math.floor((data.acquired/total)*100);
 
-charts[i]=new Chart(ctx,{
-type:'doughnut',
-data:{
-labels:['獲得','ミス'],
-datasets:[{data:[0,0]}]
-},
-options:{
-responsive:false,
-cutout:'75%',
-plugins:{legend:{display:false}}
-}
-});
-}
+  document.getElementById("percent").innerText = percent+"%";
+  document.getElementById("info").innerText =
+    `応対:${data.response} / 獲得:${data.acquired} / 未獲得:${data.miss}`;
 
-/* ■ 更新 */
-function update(i){
-let d=data[i];
-let total=d.response;
-let percent=total===0?0:Math.floor((d.acquired/total)*100);
+  chart.data.datasets[0].data = [data.acquired,data.miss];
+  chart.update();
 
-document.getElementById(`percent${i}`).innerText=`${percent}%`;
-document.getElementById(`info${i}`).innerText=`応対:${d.response} / 獲得:${d.acquired} / ミス:${d.miss}`;
-
-charts[i].data.datasets[0].data=[d.acquired,d.miss];
-charts[i].update();
+  // 保存
+  localStorage.setItem("response",data.response);
+  localStorage.setItem("acquired",data.acquired);
+  localStorage.setItem("miss",data.miss);
+  localStorage.setItem("history",JSON.stringify(data.history));
 }
 
-/* ■ 操作 */
-function addAcquired(i){
-data[i].response++;
-data[i].acquired++;
-document.getElementById(`msg${i}`).innerText="成功 +1";
-update(i);
+/* 成功 */
+function addAcquired(){
+  data.response++;
+  data.acquired++;
+  data.history.push({
+    type:"成功",
+    time:new Date().toLocaleString()
+  });
+  document.getElementById("msg").innerText="成功 +1";
+  update();
 }
 
-function addMiss(i){
-let reason=prompt("理由");
-data[i].response++;
-data[i].miss++;
-document.getElementById(`msg${i}`).innerText="ミス";
-update(i);
+/* 未獲得 */
+function addMiss(){
+  const reason = prompt("未獲得の理由を入力");
+
+  data.response++;
+  data.miss++;
+
+  data.history.push({
+    type:"未獲得",
+    reason: reason || "未入力",
+    time:new Date().toLocaleString()
+  });
+
+  document.getElementById("msg").innerText="未獲得";
+  update();
 }
 
-function showHistory(i){
-alert(data[i].history.map(h=>`${h.time}｜${h.type}`).join("\n"));
+/* 履歴 */
+function showHistory(){
+  if(data.history.length===0){
+    alert("履歴なし");
+    return;
+  }
+
+  const text = data.history.map(h=>{
+    if(h.type==="未獲得"){
+      return `${h.time}｜未獲得｜${h.reason}`;
+    }else{
+      return `${h.time}｜成功`;
+    }
+  }).join("\n");
+
+  alert(text);
 }
 
-function resetOnly(i){
-if(confirm("リセット？")){
-data[i].response=0;
-data[i].acquired=0;
-data[i].miss=0;
-update(i);
-}
+/* リセット */
+function resetAll(){
+  if(confirm("リセットしますか？")){
+    data = {response:0,acquired:0,miss:0,history:[]};
+    update();
+  }
 }
 
-/* ■ 初期化 */
-for(let i=1;i<=GAME_COUNT;i++){
-initChart(i);
-update(i);
-}
+init();
+
 </script>
-
-<button class="top-btn" onclick="location.href='top.html'">
-TOPへ
-</button>
 
 </body>
 </html>

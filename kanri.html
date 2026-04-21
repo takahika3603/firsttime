@@ -340,13 +340,14 @@ function createTimeChips(){
 /* ===== 画面切替 ===== */
 function add(){
 form = {
-    time:"",
-    course:"",
-    country:"日本",
-    type:"",
-    shimei:"",
-    op:[]
-  };
+  time:"",
+  course:"",
+  country:"日本",
+  type:"",
+  shimei:"",
+  op:[],
+  bikou:[] // ←これ追加
+};
 
   editIndex = null;
 document.getElementById("deleteBtn").style.display = "none";
@@ -431,7 +432,7 @@ function save(){
   : "日本",
     type:form.type,
     shimei:form.shimei,
-    op:form.op
+    op:form.op,
     bikou: form.bikou,
   };
 
@@ -511,7 +512,9 @@ document.getElementById("deleteBtn").style.display = "block";
 
     if(form.country == "日本" && c.innerText=="日本") c.classList.add("active");
     if(form.country == "海外" && c.innerText=="海外") c.classList.add("active");
-    if(form.bikou.includes(c.innerText)) c.classList.add("active");
+if(c.classList.contains("bikou") && form.bikou.includes(c.innerText)){
+  c.classList.add("active");
+}
 
     if(form.op.includes(c.innerText)) c.classList.add("active");
   });
@@ -546,18 +549,17 @@ function filterData(){
   const list=document.getElementById("listPage");
   list.innerHTML="";
 
-  records.slice().reverse().forEach((r, i) => {
-    const index = records.length - 1 - i;
+records.slice().reverse().forEach((r, i) => {
 
-    const div=document.createElement("div"); // ←これ追加
+  const div=document.createElement("div");
 
-    const formattedDate = r.date ? r.date.slice(5).replace("-", "/") : "";
+  const formattedDate = r.date ? r.date.slice(5).replace("-", "/") : "";
 
-div.innerHTML = `
+  div.innerHTML = `
 <span style="display:flex; align-items:center; gap:8px; width:100%;">
 
   <span style="width:20px; opacity:0.6;">
-    ${records.length - index}
+    ${records.length - i}
   </span>
 
   <span>
@@ -577,7 +579,7 @@ div.innerHTML = `
 </span>
 `;
 
-    div.onclick = () => editRecord(index); // ←OK
+div.onclick = () => editRecord(records.length - 1 - i); // ←OK
 
     list.appendChild(div);
   });

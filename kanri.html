@@ -83,7 +83,18 @@ h1{
   background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
   color:white;
 }
-
+.bikou{
+  padding:9px 13px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.75);
+  font-size:12px;
+}
+.bikou.active{
+  background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+  color:white;
+}
 /* DETAIL */
 #detailPage{ display:none; }
 
@@ -272,10 +283,10 @@ input,select{
  <!-- ⑧ 備考 -->
 <div class="label">備考</div>
 <div class="bikou-group">
-<button class="bikou" onclick="toggleOp('ぴゅあらば',this)">ぴゅあらば</button>
-<button class="bikou" onclick="toggleOp('マンステ',this)">マンステ</button>
-<button class="bikou" onclick="toggleOp('クレカ',this)">クレカ</button>
-<button class="bikou" onclick="toggleOp('クーポン',this)">クーポン</button>
+<button class="bikou" onclick="toggleBikou('ぴゅあらば',this)">ぴゅあらば</button>
+<button class="bikou" onclick="toggleBikou('マンステ',this)">マンステ</button>
+<button class="bikou" onclick="toggleBikou('クレカ',this)">クレカ</button>
+<button class="bikou" onclick="toggleBikou('クーポン',this)">クーポン</button>
   
 </div> 
 </div>
@@ -306,7 +317,8 @@ let form = {
   country:"日本",
   type:"",
   shimei:"",
-  op:[]
+  op:[],
+  bikou:[] // ←これ追加（超重要）
 };
 let editIndex = null;
  /* ===== 初期化 ===== */
@@ -397,6 +409,15 @@ function toggleOp(val,el){
   }
 }
 
+  function toggleBikou(val,el){
+  if(form.bikou.includes(val)){
+    form.bikou = form.bikou.filter(v=>v!==val);
+    el.classList.remove("active");
+  }else{
+    form.bikou.push(val);
+    el.classList.add("active");
+  }
+}
 /* ===== 保存 ===== */
 function save(){
   const record={
@@ -411,6 +432,7 @@ function save(){
     type:form.type,
     shimei:form.shimei,
     op:form.op
+    bikou: form.bikou,
   };
 
   if(editIndex !== null){
@@ -465,6 +487,7 @@ document.getElementById("deleteBtn").style.display = "block";
   form.type = r.type;
   form.shimei = r.shimei;
   form.op = r.op || [];
+   form.bikou = r.bikou || [];
 
   document.getElementById("listPage").style.display="none";
   document.getElementById("detailPage").style.display="block";
@@ -484,9 +507,11 @@ document.getElementById("deleteBtn").style.display = "block";
     if(c.innerText == form.shimei) c.classList.add("active");
     if(c.innerText == form.type) c.classList.add("active");
     if(c.innerText == form.time+"時") c.classList.add("active");
+    
 
     if(form.country == "日本" && c.innerText=="日本") c.classList.add("active");
     if(form.country == "海外" && c.innerText=="海外") c.classList.add("active");
+    if(form.bikou.includes(c.innerText)) c.classList.add("active");
 
     if(form.op.includes(c.innerText)) c.classList.add("active");
   });
@@ -497,6 +522,7 @@ document.getElementById("deleteBtn").style.display = "block";
     document.getElementById("countrySelectBox").classList.add("hidden");
   }
 }
+  
 /* ===== 描画 ===== */
 function filterData(){
 

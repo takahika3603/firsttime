@@ -170,6 +170,42 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   font-size:14px;
   font-weight:700;
 }
+.kpiBox{
+  padding:10px;
+  border-radius:22px;
+  background: rgba(120,170,255,0.08);
+  border: 1px solid rgba(120,170,255,0.18);
+  box-shadow:
+    0 10px 40px rgba(0,0,0,0.45),
+    0 0 40px rgba(106,162,255,0.08);
+  backdrop-filter: blur(35px);
+}
+
+.kpiGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+
+.kpiItem{
+  padding:10px 8px;
+  border-radius:14px;
+  background: rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+.kpiItem .label{
+  font-size:11px;
+  opacity:0.6;
+}
+
+.kpiItem .value{
+  font-size:16px;
+  font-weight:700;
+  margin-top:4px;
+  color:#cfe3ff;
+  text-shadow:0 0 10px rgba(106,162,255,0.25);
+}
 </style>
 </head>
 
@@ -216,27 +252,31 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 
 
 
-<!-- KPI -->
-<div class="grid">
+<!-- KPI統合カード -->
+<div class="card kpiBox">
 
-  <div class="card">
-    <div style="font-size:12px; opacity:0.6;">目標</div>
-    <div class="big kpiSmall">¥20,000,000</div>
-  </div>
+  <div class="kpiGrid">
 
-  <div class="card">
-    <div style="font-size:12px; opacity:0.6;">売上</div>
-    <div class="big kpiSmall" id="sales">0円</div>
-  </div>
+    <div class="kpiItem">
+      <div class="label">目標</div>
+      <div class="value">¥20,000,000</div>
+    </div>
 
-  <div class="card">
-    <div style="font-size:12px; opacity:0.6;">進捗</div>
-    <div class="big kpiSmall" id="progress">0%</div>
-  </div>
+    <div class="kpiItem">
+      <div class="label">売上</div>
+      <div class="value" id="sales">0円</div>
+    </div>
 
-  <div class="card">
-    <div style="font-size:12px; opacity:0.6;">必要日割</div>
-    <div class="big kpiSmall" id="daily">0円</div>
+    <div class="kpiItem">
+      <div class="label">進捗</div>
+      <div class="value" id="progress">0%</div>
+    </div>
+
+    <div class="kpiItem">
+      <div class="label">必要日割</div>
+      <div class="value" id="daily">0円</div>
+    </div>
+
   </div>
 
 </div>

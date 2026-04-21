@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>海外分析</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans";
+  background: radial-gradient(circle at top, #0b0f1a, #05070c);
+  color:white;
+}
+
+.container{
+  padding:20px;
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.btn{
+  padding:10px 14px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.08);
+  color:white;
+  text-decoration:none;
+  font-size:12px;
+  border:1px solid rgba(255,255,255,0.1);
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.card{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:20px;
+  padding:16px;
+  margin-bottom:12px;
+}
+
+.big{
+  font-size:22px;
+  font-weight:700;
+}
+
+h3{
+  margin:0 0 10px;
+  font-size:13px;
+  opacity:0.8;
+}
+
+canvas{
+  width:100%!important;
+  aspect-ratio:1/1;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- 戻る -->
+<div class="top">
+  <a class="btn" href="dashboard.html">← 戻る</a>
+</div>
+
+<!-- KPI -->
+<div class="grid2">
+  <div class="card">
+    海外総売上
+    <div class="big" id="totalSales">0円</div>
+  </div>
+
+  <div class="card">
+    海外客数
+    <div class="big" id="totalCount">0名</div>
+  </div>
+</div>
+
+<!-- 日本 vs 海外 -->
+<div class="card">
+<h3>日本 vs 海外（売上）</h3>
+<canvas id="chart1"></canvas>
+</div>
+
+<!-- 国別 -->
+<div class="card">
+<h3>海外 国別構成比（人数）</h3>
+<canvas id="chart2"></canvas>
+</div>
+
+<!-- 新規 / 再来 + 導線 -->
+<div class="grid2">
+
+<div class="card">
+<h3>新規 vs 再来（海外）</h3>
+<canvas id="chart3"></canvas>
+</div>
+
+<div class="card">
+<h3>導線比率（海外）</h3>
+<canvas id="chart4"></canvas>
+</div>
+
+</div>
+
+<!-- キャスト -->
+<div class="card">
+<h3>キャスト別海外売上構成</h3>
+<canvas id="chart5"></canvas>
+</div>
+
+</div>
+
+<script>
+
+const records = JSON.parse(localStorage.getItem("records") || "[]");
+
+/* ======================
+海外データ抽出
+====================== */
+const data = records.filter(r => r.country && r.country !== "日本");
+
+/* ======================
+KPI
+====================== */
+const totalSales = data.reduce((s,r)=>s+(+r.price||0),0);
+document.getElementById("totalSales").innerText = "¥" + totalSales.toLocaleString();
+document.getElementById("totalCount").innerText = data.length + "名";
+
+/* ======================
+日本 vs 海外
+====================== */
+let jp=0, overseas=0;
+
+records.forEach(r=>{
+if(r.country==="日本") jp += +r.price||0;
+else overseas += +r.price||0;
+});
+
+new Chart(document.getElementById("chart1"),{
+type:"doughnut",
+data:{
+labels:["日本","海外"],
+datasets:[{data:[jp,overseas]}]
+}
+});
+
+/* ======================
+国別（人数）
+====================== */
+const countries = ["香港","台湾","韓国","中国","オーストラリア","その他"];
+const countryMap = {};
+
+countries.forEach(c=>countryMap[c]=0);
+
+data.forEach(r=>{
+const c = r.country || "その他";
+if(countryMap[c] !== undefined){
+countryMap[c]++;
+}else{
+countryMap["その他"]++;
+}
+});
+
+new Chart(document.getElementById("chart2"),{
+type:"doughnut",
+data:{
+labels:Object.keys(countryMap),
+datasets:[{data:Object.values(countryMap)}]
+}
+});
+
+/* ======================
+新規 / 再来
+====================== */
+let newC=0, reC=0;
+
+data.forEach(r=>{
+if(r.type==="新規") newC++;
+else if(r.type==="再来") reC++;
+});
+
+new Chart(document.getElementById("chart3"),{
+type:"doughnut",
+data:{
+labels:["新規","再来"],
+datasets:[{data:[newC,reC]}]
+}
+});
+
+/* ======================
+導線
+====================== */
+const routeMap = {
+"YOASOBI":0,
+"JPS":0,
+"通りすがり":0,
+"友人紹介":0,
+"協力店紹介":0,
+"駅ちか":0
+};
+
+data.forEach(r=>{
+if(routeMap[r.route] !== undefined){
+routeMap[r.route]++;
+}
+});
+
+new Chart(document.getElementById("chart4"),{
+type:"doughnut",
+data:{
+labels:Object.keys(routeMap),
+datasets:[{data:Object.values(routeMap)}]
+}
+});
+
+/* ======================
+キャスト売上
+====================== */
+const castMap = {};
+
+data.forEach(r=>{
+castMap[r.cast]=(castMap[r.cast]||0)+(+r.price||0);
+});
+
+new Chart(document.getElementById("chart5"),{
+type:"bar",
+data:{
+labels:Object.keys(castMap),
+datasets:[{
+data:Object.values(castMap)
+}]
+}
+});
+
+</script>
+
+</body>
+</html>

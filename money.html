@@ -288,6 +288,36 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   padding-top: 6px;
   padding-bottom: 6px;
 }
+ .chartRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+}
+
+/* 左20% */
+.chartLegend{
+  flex:0 0 20%;
+  font-size:11px;
+  opacity:0.8;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding-left:4px;
+}
+
+.chartCanvasWrap{
+  flex:0 0 80%;
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+}
+
+/* グラフサイズ安定化 */
+#chart1{
+  width: 100% !important;
+  height: 180px !important;
+}
 </style>
 </head>
 
@@ -417,8 +447,22 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 </div>
 <!-- 新規 / 再来 -->
 <div class="card">
-<h3>新規 vs 再来</h3>
-<canvas id="chart1"></canvas>
+  <h3>新規 vs 再来</h3>
+
+  <div class="chartRow">
+
+    <!-- 左：ラベル -->
+    <div class="chartLegend">
+      <div>🟦 新規</div>
+      <div>🟪 再来</div>
+    </div>
+
+    <!-- 右：グラフ -->
+    <div class="chartCanvasWrap">
+      <canvas id="chart1"></canvas>
+    </div>
+
+  </div>
 </div>
 
 <!-- 日本 / 海外 -->

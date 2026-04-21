@@ -20,9 +20,7 @@ body{
   position:fixed;
   width:400px;
   height:400px;
-  background:radial-gradient(
-circle, rgba(106,162,255,0.25), transparent 60%);
-  
+  background:radial-gradient(circle, rgba(106,162,255,0.25), transparent 60%);
   filter:blur(60px);
   top:-100px;
   right:-100px;
@@ -36,7 +34,6 @@ circle, rgba(106,162,255,0.25), transparent 60%);
 /* ガラスカード */
 .card{
   background:rgba(255,255,255,0.06);
-  
   backdrop-filter: blur(30px);
   border:1px solid rgba(255,255,255,0.1);
   border-radius:20px;
@@ -60,9 +57,7 @@ circle, rgba(106,162,255,0.25), transparent 60%);
 .btn{
   padding:10px 14px;
   border-radius:12px;
-  background:rgba(255,255,255,0.
-08);
-  
+  background:rgba(255,255,255,0.08);
   text-decoration:none;
   color:white;
   font-size:12px;
@@ -99,7 +94,6 @@ canvas{
   /* ===== フィルターUI ===== */
 .filterCard{
   background:rgba(255,255,255,0.05);
-  
   border:1px solid rgba(255,255,255,0.08);
   border-radius:20px;
   padding:16px;
@@ -130,7 +124,6 @@ canvas{
   border-radius:14px;
   border:1px solid rgba(255,255,255,0.12);
   background:rgba(255,255,255,0.06);
-  
   color:white;
   font-size:13px;
   outline:none;
@@ -152,7 +145,6 @@ canvas{
 .selectWrap select:hover,
 .selectWrap input:hover{
   background:rgba(255,255,255,0.1);
-  
   transform:translateY(-1px);
 }
 
@@ -160,7 +152,6 @@ canvas{
 .selectWrap input:focus{
   border-color:#6aa2ff;
   background:rgba(255,255,255,0.12);
-  
   box-shadow:
     0 0 0 2px rgba(106,162,255,0.2),
     0 8px 20px rgba(0,0,0,0.4);
@@ -173,9 +164,7 @@ canvas{
 }
 
 /* 日付アイコン調整 */
-input[type="date"]::-webkit-
-calendar-picker-indicator{
-  
+input[type="date"]::-webkit-calendar-picker-indicator{
   opacity:0.4;
   filter:invert(1);
 }
@@ -220,10 +209,49 @@ calendar-picker-indicator{
   color:#cfe3ff;
   text-shadow:0 0 10px rgba(106,162,255,0.25);
 }
-  .visitorLabel{
-  font-size:10px;
+  .barWrap{
+  margin-top:10px;
+}
+
+.bar{
+  display:flex;
+  height:18px;
+  width:100%;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(255,255,255,0.06);
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+}
+
+/* 新規 */
+.barNew{
+  background:linear-gradient(90deg,#6aa2ff,#8ec5ff);
+  width:0%;
+  transition:width 0.5s ease;
+}
+
+/* 再来 */
+.barRe{
+  background:linear-gradient(90deg,#ff78b4,#ff9bc8);
+  width:0%;
+  transition:width 0.5s ease;
+}
+
+.barLabel{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  margin-top:6px;
+  opacity:0.8;
+}
+  .labelSmall{
+  font-size:11px;
   opacity:0.6;
-    
+}
+
+.valueBig{
+  font-size:18px;
+  font-weight:700;
 }
 </style>
 </head>
@@ -237,16 +265,15 @@ calendar-picker-indicator{
 <div class="topBar">
   <a class="btn" href="kanri.html">← 名簿へ戻る</a>
 </div>
-<div class="filterCard">
+  <div class="filterCard">
 
   <div class="filterTitle">期間フィルター</div>
 
   <div class="filterGroup">
 
-    <!-- 月 -->
     <div class="selectWrap">
       <select id="monthFilter" onchange="applyFilter()">
-        <option value="">全月</option>
+        <option value="">全期間</option>
         <option value="01">1月</option>
         <option value="02">2月</option>
         <option value="03">3月</option>
@@ -262,99 +289,134 @@ calendar-picker-indicator{
       </select>
     </div>
 
-    <!-- 日 -->
     <div class="selectWrap">
-      <select id="dayFilter" onchange="applyFilter()">
-        <option value="">全日</option>
-        <option value="01">1日</option>
-        <option value="02">2日</option>
-        <option value="03">3日</option>
-        <option value="04">4日</option>
-        <option value="05">5日</option>
-        <option value="06">6日</option>
-        <option value="07">7日</option>
-        <option value="08">8日</option>
-        <option value="09">9日</option>
-        <option value="10">10日</option>
-        <option value="11">11日</option>
-        <option value="12">12日</option>
-        <option value="13">13日</option>
-        <option value="14">14日</option>
-        <option value="15">15日</option>
-        <option value="16">16日</option>
-        <option value="17">17日</option>
-        <option value="18">18日</option>
-        <option value="19">19日</option>
-        <option value="20">20日</option>
-        <option value="21">21日</option>
-        <option value="22">22日</option>
-        <option value="23">23日</option>
-        <option value="24">24日</option>
-        <option value="25">25日</option>
-        <option value="26">26日</option>
-        <option value="27">27日</option>
-        <option value="28">28日</option>
-        <option value="29">29日</option>
-        <option value="30">30日</option>
-        <option value="31">31日</option>
-      </select>
+  <select id="dayFilter" onchange="applyFilter()">
+    <option value="">全日</option>
+    <option value="01">1日</option>
+    <option value="02">2日</option>
+    <option value="03">3日</option>
+    <option value="04">4日</option>
+    <option value="05">5日</option>
+    <option value="06">6日</option>
+    <option value="07">7日</option>
+    <option value="08">8日</option>
+    <option value="09">9日</option>
+    <option value="10">10日</option>
+    <option value="11">11日</option>
+    <option value="12">12日</option>
+    <option value="13">13日</option>
+    <option value="14">14日</option>
+    <option value="15">15日</option>
+    <option value="16">16日</option>
+    <option value="17">17日</option>
+    <option value="18">18日</option>
+    <option value="19">19日</option>
+    <option value="20">20日</option>
+    <option value="21">21日</option>
+    <option value="22">22日</option>
+    <option value="23">23日</option>
+    <option value="24">24日</option>
+    <option value="25">25日</option>
+    <option value="26">26日</option>
+    <option value="27">27日</option>
+    <option value="28">28日</option>
+    <option value="29">29日</option>
+    <option value="30">30日</option>
+    <option value="31">31日</option>
+  </select>
+</div>
     </div>
 
   </div>
+
 </div>
 
+
+
+<!-- KPI統合カード -->
 <div class="card kpiBox">
 
-  <div>売上：<span id="sales"></span></div>
-  <div>進捗：<span id="progress"></span></div>
-  <div>日割：<span id="daily"></span></div>
+  <div class="kpiGrid">
+
+    <div class="kpiItem">
+      <div class="label">目標</div>
+      <div class="value">¥20,000,000</div>
+    </div>
+
+    <div class="kpiItem">
+      <div class="label">売上</div>
+      <div class="value" id="sales">0円</div>
+    </div>
+
+    <div class="kpiItem">
+      <div class="label">進捗</div>
+      <div class="value" id="progress">0%</div>
+    </div>
+
+    <div class="kpiItem">
+      <div class="label">必要日割</div>
+      <div class="value" id="daily">0円</div>
+    </div>
+
+  </div>
 
 </div>
-<div class="kpiGrid">
 
-  <!-- ① 目標 -->
-  <div class="kpiItem">
-    <div class="label">目標</div>
-    <div class="value">¥20,000,000</div>
-  </div>
+<div class="card visitorBox">
 
-  <!-- ② 来客数 -->
-  <div class="kpiItem">
-    <div class="label">来客数</div>
-    <div class="value">
-      <span id="count"></span>名
-    </div>
-  </div>
+  <span class="labelSmall">来客数：</span>
+  <span id="count" class="valueBig"></span>
+  <span class="valueBig">名</span>
 
-  <!-- ③ 海外 -->
-  <div class="kpiItem">
-    <div class="label">海外</div>
-    <div class="value">
-      <span id="overseasCount"></span>名
-    </div>
-  </div>
+  <span class="labelSmall">（海外：</span>
+  <span id="overseasCount" class="valueBig"></span>
+  <span class="labelSmall">名）</span>
 
 </div>
 <!-- 海外分析ボタン -->
 <div class="card" onclick="location.href='kaigai.html'" style="cursor:pointer;">
-  
   <div style="font-size:14px; font-weight:600;">
-    海外分析
+    
+海外分析
   </div>
   <div style="font-size:11px; opacity:0.7; margin-top:4px;">
     国別・売上・指名を分析する
   </div>
 </div>
-<!-- 新規 / 再来 -->
 <div class="card">
-<h3>新規 vs 再来</h3>
-<canvas id="chart1"></canvas>
-</div>
+  <h3>新規 vs 再来</h3>
 
+  <div class="barWrap">
+
+    <div class="bar">
+      <div class="barNew" id="barNew"></div>
+      <div class="barRe" id="barRe"></div>
+    </div>
+
+    <div class="barLabel">
+      <span id="newText">新規 0%</span>
+      <span id="reText">再来 0%</span>
+    </div>
+
+  </div>
+</div>
 <!-- 日本 / 海外 -->
 <div class="card">
-<h3>日本 vs 海外 売上</h3>
-<canvas id="chart2"></canvas>
+  <h3>日本 vs 海外 売上</h3>
+
+  <div class="barWrap">
+
+    <div class="bar">
+      <div class="barNew" id="barJP"></div>
+      <div class="barRe" id="barOverseas"></div>
+    </div>
+
+    <div class="barLabel">
+      <span id="jpText">日本 0%</span>
+      <span id="overseasText">海外 0%</span>
+    </div>
+
+  </div>
 </div>
 
 <!-- キャスト売上 -->
@@ -400,9 +462,7 @@ Chart.register({
     if(chart.canvas.id === "chart1"){
 
       const newRate = ((data[0]/total)*100).toFixed(1);
-      
       const reRate = ((data[1]/total)*100).toFixed(1);
-      
 
       ctx.fillText(`新規 ${newRate}%`, width / 2, height / 2 - 8);
       ctx.fillText(`再来 ${reRate}%`, width / 2, height / 2 + 12);
@@ -414,9 +474,7 @@ Chart.register({
     if(chart.canvas.id === "chart2"){
 
       const jpRate = ((data[0]/total)*100).toFixed(1);
-      
       const overseasRate = ((data[1]/total)*100).toFixed(1);
-      
 
       ctx.fillText(`日本 ${jpRate}%`, width / 2, height / 2 - 8);
       ctx.fillText(`海外 ${overseasRate}%`, width / 2, height / 2 + 12);
@@ -426,9 +484,7 @@ Chart.register({
   }
 });
 
-const records = JSON.parse(localStorage.
-getItem("records") || "[]");
-  
+const records = JSON.parse(localStorage.getItem("records") || "[]");
   let chart1, chart2, chart3, chart4;
 function applyFilter(){
 
@@ -436,7 +492,6 @@ function applyFilter(){
   const dayValue = document.getElementById("dayFilter").value;
 // ★追加：保存
   localStorage.setItem("dashboardFilter", JSON.stringify({
-    
     month: monthValue,
     day: dayValue
   }));
@@ -451,164 +506,109 @@ function applyFilter(){
     );
   }
 
-  // 日で絞る
 if(dayValue){
   filtered = filtered.filter(r =>
-    r.date && r.date.slice(8,10) === dayValue
-                             
+    r.date && new Date(r.date).getDate().toString().padStart(2,'0') === dayValue
   );
 }
+  
 
   updateDashboard(filtered);
 }
 
 function updateDashboard(data){
 
-/* ======================
-売上
-====================== */
-const totalSales = data.reduce((s,r)=>s+(+r.price||0),0);
+  // 売上
+  const totalSales = data.reduce((s,r)=>s+(+r.price||0),0);
 
-document.getElementById("sales").innerText =
-"¥" + totalSales.toLocaleString();
+  document.getElementById("sales").innerText =
+  "¥" + totalSales.toLocaleString();
 
-/* 進捗 */
-const target = 20000000;
-document.getElementById("progress").innerText =
-((totalSales/target)*100).toFixed(1)+"%";
+  const target = 20000000;
+  document.getElementById("progress").innerText =
+  ((totalSales/target)*100).toFixed(1)+"%";
 
-/* 日割 */
-const now = new Date();
-const lastDay = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
-const daysLeft = Math.max(1, lastDay - now.getDate());
-document.getElementById("daily").innerText =
-Math.ceil((target-totalSales)/daysLeft).toLocaleString()+"円";
+  // 来客
+  const jpCount = data.filter(r => r.country === "日本").length;
+  const overseasCount = data.filter(r => r.country && r.country !== "日本").length;
 
-/* 来客 */
-const jpCount = data.filter(r => r.country === "日本").length;
-const overseasCount = data.filter(r => r.country && r.country !== "日本").length;
+  document.getElementById("count").innerText = jpCount + overseasCount;
+  document.getElementById("overseasCount").innerText = overseasCount;
 
-document.getElementById("count").innerText = jpCount + overseasCount;
-document.getElementById("overseasCount").innerText = overseasCount;
+  // 新規 vs 再来
+  const newC = data.filter(r => r.type === "新規").length;
+  const reC = data.filter(r => r.type === "再来").length;
 
-/* ======================
-新規 / 再来
-====================== */  
-const newC = data.filter(r=>r.type==="新規").length;
-const reC = data.filter(r=>r.type==="再来").length;
+  const total = newC + reC;
 
-if(chart1) chart1.destroy();
+  const newRate = total ? (newC / total * 100) : 0;
+  const reRate = total ? (reC / total * 100) : 0;
 
-const total = newC + reC;
+  document.getElementById("barNew").style.width = newRate + "%";
+  document.getElementById("barRe").style.width = reRate + "%";
 
-chart1 = new Chart(document.getElementById("chart1"),{
-type:"bar",
-data:{
-  labels:["来客構成"],
-  datasets:[
-    {
-      label:"新規",
-      data:[newC],
-      backgroundColor:"rgba(106,162,255,0.9)",
-      borderRadius:10,
-      barThickness:18,
-      stack:"stack1"
-    },
-    {
-      label:"再来",
-      data:[reC],
-      backgroundColor:"rgba(255,255,255,0.15)",
-      borderRadius:10,
-      barThickness:18,
-      stack:"stack1"
-    }
-  ]
-},
-options:{
-  indexAxis:"y",
-  plugins:{
-    legend:{
-      labels:{
-        color:"rgba(255,255,255,0.7)",
-        font:{ size:11 }
-      }
-    },
-    tooltip:{
-      callbacks:{
-        label:(ctx)=>{
-          const val = ctx.raw;
-          const percent = ((val/total)*100).toFixed(1);
-          return `${ctx.dataset.label}: ${val}件 (${percent}%)`;
-        }
-      }
-    }
-  },
-  scales:{
-    x:{
-      stacked:true,
-      display:false
-    },
-    y:{
-      stacked:true,
-      display:false
-    }
+  document.getElementById("newText").innerText =
+    `新規 ${newRate.toFixed(1)}%`;
+
+  document.getElementById("reText").innerText =
+    `再来 ${reRate.toFixed(1)}%`;
+
+  // 日本 vs 海外
+ // 日本 vs 海外（売上ベース）
+
+let jpSales = 0;
+let overseasSales = 0;
+
+data.forEach(r => {
+  const price = +r.price || 0;
+
+  if (r.country === "日本") {
+    jpSales += price;
+  } else {
+    overseasSales += price;
   }
 });
 
-/* ======================
-日本 / 海外
-====================== */
-let jp=0, overseas=0;
+const totalSalesCountry = jpSales + overseasSales;
 
-data.forEach(r=>{
-if(r.country==="日本") jp+=+r.price||0;
-else overseas+=+r.price||0;
-});
+const jpRate = totalSalesCountry ? (jpSales / totalSalesCountry * 100) : 0;
+const overseasRate = totalSalesCountry ? (overseasSales / totalSalesCountry * 100) : 0;
 
-if(chart2) chart2.destroy();
+// バー反映
+document.getElementById("barJP").style.width = jpRate + "%";
+document.getElementById("barOverseas").style.width = overseasRate + "%";
 
-chart2 = new Chart(document.getElementById("chart2"),{
-type:"doughnut",
-data:{
-  labels:["日本","海外"],
-  datasets:[{ data:[jp,overseas] }]
-},
-options:{
-  cutout: '80%'
-}
-});
+// 文字反映
+document.getElementById("jpText").innerText =
+  `日本 ${jpRate.toFixed(1)}%`;
 
-/* ======================
-キャスト売上
-====================== */
-const castMap = {};
-data.forEach(r=>{
-  castMap[r.cast] = (castMap[r.cast] || 0) + (+r.price || 0);
-});
+document.getElementById("overseasText").innerText =
+  `海外 ${overseasRate.toFixed(1)}%`;
+  // キャスト売上（ここに移動）
+  const castMap = {};
+  data.forEach(r=>{
+    castMap[r.cast] = (castMap[r.cast] || 0) + (+r.price || 0);
+  });
 
-/* ★ここが追加ポイント（並び替え） */
-const sortedCast = Object.entries(castMap)
-  .sort((a, b) => b[1] - a[1]); // 売上が高い順
+  const sortedCast = Object.entries(castMap)
+    .sort((a,b)=>b[1]-a[1]);
 
-const castLabels = sortedCast.map(item => item[0]);
-const castValues = sortedCast.map(item => item[1]);
+  const castLabels = sortedCast.map(x=>x[0]);
+  const castValues = sortedCast.map(x=>x[1]);
 
-if(chart3) chart3.destroy();
+  if(chart3) chart3.destroy();
 
 chart3 = new Chart(document.getElementById("chart3"),{
-type:"doughnut",
-data:{
-  labels: castLabels,
-  datasets:[{
-    data: castValues
-  }]
-},
-options:{
-  cutout: '80%'
-}
+  type:"doughnut",
+  data:{
+    labels:castLabels,
+    datasets:[{
+      data: castValues,
+      cutout: "80%"  // ←ここを追加
+    }]
+  }
 });
-
-/* ======================
+  /* ======================
 リピート率
 ====================== */
 const castStats = {};

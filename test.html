@@ -553,10 +553,10 @@ data.forEach(r => {
   }
 });
 
-const total = jpSales + overseasSales;
+const totalSalesCountry = jpSales + overseasSales;
 
-const jpRate = total ? (jpSales / total * 100) : 0;
-const overseasRate = total ? (overseasSales / total * 100) : 0;
+const jpRate = totalSalesCountry ? (jpSales / totalSalesCountry * 100) : 0;
+const overseasRate = totalSalesCountry ? (overseasSales / totalSalesCountry * 100) : 0;
 
 // バー反映
 document.getElementById("barJP").style.width = jpRate + "%";

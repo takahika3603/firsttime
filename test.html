@@ -582,13 +582,16 @@ document.getElementById("overseasText").innerText =
 
   if(chart3) chart3.destroy();
 
-  chart3 = new Chart(document.getElementById("chart3"),{
-    type:"doughnut",
-    data:{
-      labels:castLabels,
-      datasets:[{ data:castValues }]
-    }
-  });
+chart3 = new Chart(document.getElementById("chart3"),{
+  type:"doughnut",
+  data:{
+    labels:castLabels,
+    datasets:[{
+      data: castValues,
+      cutout: "80%"  // ←ここを追加
+    }]
+  }
+});
   /* ======================
 リピート率
 ====================== */

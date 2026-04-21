@@ -282,6 +282,33 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 
 <script>
 
+Chart.register({
+  id: 'centerText',
+  beforeDraw(chart) {
+
+    if (chart.canvas.id !== "chart1") return;
+
+    const { width, height, ctx } = chart;
+    ctx.save();
+
+    const data = chart.data.datasets[0].data;
+    const total = data.reduce((a,b)=>a+b,0);
+
+    const newRate = ((data[0]/total)*100).toFixed(1);
+    const reRate = ((data[1]/total)*100).toFixed(1);
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.font = "500 12px -apple-system";
+
+    ctx.fillText(`新規 ${newRate}%`, width / 2, height / 2 - 8);
+    ctx.fillText(`再来 ${reRate}%`, width / 2, height / 2 + 12);
+
+    ctx.restore();
+  }
+});
+
 const records = JSON.parse(localStorage.getItem("records") || "[]");
   let chart1, chart2, chart3, chart4;
 function applyFilter(){
@@ -345,7 +372,7 @@ document.getElementById("overseasCount").innerText = overseasCount;
 
 /* ======================
 新規 / 再来
-====================== */
+====================== */  
 const newC = data.filter(r=>r.type==="新規").length;
 const reC = data.filter(r=>r.type==="再来").length;
 

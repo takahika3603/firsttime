@@ -219,10 +219,53 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 /* ドーナツだけサイズ調整（安定版） */
 #chart1,
 #chart2,
+/* キャスト売上 */
 #chart3{
   max-width: 260px;
   margin: 0 auto;
   display: block;
+}
+
+/* ★ここに貼る */
+.castLayout{
+  display:flex;
+  width:100%;
+  gap:10px;
+}
+
+.castLeft{
+  flex:0 0 90px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:11px;
+  opacity:0.9;
+}
+
+.castLeft div{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  white-space:nowrap;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+
+.castRight{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.castRight canvas{
+  width:200px !important;
+  height:200px !important;
 }
   /* カード余白を詰める */
 .card{

@@ -651,7 +651,17 @@ function setChip(type,value,el){
   group.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
   el.classList.add("active");
 }
+function setCoursePrice(course, price, el){
+  form.course = course;
+  document.getElementById("price").value = price;
 
+  document.querySelectorAll(".chip").forEach(c=>{
+    if(c.parentNode === el.parentNode){
+      c.classList.remove("active");
+    }
+  });
+  el.classList.add("active");
+}
 function setCountry(val,el){
   form.country = val;
 
@@ -1032,13 +1042,13 @@ window.addEventListener("click", function(e){
 });
 window.addEventListener("load", async function () {
   restoreFilterState();
+  createTimeChips();
 
   // Firebase準備後にデータ取得
   await render();
 
   // KPI更新
   updateKPI(records);
-});
 });
 </script>
 

@@ -618,7 +618,7 @@ if(!castStats[r.cast]){
 castStats[r.cast]={total:0,re:0};
 }
 castStats[r.cast].total++;
-if(r.type==="再来") castStats[r.cast].re++;
+if(r.shimei === "リピ") castStats[r.cast].re++;
 });
 
 const sorted = Object.keys(castStats).map(name=>{

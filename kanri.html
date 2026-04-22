@@ -753,13 +753,8 @@ async function save(){
     back();
 
   } catch (error) {
-
-    console.log(error);
-
-    // ❌ ユーザーには出さない or 軽く1行だけ
-    showToast("保存に失敗しました");
-
-  } finally {
+  console.log(error);
+} finally {
     isSaving = false;
   }
 }

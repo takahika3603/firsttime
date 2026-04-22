@@ -142,6 +142,23 @@ canvas{
 
   </div>
 </div>
+
+<div class="card">
+  <h3>導線比率（海外）</h3>
+
+  <div class="barWrap">
+    <div class="bar">
+      <div class="barNew" id="routeMainBar"></div>
+      <div class="barRe" id="routeOtherBar"></div>
+    </div>
+
+    <div class="barLabel">
+      <span id="routeMainText">主要導線 0%</span>
+      <span id="routeOtherText">その他 0%</span>
+    </div>
+  </div>
+</div>
+  
 <!-- 国別 -->
 <div class="card">
 <h3>海外 国別構成比（人数）</h3>
@@ -154,11 +171,6 @@ canvas{
 <div class="card">
 <h3>新規 vs 再来（海外）</h3>
 <canvas id="chart3"></canvas>
-</div>
-
-<div class="card">
-<h3>導線比率（海外）</h3>
-<canvas id="chart4"></canvas>
 </div>
 
 </div>
@@ -219,11 +231,39 @@ function updateOverseasNewRe(data){
   document.getElementById("overNewBar").style.width = newRate + "%";
   document.getElementById("overReBar").style.width = reRate + "%";
 
-  document.getElementById("overNewText").innerHTML =
-    `新規 ${newRate.toFixed(1)}%<br>${newCount}名`;
+document.getElementById("overNewText").innerHTML =
+  `新規 ${newRate.toFixed(1)}%<br>
+   <span style="font-size:11px; opacity:0.7;">${newCount}名</span>`;
 
-  document.getElementById("overReText").innerHTML =
-    `再来 ${reRate.toFixed(1)}%<br>${reCount}名`;
+document.getElementById("overReText").innerHTML =
+  `再来 ${reRate.toFixed(1)}%<br>
+   <span style="font-size:11px; opacity:0.7;">${reCount}名</span>`;
+}
+  function updateRouteBar(data){
+
+  const routeCount = {};
+
+  data.forEach(r=>{
+    const key = r.route || "その他";
+    routeCount[key] = (routeCount[key] || 0) + 1;
+  });
+
+  const total = Object.values(routeCount).reduce((a,b)=>a+b,0);
+
+  const main = routeCount["YOASOBI"] || 0;
+  const other = total - main;
+
+  const mainRate = total ? (main / total * 100) : 0;
+  const otherRate = total ? (other / total * 100) : 0;
+
+  document.getElementById("routeMainBar").style.width = mainRate + "%";
+  document.getElementById("routeOtherBar").style.width = otherRate + "%";
+
+  document.getElementById("routeMainText").innerHTML =
+    `主要導線 ${mainRate.toFixed(1)}%<br><span style="font-size:11px">${main}件</span>`;
+
+  document.getElementById("routeOtherText").innerHTML =
+    `その他 ${otherRate.toFixed(1)}%<br><span style="font-size:11px">${other}件</span>`;
 }
 let newC = 0;
 let reC = 0;
@@ -353,14 +393,6 @@ routeMap[r.route]++;
 }
 });
 
-new Chart(document.getElementById("chart4"),{
-type:"doughnut",
-data:{
-labels:Object.keys(routeMap),
-datasets:[{data:Object.values(routeMap)}]
-}
-});
-
 /* ======================
 キャスト売上
 ====================== */
@@ -384,24 +416,13 @@ loadData();
 async function loadData(){
 
   const snap = await getDocs(collection(db, "records"));
-
   records = snap.docs.map(d => d.data());
 
-  // ① ここで初めてデータ作る
   const data = records.filter(r =>
     r.country && r.country !== "日本"
   );
 
-  // ② KPI
-  const totalSales = data.reduce((s,r)=>s+(+r.price||0),0);
-  document.getElementById("totalSales").innerText = "¥" + totalSales.toLocaleString();
-  document.getElementById("totalCount").innerText = data.length + "名";
-
-  // ③ 新規再来バー
-  updateOverseasNewRe(data);
-
-  // ④ ここにグラフ更新をまとめる（重要）
-  updateCharts(data);
+  render(data);
 }
 </script>
 

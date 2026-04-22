@@ -570,6 +570,9 @@ const db = getFirestore(app);
 window.db = db;
 window.collection = collection;
 window.addDoc = addDoc;
+window.getDocs = getDocs;
+window.deleteDoc = deleteDoc;
+window.doc = doc;
 </script>
 <script>
 let records = [];
@@ -743,7 +746,7 @@ async function save(){
       extra: form.extra
     };
 
-    await addDoc(collection(db, "records"), record);
+ await addDoc(collection(window.db, "records"), record);
 
     alert("保存できた！");
 
@@ -868,9 +871,9 @@ function filterData(){
 
   const filtered = allRecords.filter(r => {
 
-    if(!r.date) return false;
+if(!r.date || typeof r.date !== "string") return false;
 
-    const matchMonth = month ? r.date.slice(5,7) === month : true;
+const matchMonth = month ? r.date.slice(5,7) === month : true;
 const matchDate = date ? r.date.slice(8,10) === date : true;
 
     return matchMonth && matchDate;

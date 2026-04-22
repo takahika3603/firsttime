@@ -579,11 +579,11 @@ document.getElementById("barJP").style.width = jpRate + "%";
 document.getElementById("barOverseas").style.width = overseasRate + "%";
 
 // 文字反映
-document.getElementById("jpText").innerText =
-  `日本 ${jpRate.toFixed(1)}%`;
+document.getElementById("jpText").innerHTML =
+  `日本 ${jpRate.toFixed(1)}%<br>¥${jpSales.toLocaleString()}`;
 
-document.getElementById("overseasText").innerText =
-  `海外 ${overseasRate.toFixed(1)}%`;
+document.getElementById("overseasText").innerHTML =
+  `海外 ${overseasRate.toFixed(1)}%<br>¥${overseasSales.toLocaleString()}`;
   // キャスト売上（ここに移動）
   const castMap = {};
   data.forEach(r=>{

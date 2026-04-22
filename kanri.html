@@ -576,6 +576,7 @@ window.doc = doc;
 </script>
 <script>
 let records = [];
+let allRecords = [];
 
 let form = {
   time:"",
@@ -589,10 +590,7 @@ let form = {
   extra:[]
 };
 let editIndex = null;
- /* ===== 初期化 ===== */
-createTimeChips();
-render();
-updateKPI(records);
+
   
 /* ===== 時間チップ生成 ===== */
 function createTimeChips(){
@@ -1032,9 +1030,15 @@ window.addEventListener("click", function(e){
     
   }
 });
-  window.addEventListener("load", function(){
+window.addEventListener("load", async function () {
   restoreFilterState();
-  filterData();
+
+  // Firebase準備後にデータ取得
+  await render();
+
+  // KPI更新
+  updateKPI(records);
+});
 });
 </script>
 

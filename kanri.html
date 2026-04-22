@@ -718,9 +718,8 @@ function save(){
 
   localStorage.setItem("records",JSON.stringify(allRecords));
 
-  back();
-  render();
-  updateKPI(records);
+back();
+filterData();
 }
 function deleteRecord(){
   if(editIndex === null){
@@ -741,8 +740,8 @@ render();
 updateKPI(records);
   }
 }
- function editRecord(index){
-  const r = records[index];
+function editRecord(index){
+  const r = allRecords[index]; // ←ここだけ変更
 
   editIndex = index;
 document.getElementById("deleteBtn").style.display = "block";

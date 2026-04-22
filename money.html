@@ -484,7 +484,7 @@ Chart.register({
   }
 });
 
-const records = JSON.parse(localStorage.getItem("records") || "[]");
+
   let chart1, chart2, chart3, chart4;
 function applyFilter(){
 
@@ -496,7 +496,7 @@ function applyFilter(){
     day: dayValue
   }));
 
-  let filtered = records;
+  let records = records || [];
 
   // 月で絞る
   if(monthValue){
@@ -676,6 +676,50 @@ window.addEventListener("load", () => {
   applyFilter();
 });
 </script>
+<script type="module">
 
+// =====================
+// ① Firebase読み込み
+// =====================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+
+// =====================
+// ② Firebase接続情報（ここだけ自分のに変える）
+// =====================
+const firebaseConfig = {
+  apiKey: "ここにAPIキー",
+  authDomain: "ここにauthDomain",
+  projectId: "ここにprojectId"
+};
+
+
+// =====================
+// ③ Firebase起動
+// =====================
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+// =====================
+// ④ データ取得
+// =====================
+let records = [];
+
+async function loadData(){
+  const snap = await getDocs(collection(db, "records"));
+  records = snap.docs.map(d => d.data());
+
+  applyFilter(); // 既存の関数を呼ぶ
+}
+
+loadData();
+
+</script>
 </body>
 </html>

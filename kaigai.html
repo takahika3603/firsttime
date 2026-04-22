@@ -64,6 +64,38 @@ canvas{
   width:100%!important;
   aspect-ratio:1/1;
 }
+.barWrap{
+  margin-top:10px;
+}
+
+.bar{
+  display:flex;
+  height:18px;
+  width:100%;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(255,255,255,0.06);
+}
+
+.barNew{
+  background:linear-gradient(90deg,#6aa2ff,#8ec5ff);
+  width:0%;
+  transition:width 0.5s ease;
+}
+
+.barRe{
+  background:linear-gradient(90deg,#ff78b4,#ff9bc8);
+  width:0%;
+  transition:width 0.5s ease;
+}
+
+.barLabel{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  margin-top:6px;
+  opacity:0.8;
+}
 </style>
 </head>
 
@@ -93,7 +125,23 @@ canvas{
 <h3>日本 vs 海外（売上）</h3>
 <canvas id="chart1"></canvas>
 </div>
+<div class="card">
+  <h3>海外：新規 vs 再来</h3>
 
+  <div class="barWrap">
+
+    <div class="bar">
+      <div class="barNew" id="overNewBar"></div>
+      <div class="barRe" id="overReBar"></div>
+    </div>
+
+    <div class="barLabel">
+      <span id="overNewText">新規 0%</span>
+      <span id="overReText">再来 0%</span>
+    </div>
+
+  </div>
+</div>
 <!-- 国別 -->
 <div class="card">
 <h3>海外 国別構成比（人数）</h3>
@@ -123,14 +171,23 @@ canvas{
 
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const records = JSON.parse(localStorage.getItem("records") || "[]");
+const firebaseConfig = {
+  apiKey: "あなたのAPIキー",
+  authDomain: "あなたのプロジェクト.firebaseapp.com",
+  projectId: "あなたのprojectId",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+let records = [];
 
 /* ======================
 海外データ抽出
 ====================== */
-const data = records.filter(r => r.country && r.country !== "日本");
 
 /* ======================
 KPI
@@ -141,7 +198,33 @@ document.getElementById("totalCount").innerText = data.length + "名";
 /* ======================
 新規 / 再来（海外専用・強化版）
 ====================== */
+/* ======================
+海外：新規 vs 再来（横バー）
+====================== */
 
+function updateOverseasNewRe(data){
+
+  const overseas = data.filter(r =>
+    r.country && r.country !== "日本"
+  );
+
+  const newCount = overseas.filter(r => r.type === "新規").length;
+  const reCount = overseas.filter(r => r.type === "再来").length;
+
+  const total = newCount + reCount;
+
+  const newRate = total ? (newCount / total * 100) : 0;
+  const reRate = total ? (reCount / total * 100) : 0;
+
+  document.getElementById("overNewBar").style.width = newRate + "%";
+  document.getElementById("overReBar").style.width = reRate + "%";
+
+  document.getElementById("overNewText").innerHTML =
+    `新規 ${newRate.toFixed(1)}%<br>${newCount}名`;
+
+  document.getElementById("overReText").innerHTML =
+    `再来 ${reRate.toFixed(1)}%<br>${reCount}名`;
+}
 let newC = 0;
 let reC = 0;
 
@@ -297,6 +380,29 @@ data:Object.values(castMap)
 }
 });
 
+loadData();
+async function loadData(){
+
+  const snap = await getDocs(collection(db, "records"));
+
+  records = snap.docs.map(d => d.data());
+
+  // ① ここで初めてデータ作る
+  const data = records.filter(r =>
+    r.country && r.country !== "日本"
+  );
+
+  // ② KPI
+  const totalSales = data.reduce((s,r)=>s+(+r.price||0),0);
+  document.getElementById("totalSales").innerText = "¥" + totalSales.toLocaleString();
+  document.getElementById("totalCount").innerText = data.length + "名";
+
+  // ③ 新規再来バー
+  updateOverseasNewRe(data);
+
+  // ④ ここにグラフ更新をまとめる（重要）
+  updateCharts(data);
+}
 </script>
 
 </body>

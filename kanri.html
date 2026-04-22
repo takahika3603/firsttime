@@ -651,15 +651,15 @@ function setChip(type,value,el){
   group.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
   el.classList.add("active");
 }
-function setCoursePrice(course, price, el){
+function setCoursePrice(course, el){
   form.course = course;
-  document.getElementById("price").value = price;
 
   document.querySelectorAll(".chip").forEach(c=>{
     if(c.parentNode === el.parentNode){
       c.classList.remove("active");
     }
   });
+
   el.classList.add("active");
 }
 function setCountry(val,el){

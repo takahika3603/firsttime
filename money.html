@@ -437,7 +437,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 </div>
 
 <script>
-
+let records = [];
+let filtered = [];
 Chart.register({
   id: 'centerText',
   beforeDraw(chart) {
@@ -490,28 +491,23 @@ function applyFilter(){
 
   const monthValue = document.getElementById("monthFilter").value;
   const dayValue = document.getElementById("dayFilter").value;
-// ★追加：保存
-  localStorage.setItem("dashboardFilter", JSON.stringify({
-    month: monthValue,
-    day: dayValue
-  }));
 
-  let records = records || [];
+  // ★ベースは毎回「全データ」
+  filtered = [...records];
 
-  // 月で絞る
+  // 月フィルター
   if(monthValue){
-    const m = monthValue;
     filtered = filtered.filter(r =>
-      r.date && r.date.slice(5,7) === m
+      r.date && r.date.slice(5,7) === monthValue
     );
   }
 
-if(dayValue){
-  filtered = filtered.filter(r =>
-    r.date && new Date(r.date).getDate().toString().padStart(2,'0') === dayValue
-  );
-}
-  
+  // 日フィルター
+  if(dayValue){
+    filtered = filtered.filter(r =>
+      r.date && new Date(r.date).getDate().toString().padStart(2,'0') === dayValue
+    );
+  }
 
   updateDashboard(filtered);
 }
@@ -664,7 +660,7 @@ chart4 = new Chart(document.getElementById("chart4"),{
 });
 
 }
-updateDashboard(records);
+
 window.addEventListener("load", () => {
   const saved = JSON.parse(localStorage.getItem("dashboardFilter"));
 
@@ -705,10 +701,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 
-// =====================
-// ④ データ取得
-// =====================
-let records = [];
+
 
 async function loadData(){
   const snap = await getDocs(collection(db, "records"));

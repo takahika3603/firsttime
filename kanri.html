@@ -717,50 +717,47 @@ function toggleExtra(name, price, el){
   input.value = current;
 }
 /* ===== 保存 ===== */
+let isSaving = false;
+
 async function save(){
 
-  // ① 入力データをまとめる
-  const record = {
-    date: document.getElementById("date").value,
-    cast: document.getElementById("cast").value,
-    price: document.getElementById("price").value,
-    time: form.time,
-    course: form.course,
-    country: form.country === "海外"
-      ? document.getElementById("countrySelect").value
-      : "日本",
-    type: form.type,
-    shimei: form.shimei,
-    op: form.op,
-    bikou: form.bikou,
-    route: form.route,
-    extra: form.extra
-  };
+  if(isSaving) return;   // ←これ重要
+  isSaving = true;
 
   try {
 
-    // ② Firebaseに保存（ここが本体）
-    await addDoc(
-      collection(window.db, "records"),
-      record
-    );
+    const record = {
+      date: document.getElementById("date").value,
+      cast: document.getElementById("cast").value,
+      price: document.getElementById("price").value,
+      time: form.time,
+      course: form.course,
+      country: form.country === "海外"
+        ? document.getElementById("countrySelect").value
+        : "日本",
+      type: form.type,
+      shimei: form.shimei,
+      op: form.op,
+      bikou: form.bikou,
+      route: form.route,
+      extra: form.extra
+    };
 
-    // ③ 成功したら
+    await addDoc(collection(db, "records"), record);
+
     alert("保存できた！");
-    // ★ここ追加（重要）
-await render();
 
-    // 画面戻る
+    await render();
+
     back();
-
-    // 一覧更新
-    filterData();
 
   } catch (error) {
 
-    console.log(error);
+    console.log("保存エラー:", error);
     alert("保存に失敗しました");
 
+  } finally {
+    isSaving = false; // ←解除
   }
 }
 async function deleteRecord(){

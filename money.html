@@ -641,19 +641,26 @@ chart4 = new Chart(document.getElementById("chart4"),{
     }]
   },
   options:{
-    indexAxis: "y",
-    responsive: true,
-    maintainAspectRatio: false, // ←これ重要
-    scales:{
-      x:{
-        beginAtZero:true,
-        max:100
-      }
+  indexAxis: "y",
+  responsive: true,
+  maintainAspectRatio: false,
+  scales:{
+    x:{
+      beginAtZero:true,
+      max:100
     },
-    plugins:{
-      legend:{ display:false }
+    y:{
+      ticks:{
+        font:{
+          size: 8   // ←ここで半分くらいに
+        }
+      }
     }
+  },
+  plugins:{
+    legend:{ display:false }
   }
+}
 });
 
 }

@@ -756,7 +756,9 @@ async function save(){
       op: form.op,
       bikou: form.bikou,
       route: form.route,
-      extra: form.extra
+      extra: form.extra,
+      createdAt: Date.now(),
+      number: allRecords.length + 1
     };
 
     await addDoc(collection(window.db, "records"), record);
@@ -915,16 +917,19 @@ async function render(){
     allRecords = data;
     records = data;
 
-    data.slice().reverse().forEach((r, i) => {
+data
+  .slice()
+  .sort((a, b) => a.createdAt - b.createdAt)
+  .forEach((r, i) => {
 
       const div = document.createElement("div");
 
       div.innerHTML = `
 <span style="display:flex; align-items:center; gap:8px; width:100%;">
 
-  <span style="width:20px; opacity:0.6;">
-    ${i + 1}
-  </span>
+<span style="width:20px; opacity:0.6;">
+  ${r.number}
+</span>
 
   <span>
     ${r.type || ""}｜${r.cast || ""}｜${r.course || ""}｜${r.shimei || ""}

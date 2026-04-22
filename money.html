@@ -547,11 +547,11 @@ function updateDashboard(data){
   document.getElementById("barNew").style.width = newRate + "%";
   document.getElementById("barRe").style.width = reRate + "%";
 
-  document.getElementById("newText").innerText =
-    `新規 ${newRate.toFixed(1)}%`;
+document.getElementById("newText").innerHTML =
+  `新規 ${newRate.toFixed(1)}%<br>${newC}名`;
 
-  document.getElementById("reText").innerText =
-    `再来 ${reRate.toFixed(1)}%`;
+document.getElementById("reText").innerHTML =
+  `再来 ${reRate.toFixed(1)}%<br>${reC}名`;
 
   // 日本 vs 海外
  // 日本 vs 海外（売上ベース）

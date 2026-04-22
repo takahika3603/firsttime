@@ -545,10 +545,28 @@ input,select{
 </div>
 
 <div class="fab" onclick="add()">＋</div>
+<!-- ① ここにFirebase追加 -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc }
+from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyDTwjQIjolOfaBUNqtzwBTIGKMbUN51e_Y",
+  authDomain: "luxuryspa-fuga.firebaseapp.com",
+  projectId: "luxuryspa-fuga",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ★ここ重要（下のJSで使うため）
+window.db = db;
+window.collection = collection;
+window.addDoc = addDoc;
+</script>
 <script>
-let allRecords = JSON.parse(localStorage.getItem("records") || "[]");
-let records = [...allRecords];
+let records = [];
 
 let form = {
   time:"",
@@ -693,90 +711,116 @@ function toggleExtra(name, price, el){
   input.value = current;
 }
 /* ===== 保存 ===== */
-function save(){
-  const record={
-    date:document.getElementById("date").value,
-    cast:document.getElementById("cast").value,
-    price:document.getElementById("price").value,
-    time:form.time,
-    course:form.course,
+async function save(){
+
+  // ① 入力データをまとめる
+  const record = {
+    date: document.getElementById("date").value,
+    cast: document.getElementById("cast").value,
+    price: document.getElementById("price").value,
+    time: form.time,
+    course: form.course,
     country: form.country === "海外"
-  ? document.getElementById("countrySelect").value
-  : "日本",
-    type:form.type,
-    shimei:form.shimei,
-    op:form.op,
+      ? document.getElementById("countrySelect").value
+      : "日本",
+    type: form.type,
+    shimei: form.shimei,
+    op: form.op,
     bikou: form.bikou,
     route: form.route,
     extra: form.extra
   };
 
-  if(editIndex !== null){
-  allRecords[editIndex] = record; // ←変更
-  editIndex = null;
-}else{
-  allRecords.push(record); // ←ここも変更
-}
+  try {
 
-  localStorage.setItem("records",JSON.stringify(allRecords));
+    // ② Firebaseに保存（ここが本体）
+    await addDoc(
+      collection(window.db, "records"),
+      record
+    );
 
-back();
-filterData();
+    // ③ 成功したら
+    alert("保存できた！");
+
+    // 画面戻る
+    back();
+
+    // 一覧更新
+    filterData();
+
+  } catch (error) {
+
+    console.log(error);
+    alert("保存に失敗しました");
+
+  }
 }
-function deleteRecord(){
-  if(editIndex === null){
-    alert("削除できるデータがありません");
+async function deleteRecord(){
+
+  if(!editIndex){
+    alert("削除対象がありません");
     return;
   }
 
   if(confirm("このデータを削除しますか？")){
-   allRecords.splice(editIndex, 1);
 
-localStorage.setItem("records", JSON.stringify(allRecords));
+    try {
 
-allRecords = JSON.parse(localStorage.getItem("records") || "[]");
-records = [...allRecords];
+      await deleteDoc(
+        doc(window.db, "records", editIndex)
+      );
 
-back();
-render();
-updateKPI(records);
+      alert("削除しました");
+
+      // ★重要：状態リセット
+      editIndex = null;
+      form = {
+        time:"",
+        course:"",
+        country:"日本",
+        type:"",
+        shimei:"",
+        op:[],
+        bikou:[],
+        route:"",
+        extra:[]
+      };
+
+      back();
+      render();
+
+    } catch (e) {
+      console.log(e);
+      alert("削除失敗");
+    }
+
   }
 }
-function editRecord(index){
-  const r = allRecords[index]; // ←ここだけ変更
+function editRecord(r){
 
-  editIndex = index;
-document.getElementById("deleteBtn").style.display = "block";
+  // 🔥 ここが超重要（FirestoreのID）
+  editIndex = r.id;
+
+  document.getElementById("deleteBtn").style.display = "block";
+
   document.getElementById("date").value = r.date || "";
   document.getElementById("cast").value = r.cast || "";
   document.getElementById("price").value = r.price || "";
 
   form.time = r.time;
   form.course = r.course;
-
-  // ★ここ修正
-  if(r.country === "日本"){
-    form.country = "日本";
-  }else{
-    form.country = "海外";
-  }
-
+  form.country = r.country || "日本";
   form.type = r.type;
   form.shimei = r.shimei;
   form.op = r.op || [];
   form.bikou = r.bikou || [];
   form.route = r.route || "";
-   form.extra = r.extra || [];
+  form.extra = r.extra || [];
 
   document.getElementById("listPage").style.display="none";
   document.getElementById("detailPage").style.display="block";
 
   reflectChips();
-
-  // ★これ追加（国も復元）
-  if(r.country !== "日本"){
-    document.getElementById("countrySelect").value = r.country;
-  }
 }
   function reflectChips(){
   document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
@@ -831,47 +875,64 @@ const matchDate = date ? r.date.slice(8,10) === date : true;
   render();
   updateKPI(records);
 }
-  function render(){
-  const list=document.getElementById("listPage");
-  list.innerHTML="";
+async function render(){
 
-records
-  .map((r, i) => ({...r, _index: allRecords.indexOf(r)}))
-  .reverse()
-  .forEach((r, i) => {
-const originalIndex = allRecords.indexOf(r);
-  const div=document.createElement("div");
+  const list = document.getElementById("listPage");
+  list.innerHTML = "";
 
-  const formattedDate = r.date ? r.date.slice(5).replace("-", "/") : "";
+  try {
 
-  div.innerHTML = `
+    const snap = await getDocs(
+      collection(window.db, "records")
+    );
+
+    let data = [];
+
+    snap.forEach((doc) => {
+      data.push({
+        id: doc.id,      // ←★これ超重要（削除・編集に使う）
+        ...doc.data()
+      });
+    });
+
+    // ★ここがポイント（データ保存）
+    allRecords = data;
+    records = data;
+
+    data.slice().reverse().forEach((r, i) => {
+
+      const div = document.createElement("div");
+
+      div.innerHTML = `
 <span style="display:flex; align-items:center; gap:8px; width:100%;">
 
   <span style="width:20px; opacity:0.6;">
-    ${records.length - i}
+    ${i + 1}
   </span>
 
   <span>
-     ${r.type}｜${r.cast}｜${r.course}｜${r.shimei}
+    ${r.type || ""}｜${r.cast || ""}｜${r.course || ""}｜${r.shimei || ""}
   </span>
 
-  <span style="
-    margin-left:auto;
-    font-weight:600;
-    background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-  ">
+  <span style="margin-left:auto; font-weight:600;">
     ${r.price ? Number(r.price).toLocaleString() + "円" : ""}
   </span>
 
 </span>
 `;
 
-div.onclick = () => editRecord(r._index);
+      // ★クリックで編集
+      div.onclick = () => editRecord(r);
 
-    list.appendChild(div);
-  });
+      list.appendChild(div);
+
+    });
+
+    updateKPI(records);
+
+  } catch (error) {
+    console.log(error);
+  }
 }
 function toggleMenu(){
   document.getElementById("menu").classList.toggle("hidden");

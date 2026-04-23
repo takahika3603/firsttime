@@ -881,22 +881,20 @@ function filterData(){
 
   const filtered = allRecords.filter(r => {
 
-if(!r.date || typeof r.date !== "string") return false;
+    if(!r.date) return false;
 
-const matchMonth = month ? r.date.slice(5,7) === month : true;
-const matchDate = date ? r.date.slice(8,10) === date : true;
+    const matchMonth = month ? r.date.slice(5,7) === month : true;
+    const matchDate = date ? r.date.slice(8,10) === date : true;
 
     return matchMonth && matchDate;
   });
 
   records = filtered;
-  render();
-  updateKPI(records);
+
+  // ★ここ重要（renderじゃなくこれ）
+  drawList(records);
 }
 async function render(){
-
-  const list = document.getElementById("listPage");
-  list.innerHTML = "";
 
   try {
 
@@ -908,19 +906,29 @@ async function render(){
 
     snap.forEach((doc) => {
       data.push({
-        id: doc.id,      // ←★これ超重要（削除・編集に使う）
+        id: doc.id,
         ...doc.data()
       });
     });
 
-    // ★ここがポイント（データ保存）
     allRecords = data;
-    records = data;
 
-data
-  .slice()
-  .sort((a, b) => a.createdAt - b.createdAt)
-  .forEach((r, i) => {
+    // ★ここ変更（フィルターを必ず通す）
+    filterData();
+
+  } catch (error) {
+    console.log(error);
+  }
+}
+function drawList(data){
+
+  const list = document.getElementById("listPage");
+  list.innerHTML = "";
+
+  data
+    .slice()
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .forEach((r, i) => {
 
       const div = document.createElement("div");
 
@@ -928,32 +936,25 @@ data
 <span style="display:flex; align-items:center; gap:8px; width:100%;">
 
 <span style="width:20px; opacity:0.6;">
-  ${r.number}
+  ${r.number ?? (i + 1)}
 </span>
 
-  <span>
-    ${r.type || ""}｜${r.cast || ""}｜${r.course || ""}｜${r.shimei || ""}
-  </span>
+<span>
+  ${r.type || ""}｜${r.cast || ""}｜${r.course || ""}｜${r.shimei || ""}
+</span>
 
-  <span style="margin-left:auto; font-weight:600;">
-    ${r.price ? Number(r.price).toLocaleString() + "円" : ""}
-  </span>
+<span style="margin-left:auto; font-weight:600;">
+  ${r.price ? Number(r.price).toLocaleString() + "円" : ""}
+</span>
 
 </span>
 `;
 
-      // ★クリックで編集
       div.onclick = () => editRecord(r);
-
       list.appendChild(div);
-
     });
 
-    updateKPI(records);
-
-  } catch (error) {
-    console.log(error);
-  }
+  updateKPI(data);
 }
 function toggleMenu(){
   document.getElementById("menu").classList.toggle("hidden");

@@ -559,7 +559,8 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
-  doc
+  doc,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -578,6 +579,7 @@ window.addDoc = addDoc;
 window.getDocs = getDocs;
 window.deleteDoc = deleteDoc;
 window.doc = doc;
+window.updateDoc = updateDoc;
 </script>
 <script>
 let records = [];
@@ -757,19 +759,29 @@ async function save(){
       bikou: form.bikou,
       route: form.route,
       extra: form.extra,
-      createdAt: Date.now(),
-      number: allRecords.length + 1
+      createdAt: Date.now()
     };
 
-    await addDoc(collection(window.db, "records"), record);
+    if(editIndex){
+      // ✏️ 編集モード（上書き）
+      await updateDoc(
+        doc(window.db, "records", editIndex),
+        record
+      );
+    }else{
+      // ➕ 新規追加
+      await addDoc(
+        collection(window.db, "records"),
+        record
+      );
+    }
 
-    // ✔ 成功時はUIだけ更新（静かに）
     await render();
     back();
 
   } catch (error) {
-  console.log(error);
-} finally {
+    console.log(error);
+  } finally {
     isSaving = false;
   }
 }
@@ -936,7 +948,7 @@ function drawList(data){
 <span style="display:flex; align-items:center; gap:8px; width:100%;">
 
 <span style="width:20px; opacity:0.6;">
-  ${r.number ?? (i + 1)}
+  ${i + 1}
 </span>
 
 <span>

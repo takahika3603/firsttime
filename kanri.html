@@ -478,6 +478,12 @@ input,select{
   </div>
 </div>
 
+<!-- ④ 来店経路 -->
+<div class="label">来店経路</div>
+<div class="chip-group">
+  <button class="chip" onclick="setChip('visitType','飛込',this)">飛込</button>
+  <button class="chip" onclick="setChip('visitType','予約',this)">予約</button>
+</div>  
 
 <!-- ⑤ 指名 -->
 <div class="label">指名</div>
@@ -588,6 +594,7 @@ let form = {
   country:"日本",
   type:"",
   shimei:"",
+  visitType:"",
   op:[],
   bikou:[],
   route:"",
@@ -845,6 +852,7 @@ async function save(){
         : "日本",
       type: form.type,
       shimei: form.shimei,
+      visitType: form.visitType,
       op: form.op,
       bikou: form.bikou,
       route: form.route,
@@ -932,6 +940,7 @@ function editRecord(r){
   form.country = r.country || "日本";
   form.type = r.type;
   form.shimei = r.shimei;
+  form.visitType = r.visitType;
   form.op = r.op || [];
   form.bikou = r.bikou || [];
   form.route = r.route || "";

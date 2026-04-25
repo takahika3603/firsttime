@@ -3,98 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>海外分析</title>
+<title>海外分析ダッシュボード</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans";
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Meiryo";
   background: radial-gradient(circle at top, #0b0f1a, #05070c);
   color:white;
 }
 
-.container{
-  padding:20px;
-}
+.container{ padding:16px; }
 
-.top{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:10px;
-}
-
-.btn{
-  padding:10px 14px;
-  border-radius:12px;
-  background:rgba(255,255,255,0.08);
-  color:white;
-  text-decoration:none;
-  font-size:12px;
+.card{
+  background:rgba(255,255,255,0.06);
   border:1px solid rgba(255,255,255,0.1);
+  border-radius:18px;
+  padding:14px;
+  margin-bottom:12px;
+  backdrop-filter: blur(25px);
 }
 
-.grid2{
+h1{ font-size:18px; margin:0 0 10px; }
+h3{ font-size:13px; margin:0 0 10px; opacity:0.8; }
+
+/* ===== フィルター ===== */
+.filterCard{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px;
+  padding:14px;
+  margin-bottom:12px;
+}
+
+.filterGroup{
+  display:flex;
+  gap:10px;
+}
+
+.selectWrap{
+  flex:1;
+}
+
+.selectWrap select{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.06);
+  color:white;
+  border:1px solid rgba(255,255,255,0.12);
+  outline:none;
+  appearance:none;
+}
+
+/* KPI */
+.kpiGrid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
 }
 
-.card{
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:20px;
-  padding:16px;
-  margin-bottom:12px;
+.kpiBox{
+  padding:12px;
+  border-radius:14px;
+  background:rgba(120,170,255,0.08);
+  border:1px solid rgba(120,170,255,0.2);
 }
 
-.big{
-  font-size:22px;
-  font-weight:700;
-}
+.kpiLabel{ font-size:11px; opacity:0.6; }
+.kpiValue{ font-size:20px; font-weight:700; margin-top:6px; }
 
-h3{
-  margin:0 0 10px;
-  font-size:13px;
-  opacity:0.8;
-}
-
-canvas{
-  width:100%!important;
-  aspect-ratio:1/1;
-}
-.barWrap{
-  margin-top:10px;
-}
-
+/* バー */
 .bar{
-  display:flex;
-  height:18px;
+  height:16px;
   width:100%;
   border-radius:999px;
   overflow:hidden;
-  background:rgba(255,255,255,0.06);
+  display:flex;
+  background:rgba(255,255,255,0.08);
 }
 
-.barNew{
-  background:linear-gradient(90deg,#6aa2ff,#8ec5ff);
-  width:0%;
-  transition:width 0.5s ease;
-}
-
-.barRe{
-  background:linear-gradient(90deg,#ff78b4,#ff9bc8);
-  width:0%;
-  transition:width 0.5s ease;
-}
+.barNew{background:#6aa2ff;width:50%;}
+.barRe{background:#ff78b4;width:50%;}
 
 .barLabel{
   display:flex;
   justify-content:space-between;
-  font-size:12px;
+  font-size:11px;
   margin-top:6px;
   opacity:0.8;
+}
+
+canvas{
+  width:100% !important;
+  height:220px !important;
+}
+.smallCanvas{
+  height:180px !important;
 }
 </style>
 </head>
@@ -103,395 +110,255 @@ canvas{
 
 <div class="container">
 
-<!-- 戻る -->
-<div class="top">
-  <a class="btn" href="money.html">← 戻る</a>
+<!-- タイトル -->
+<h1 style="margin:0 0 12px; padding:16px; font-size:18px;">
+  海外分析ダッシュボード
+</h1>
+
+<!-- フィルター -->
+<div class="filterCard">
+
+  <div class="filterGroup">
+
+    <div class="selectWrap">
+      <select id="monthFilter" onchange="applyFilter()">
+        <option value="">全期間</option>
+        <option value="01">1月</option>
+        <option value="02">2月</option>
+        <option value="03">3月</option>
+        <option value="04">4月</option>
+        <option value="05">5月</option>
+        <option value="06">6月</option>
+        <option value="07">7月</option>
+        <option value="08">8月</option>
+        <option value="09">9月</option>
+        <option value="10">10月</option>
+        <option value="11">11月</option>
+        <option value="12">12月</option>
+      </select>
+    </div>
+
+    <div class="selectWrap">
+      <select id="dayFilter" onchange="applyFilter()">
+        <option value="">全日</option>
+        <option value="01">1日</option>
+        <option value="02">2日</option>
+        <option value="03">3日</option>
+        <option value="04">4日</option>
+        <option value="05">5日</option>
+        <option value="06">6日</option>
+        <option value="07">7日</option>
+        <option value="08">8日</option>
+        <option value="09">9日</option>
+        <option value="10">10日</option>
+        <option value="11">11日</option>
+        <option value="12">12日</option>
+        <option value="13">13日</option>
+        <option value="14">14日</option>
+        <option value="15">15日</option>
+        <option value="16">16日</option>
+        <option value="17">17日</option>
+        <option value="18">18日</option>
+        <option value="19">19日</option>
+        <option value="20">20日</option>
+        <option value="21">21日</option>
+        <option value="22">22日</option>
+        <option value="23">23日</option>
+        <option value="24">24日</option>
+        <option value="25">25日</option>
+        <option value="26">26日</option>
+        <option value="27">27日</option>
+        <option value="28">28日</option>
+        <option value="29">29日</option>
+        <option value="30">30日</option>
+        <option value="31">31日</option>
+      </select>
+    </div>
+
+  </div>
 </div>
 
 <!-- KPI -->
-<div class="grid2">
-  <div class="card">
-    海外総売上
-    <div class="big" id="totalSales">0円</div>
-  </div>
-
-  <div class="card">
-    海外客数
-    <div class="big" id="totalCount">0名</div>
-  </div>
-</div>
-<!-- 日本 vs 海外 -->
 <div class="card">
-<h3>日本 vs 海外（売上）</h3>
-<canvas id="chart1"></canvas>
-</div>
-<div class="card">
-  <h3>海外：新規 vs 再来</h3>
+  <div class="kpiGrid">
 
-  <div class="barWrap">
-
-    <div class="bar">
-      <div class="barNew" id="overNewBar"></div>
-      <div class="barRe" id="overReBar"></div>
+    <div class="kpiBox">
+      <div class="kpiLabel">海外売上</div>
+      <div class="kpiValue">¥0</div>
     </div>
 
-    <div class="barLabel">
-      <span id="overNewText">新規 0%</span>
-      <span id="overReText">再来 0%</span>
+    <div class="kpiBox">
+      <div class="kpiLabel">海外人数</div>
+      <div class="kpiValue">0名</div>
     </div>
 
   </div>
 </div>
 
+<!-- 新規 vs 再来 -->
 <div class="card">
-  <h3>導線比率（海外）</h3>
+  <h3>新規 vs 再来</h3>
 
-  <div class="barWrap">
-    <div class="bar">
-      <div class="barNew" id="routeMainBar"></div>
-      <div class="barRe" id="routeOtherBar"></div>
-    </div>
+  <div class="bar">
+    <div class="barNew"></div>
+    <div class="barRe"></div>
+  </div>
 
-    <div class="barLabel">
-      <span id="routeMainText">主要導線 0%</span>
-      <span id="routeOtherText">その他 0%</span>
-    </div>
+  <div class="barLabel">
+    <span>新規</span>
+    <span>再来</span>
   </div>
 </div>
-  
-<!-- 国別 -->
+
+<!-- 導線 -->
 <div class="card">
-<h3>海外 国別構成比（人数）</h3>
-<canvas id="chart2"></canvas>
+  <h3>導線</h3>
+  <canvas class="smallCanvas"></canvas>
 </div>
 
-<!-- 新規 / 再来 + 導線 -->
-<div class="grid2">
-
+<!-- 指名方法 -->
 <div class="card">
-<h3>新規 vs 再来（海外）</h3>
-<canvas id="chart3"></canvas>
+  <h3>指名方法</h3>
+
+  <div class="bar">
+    <div style="width:25%;background:#6aa2ff"></div>
+    <div style="width:25%;background:#7ad3ff"></div>
+    <div style="width:25%;background:#ffd36a"></div>
+    <div style="width:25%;background:#ff78b4"></div>
+  </div>
+
+  <div class="barLabel">
+    <span>フリー</span>
+    <span>NET</span>
+    <span>P</span>
+    <span>リピ</span>
+  </div>
 </div>
 
-</div>
-
-<!-- キャスト -->
+<!-- 国籍 -->
 <div class="card">
-<h3>キャスト別海外売上構成</h3>
-<canvas id="chart5"></canvas>
+  <h3>国籍</h3>
+  <canvas class="smallCanvas"></canvas>
+</div>
+<!-- キャスト接客回数 -->
+<div class="card">
+  <h3>キャスト接客回数</h3>
+  <canvas id="castVisitChart"></canvas>
+</div>
+<!-- リピート率 -->
+<div class="card">
+  <h3>海外リピート率</h3>
+  <canvas></canvas>
 </div>
 
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDTwjQIjolOfaBUNqtzwBTIGKMbUN51e_Y",
-  authDomain: "luxuryspa-fuga.firebaseapp.com",
-  projectId: "luxuryspa-fuga",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+<script>
 let records = [];
+let filtered = [];
+let repeatChart;
+let castVisitChart;
 
-/* ======================
-海外データ抽出
-====================== */
+/* =====================
+フィルター処理（枠）
+===================== */
+function applyFilter(){
 
-/* ======================
-KPI
-====================== */
-const totalSales = data.reduce((s,r)=>s+(+r.price||0),0);
-document.getElementById("totalSales").innerText = "¥" + totalSales.toLocaleString();
-document.getElementById("totalCount").innerText = data.length + "名";
-/* ======================
-新規 / 再来（海外専用・強化版）
-====================== */
-/* ======================
-海外：新規 vs 再来（横バー）
-====================== */
+  const month = document.getElementById("monthFilter").value;
+  const day = document.getElementById("dayFilter").value;
 
-function updateOverseasNewRe(data){
+  filtered = [...records];
 
-  const overseas = data.filter(r =>
-    r.country && r.country !== "日本"
-  );
-
-  const newCount = overseas.filter(r => r.type === "新規").length;
-  const reCount = overseas.filter(r => r.type === "再来").length;
-
-  const total = newCount + reCount;
-
-  const newRate = total ? (newCount / total * 100) : 0;
-  const reRate = total ? (reCount / total * 100) : 0;
-
-  document.getElementById("overNewBar").style.width = newRate + "%";
-  document.getElementById("overReBar").style.width = reRate + "%";
-
-document.getElementById("overNewText").innerHTML =
-  `新規 ${newRate.toFixed(1)}%<br>
-   <span style="font-size:11px; opacity:0.7;">${newCount}名</span>`;
-
-document.getElementById("overReText").innerHTML =
-  `再来 ${reRate.toFixed(1)}%<br>
-   <span style="font-size:11px; opacity:0.7;">${reCount}名</span>`;
-}
-  function updateRouteBar(data){
-
-  const routeCount = {};
-
-  data.forEach(r=>{
-    const key = r.route || "その他";
-    routeCount[key] = (routeCount[key] || 0) + 1;
-  });
-
-  const total = Object.values(routeCount).reduce((a,b)=>a+b,0);
-
-  const main = routeCount["YOASOBI"] || 0;
-  const other = total - main;
-
-  const mainRate = total ? (main / total * 100) : 0;
-  const otherRate = total ? (other / total * 100) : 0;
-
-  document.getElementById("routeMainBar").style.width = mainRate + "%";
-  document.getElementById("routeOtherBar").style.width = otherRate + "%";
-
-  document.getElementById("routeMainText").innerHTML =
-    `主要導線 ${mainRate.toFixed(1)}%<br><span style="font-size:11px">${main}件</span>`;
-
-  document.getElementById("routeOtherText").innerHTML =
-    `その他 ${otherRate.toFixed(1)}%<br><span style="font-size:11px">${other}件</span>`;
-}
-let newC = 0;
-let reC = 0;
-
-// 海外データだけで集計
-data.forEach(r => {
-  if (r.type === "新規") newC++;
-  else if (r.type === "再来") reC++;
-});
-
-// canvas取得
-const canvas = document.getElementById("chart3");
-
-// 念のためチェック
-if (canvas) {
-
-  const ctx3 = canvas.getContext("2d");
-
-  // グラデーション（新規）
-  const gradNew = ctx3.createLinearGradient(0, 0, 200, 200);
-  gradNew.addColorStop(0, "#6aa2ff");
-  gradNew.addColorStop(1, "#4f7dff");
-
-  // グラデーション（再来）
-  const gradRe = ctx3.createLinearGradient(0, 0, 200, 200);
-  gradRe.addColorStop(0, "#ff7ad9");
-  gradRe.addColorStop(1, "#ff4fb8");
-
-  // 既存があれば削除（エラー防止）
-  if (window.chart3Instance) {
-    window.chart3Instance.destroy();
+  if(month){
+    filtered = filtered.filter(r =>
+      r.date && r.date.slice(5,7) === month
+    );
   }
 
-  // グラフ作成
-  window.chart3Instance = new Chart(canvas, {
-    type: "doughnut",
-    data: {
-      labels: ["新規", "再来"],
-      datasets: [{
-        data: [newC, reC],
-        backgroundColor: [gradNew, gradRe],
-        borderWidth: 0,
-        hoverOffset: 10
-      }]
-    },
-    options: {
-      cutout: "85%",
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: {
-            color: "white",
-            font: { size: 11 }
-          }
-        }
-      }
-    }
-  });
+  if(day){
+    filtered = filtered.filter(r =>
+      r.date && new Date(r.date).getDate().toString().padStart(2,'0') === day
+    );
+  }
 
-}
-/* ======================
-日本 vs 海外
-====================== */
-let jp=0, overseas=0;
-
-records.forEach(r=>{
-if(r.country==="日本") jp += +r.price||0;
-else overseas += +r.price||0;
-});
-
-new Chart(document.getElementById("chart1"),{
-type:"doughnut",
-data:{
-  labels:["日本","海外"],
-  datasets:[{
-    data:[jp,overseas]
-  }]
-},
-
-// ★ここを追加する（重要）
-options:{
-  cutout: "85%"
+  updateDashboard(filtered);
 }
 
-});
-
-/* ======================
-国別（人数）
-====================== */
-const countries = ["香港","台湾","韓国","中国","オーストラリア","その他"];
-const countryMap = {};
-
-countries.forEach(c=>countryMap[c]=0);
-
-data.forEach(r=>{
-const c = r.country || "その他";
-if(countryMap[c] !== undefined){
-countryMap[c]++;
-}else{
-countryMap["その他"]++;
-}
-});
-
-new Chart(document.getElementById("chart2"),{
-type:"doughnut",
-data:{
-labels:Object.keys(countryMap),
-datasets:[{data:Object.values(countryMap)}]
-}
-});
-
-/* ======================
-導線
-====================== */
-const routeMap = {
-"YOASOBI":0,
-"JPS":0,
-"通りすがり":0,
-"友人紹介":0,
-"協力店紹介":0,
-"駅ちか":0
-};
-
-data.forEach(r=>{
-if(routeMap[r.route] !== undefined){
-routeMap[r.route]++;
-}
-});
-
-/* ======================
-キャスト売上
-====================== */
-const castMap = {};
-
-data.forEach(r=>{
-castMap[r.cast]=(castMap[r.cast]||0)+(+r.price||0);
-});
-
-new Chart(document.getElementById("chart5"),{
-type:"bar",
-data:{
-labels:Object.keys(castMap),
-datasets:[{
-data:Object.values(castMap)
-}]
-}
-});
-
-loadData();
-
-async function loadData(){
-
-  const snap = await getDocs(collection(db, "records"));
-  records = snap.docs.map(d => d.data());
-
-  // 海外だけ抽出
-  const overseasData = records.filter(r =>
-    r.country && r.country !== "日本"
-  );
-
-  render(overseasData);
-}
-  function render(data){
+/* =====================
+ダッシュボード更新（枠）
+===================== */
+function updateDashboard(data){
 
   // KPI
-  const totalSales = data.reduce((s,r)=>s+(+r.price||0),0);
+  const totalSales = 0;
+  const totalPeople = 0;
 
-  document.getElementById("totalSales").innerText =
-    "¥" + totalSales.toLocaleString();
+  // 新規 vs 再来
+  const newC = 0;
+  const reC = 0;
 
-  document.getElementById("totalCount").innerText =
-    data.length + "名";
+  // バー比率（仮）
+  document.querySelector(".barNew").style.width = "50%";
+  document.querySelector(".barRe").style.width = "50%";
+    // =====================
+  // キャスト接客回数
+  // =====================
+  const castCount = {};
 
-  // グラフ更新
-  updateOverseasNewRe(data);
-  updateRouteBar(data);
+data.forEach(r=>{
+  const name = r.cast || "未設定";
+  castCount[name] = (castCount[name] || 0) + 1;
+});
 
-  // ここでグラフ全部描画
-  drawCharts(data);
+const sortedCast = Object.entries(castCount)
+  .sort((a,b)=>b[1]-a[1])
+  .slice(0,10);
+
+const labels = sortedCast.map(x=>x[0]);
+const values = sortedCast.map(x=>x[1]);
+
+// =====================
+// ★ここが重要（更新 or 初回作成）
+// =====================
+if (castVisitChart) {
+
+  // すでにある → データだけ更新
+  castVisitChart.data.labels = labels;
+  castVisitChart.data.datasets[0].data = values;
+  castVisitChart.update();
+
+} else {
+
+  // 初回だけグラフ作る
+  castVisitChart = new Chart(
+    document.getElementById("castVisitChart"),
+    {
+      type:"bar",
+      data:{
+        labels:labels,
+        datasets:[{
+          data:values
+        }]
+      },
+      options:{
+        indexAxis:"y",
+        plugins:{
+          legend:{ display:false }
+        },
+        scales:{
+          x:{ beginAtZero:true },
+          y:{ ticks:{ font:{ size:10 }}}
+    　    }
+      　}
+    　}
+  　);
+　}
 }
-  function drawCharts(data){
-
-  // 日本 vs 海外
-  let jp=0, overseas=0;
-
-  data.forEach(r=>{
-    if(r.country==="日本") jp += +r.price||0;
-    else overseas += +r.price||0;
-  });
-
-  new Chart(document.getElementById("chart1"),{
-    type:"doughnut",
-    data:{
-      labels:["日本","海外"],
-      datasets:[{ data:[jp,overseas] }]
-    },
-    options:{ cutout:"85%" }
-  });
-
-  // 国別
-  const countryMap = {};
-  data.forEach(r=>{
-    const c = r.country || "その他";
-    countryMap[c] = (countryMap[c]||0)+1;
-  });
-
-  new Chart(document.getElementById("chart2"),{
-    type:"doughnut",
-    data:{
-      labels:Object.keys(countryMap),
-      datasets:[{ data:Object.values(countryMap) }]
-    }
-  });
-
-  // キャスト
-  const castMap = {};
-  data.forEach(r=>{
-    castMap[r.cast]=(castMap[r.cast]||0)+(+r.price||0);
-  });
-
-  new Chart(document.getElementById("chart5"),{
-    type:"bar",
-    data:{
-      labels:Object.keys(castMap),
-      datasets:[{ data:Object.values(castMap) }]
-    }
-  });
-}
+/* 初期ロード */
+window.addEventListener("load", ()=>{
+  filtered = records;
+  updateDashboard(filtered);
+});
 </script>
 
 </body>

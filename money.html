@@ -442,7 +442,14 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 <h3>キャスト売上</h3>
 <canvas id="chart3"></canvas>
 </div>
+<!-- ★接客回数ランキング -->
+<div class="card">
+  <h3>接客回数ランキング</h3>
 
+  <div id="chartCountWrap">
+    <canvas id="chartCount"></canvas>
+  </div>
+</div>
 <!-- ★追加：リピート率ランキング -->
 <div class="card">
   <h3>リピート率ランキング</h3>
@@ -504,7 +511,7 @@ Chart.register({
 });
 
 
-  let chart1, chart2, chart3, chart4;
+  let chart1, chart2, chart3, chart4, chartCount;
 function applyFilter(){
 
   const monthValue = document.getElementById("monthFilter").value;
@@ -640,6 +647,59 @@ chart3 = new Chart(document.getElementById("chart3"),{
       data: castValues,
       cutout: "80%"  // ←ここを追加
     }]
+  }
+});
+/* ======================
+接客回数ランキング
+====================== */
+const castCountMap = {};
+
+data.forEach(r=>{
+  if(!castCountMap[r.cast]){
+    castCountMap[r.cast] = 0;
+  }
+  castCountMap[r.cast]++;
+});
+
+// 多い順
+const sortedCount = Object.keys(castCountMap).map(name=>{
+  return { name, count: castCountMap[name] };
+}).sort((a,b)=>b.count-a.count);
+
+// グラフ描画
+if(chartCount) chartCount.destroy();
+
+const countLen = Math.min(sortedCount.length, 20);
+const rowHeight2 = 20;
+const height2 = Math.max(200, countLen * rowHeight2);
+
+document.getElementById("chartCountWrap").style.height = height2 + "px";
+
+chartCount = new Chart(document.getElementById("chartCount"),{
+  type:"bar",
+  data:{
+    labels: sortedCount.slice(0,20).map(s=>s.name),
+    datasets:[{
+      data: sortedCount.slice(0,20).map(s=>s.count)
+    }]
+  },
+  options:{
+    indexAxis: "y",
+    responsive: true,
+    maintainAspectRatio: false,
+    scales:{
+      x:{
+        beginAtZero:true
+      },
+      y:{
+        ticks:{
+          font:{ size:8 }
+        }
+      }
+    },
+    plugins:{
+      legend:{ display:false }
+    }
   }
 });
   /* ======================

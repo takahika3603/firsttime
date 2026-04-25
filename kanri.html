@@ -631,6 +631,7 @@ function renderCastChips(){
 let form = {
   course:"",
   country:"日本",
+  countryDetail:"",
   type:"",
   shimei:"",
   visitType:"",
@@ -639,6 +640,14 @@ let form = {
   route:"",
   extra:[]
 };
+window.addEventListener("load", function(){
+
+  document.getElementById("countrySelect")
+    .addEventListener("change", function(){
+      form.countryDetail = this.value;
+    });
+
+});
 let editIndex = null;
 
 const coursePriceMap = {
@@ -795,26 +804,26 @@ recalcPrice(); // ←ここで1回だけ
 function setCountry(val,el){
   form.country = val;
 
-  // 日本・海外の選択状態リセット
   document.querySelectorAll(".chip-group .chip").forEach(c=>{
     if(c.innerText==="日本" || c.innerText==="海外"){
       c.classList.remove("active");
     }
   });
 
-  // 押したボタンを光らせる
   el.classList.add("active");
 
-  const box = document.getElementById("countrySelectBox"); // 国選択
-  const route = document.getElementById("routeBox");       // ←導線（追加したやつ）
+  const box = document.getElementById("countrySelectBox");
+  const route = document.getElementById("routeBox");
 
   if(val === "海外"){
     box.classList.remove("hidden");
-    route.classList.remove("hidden"); // ←これが今回の目的
+    route.classList.remove("hidden");
   }else{
     box.classList.add("hidden");
-    route.classList.add("hidden");    // ←日本なら消す
-    form.route = ""; // ←リセット（重要）
+    route.classList.add("hidden");
+
+    form.countryDetail = ""; // ★リセット
+    form.route = "";         // ★リセット
   }
 }
 
@@ -881,24 +890,24 @@ async function save(){
 
   try {
 
-    const record = {
-      date: document.getElementById("date").value,
-      cast: document.getElementById("cast").value,
-      price: Number(document.getElementById("price").value),
-      time: form.time,
-      course: form.course,
-      country: form.country === "海外"
-        ? document.getElementById("countrySelect").value
-        : "日本",
-      type: form.type,
-      shimei: form.shimei,
-      visitType: form.visitType,
-      op: form.op,
-      bikou: form.bikou,
-      route: form.route,
-      extra: form.extra,
-      createdAt: Date.now()
-    };
+const record = {
+  date: document.getElementById("date").value,
+  cast: document.getElementById("cast").value,
+  price: Number(document.getElementById("price").value),
+
+  country: form.country,            // 日本 or 海外
+  countryDetail: form.countryDetail, // 香港など
+
+  route: form.route,                // 導線
+
+  type: form.type,
+  shimei: form.shimei,
+  visitType: form.visitType,
+  op: form.op,
+  bikou: form.bikou,
+  extra: form.extra,
+  createdAt: Date.now()
+};
     const attendanceRecord = {
   date: document.getElementById("date").value,
   cast: document.getElementById("cast").value,

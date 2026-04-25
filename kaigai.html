@@ -5,8 +5,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>海外分析ダッシュボード</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js">
+  
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+/* ★ index.html（来客名簿）と完全同じFirebase設定を入れる */
+const firebaseConfig = {
+  apiKey: "AIzaSyDTwjQIjolOfaBUNqtzwBTIGKMbUN51e_Y",
+  authDomain: "luxuryspa-fuga.firebaseapp.com",
+  projectId: "luxuryspa-fuga",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* =========================
+🔥 来客名簿（index.html）から取得
+========================= */
+async function loadFromIndex(){
+
+  // ★ここが「来客名簿の保存先」
+  const snap = await getDocs(collection(db, "来客名簿"));
+
+  // Firestore → 配列に変換
+  records = snap.docs.map(doc => doc.data());
+
+  filtered = records;
+
+  updateDashboard(filtered);
+}
+
+window.addEventListener("load", loadFromIndex);
+</script>
 <style>
 body{
   margin:0;

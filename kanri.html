@@ -696,6 +696,7 @@ form = {
   country:"日本",
   type:"",
   shimei:"",
+  visitType:"",
   op:[],
   bikou:[],
   route:"",
@@ -959,6 +960,7 @@ function editRecord(r){
     if(c.innerText == form.shimei) c.classList.add("active");
     if(c.innerText == form.type) c.classList.add("active");
     if(c.innerText == form.time+"時") c.classList.add("active");
+    if(c.innerText == form.visitType) c.classList.add("active");
     
 
     if(form.country == "日本" && c.innerText=="日本") c.classList.add("active");

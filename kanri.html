@@ -477,9 +477,7 @@ input,select{
     <button class="chip" onclick="setChip('route','不明',this)">不明</button>
   </div>
 </div>
-<!-- ④ 時間 -->
-<div class="label">時間</div>
-<div class="chip-group" id="timeGroup"></div>
+
 
 <!-- ⑤ 指名 -->
 <div class="label">指名</div>
@@ -520,6 +518,7 @@ input,select{
 <button class="bikou" onclick="toggleBikou('マンステ',this)">マンステ</button>
 <button class="bikou" onclick="toggleBikou('クレカ',this)">クレカ</button>
 <button class="bikou" onclick="toggleBikou('クーポン',this)">クーポン</button>
+<button class="bikou" onclick="toggleBikou('口コミ',this)">口コミ</button>
 </div>
 <!-- ⑧ 総額 -->
 <input id="price" placeholder="金額">
@@ -532,8 +531,7 @@ input,select{
   <button class="chip" onclick="toggleExtra('CP',1000,this)">CP +1000</button>
   <button class="chip" onclick="toggleExtra('延長15分',5000,this)">延長15分 +5000</button>
   <button class="chip" onclick="toggleExtra('延長30分',10000,this)">延長30分 +10000</button>
-  <button class="chip" onclick="toggleExtra('口コミ割引',-1000,this)">口コミ割引 -1000</button>
-<button class="chip" onclick="toggleExtra('CB',-1000,this)">CB -1000</button>
+　<button class="chip" onclick="toggleExtra('CB',-1000,this)">CB -1000</button>
 </div>
 
 
@@ -586,7 +584,6 @@ let records = [];
 let allRecords = [];
 
 let form = {
-  time:"",
   course:"",
   country:"日本",
   type:"",
@@ -598,19 +595,92 @@ let form = {
 };
 let editIndex = null;
 
-  
-/* ===== 時間チップ生成 ===== */
-function createTimeChips(){
-  const group = document.getElementById("timeGroup");
-  for(let i=8;i<=23;i++){
-    const btn = document.createElement("button");
-    btn.className="chip";
-    btn.innerText=i+"時";
-    btn.onclick=()=>setChip("time",i,btn);
-    group.appendChild(btn);
+const coursePriceMap = {
+  "30分": 8000,
+  "45分": 12000,
+  "60分": 14000,
+  "75分": 18000,
+  "90分": 22000,
+  "120分": 30000,
+  "極液": 28000
+};
+const optionPriceMap = {
+  "AN": 3000,
+  "SL": 2000,
+  "NL": 3000,
+  "K": 1000,
+  "CP": 1000
+};
+function isNightOrWeekend(){
+
+  const now = new Date();
+  const day = now.getDay(); // 0=日曜
+  const hour = now.getHours();
+
+  const isWeekend = (day === 0 || day === 6);
+  const isNight = (hour >= 21);
+
+  return isWeekend || isNight;
+}
+function recalcPrice(){
+
+  let total = 0;
+
+  // ③ 指名料金
+// ① コース
+let coursePrice = coursePriceMap[form.course] || 0;
+
+// ② 深夜
+let nightFee = 0;
+if(form.course && form.course !== "30分" && form.course !== "45分"){
+  if(isNightOrWeekend()){
+    nightFee = 1000;
   }
 }
 
+// ③ 指名
+let shimeiFee = 0;
+if(form.shimei === "NET" || form.shimei === "P"){
+  shimeiFee = 2000;
+}
+if(form.shimei === "リピ"){
+  shimeiFee = 3000;
+}
+if(form.bikou.includes("クーポン")){
+  shimeiFee = 0;
+}
+// ★追加オプション割引（備考）
+let bikouDiscount = 0;
+
+if(form.bikou.includes("ぴゅあらば")){
+  bikouDiscount -= 1000;
+}
+
+if(form.bikou.includes("マンステ")){
+  bikouDiscount -= 1000;
+}
+if(form.bikou.includes("口コミ")){
+  bikouDiscount -= 1000;
+}
+// 合計に追加
+total += coursePrice + nightFee + shimeiFee + bikouDiscount;
+// オプション加算
+form.op.forEach(op=>{
+  total += optionPriceMap[op] || 0;
+});
+// ★クレカ
+if(form.bikou.includes("クレカ")){
+  const base = coursePrice + nightFee + shimeiFee;
+  total += Math.floor(base * 0.15);
+}
+
+  // 最低0円制御（保険）
+  if(total < 0) total = 0;
+
+  // ※追加オプションは除外（既存のtoggleExtraで処理）
+
+  document.getElementById("price").value = total;
+}
 /* ===== 画面切替 ===== */
 function add(){
 form = {
@@ -654,20 +724,26 @@ function back(){
 /* ===== チップ ===== */
 function setChip(type,value,el){
   form[type]=value;
+
   const group=el.parentNode;
   group.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
   el.classList.add("active");
+
+  // ★これ追加（超重要）
+  recalcPrice();
 }
 function setCoursePrice(course, el){
   form.course = course;
 
-  document.querySelectorAll(".chip").forEach(c=>{
-    if(c.parentNode === el.parentNode){
-      c.classList.remove("active");
-    }
-  });
+document.querySelectorAll(".chip").forEach(c=>{
+  if(c.parentNode === el.parentNode){
+    c.classList.remove("active");
+  }
+});
 
-  el.classList.add("active");
+el.classList.add("active");
+recalcPrice(); // ←ここで1回だけ
+
 }
 function setCountry(val,el){
   form.country = val;
@@ -696,16 +772,28 @@ function setCountry(val,el){
 }
 
 function toggleOp(val,el){
+
+  const input = document.getElementById("price");
+  let current = Number(input.value) || 0;
+
+  const price = optionPriceMap[val] || 0;
+
   if(form.op.includes(val)){
-    form.op=form.op.filter(v=>v!==val);
+    // OFF（引く）
+    form.op = form.op.filter(v=>v!==val);
+    current -= price;
     el.classList.remove("active");
   }else{
+    // ON（足す）
     form.op.push(val);
+    current += price;
     el.classList.add("active");
   }
+
+  input.value = current;
 }
 
-  function toggleBikou(val,el){
+function toggleBikou(val,el){
   if(form.bikou.includes(val)){
     form.bikou = form.bikou.filter(v=>v!==val);
     el.classList.remove("active");
@@ -713,6 +801,8 @@ function toggleOp(val,el){
     form.bikou.push(val);
     el.classList.add("active");
   }
+
+  recalcPrice(); // ←これ絶対必要
 }
 
 function toggleExtra(name, price, el){
@@ -747,7 +837,7 @@ async function save(){
     const record = {
       date: document.getElementById("date").value,
       cast: document.getElementById("cast").value,
-      price: document.getElementById("price").value,
+      price: Number(document.getElementById("price").value),
       time: form.time,
       course: form.course,
       country: form.country === "海外"
@@ -762,7 +852,7 @@ async function save(){
       createdAt: Date.now()
     };
 
-    if(editIndex){
+    if(editIndex !== null){
       // ✏️ 編集モード（上書き）
       await updateDoc(
         doc(window.db, "records", editIndex),
@@ -787,7 +877,7 @@ async function save(){
 }
 async function deleteRecord(){
 
-  if(!editIndex){
+  if(editIndex === null){
     alert("削除対象がありません");
     return;
   }
@@ -893,7 +983,7 @@ function filterData(){
 
   const filtered = allRecords.filter(r => {
 
-    if(!r.date) return false;
+    if(!r.date) return true;
 
     const matchMonth = month ? r.date.slice(5,7) === month : true;
     const matchDate = date ? r.date.slice(8,10) === date : true;
@@ -937,18 +1027,30 @@ function drawList(data){
   const list = document.getElementById("listPage");
   list.innerHTML = "";
 
-  data
+  // ① 古い順に並べる
+  const sorted = data
     .slice()
-    .sort((a, b) => b.createdAt - a.createdAt)
-    .forEach((r, i) => {
+    .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+
+  // ② 番号付け
+  const numbered = sorted.map((r, index) => ({
+    ...r,
+    number: index + 1
+  }));
+
+  // ③ 新しい順で表示（番号付き）
+  numbered
+    .slice()
+    .reverse()
+    .forEach((r) => {
 
       const div = document.createElement("div");
 
       div.innerHTML = `
 <span style="display:flex; align-items:center; gap:8px; width:100%;">
 
-<span style="width:20px; opacity:0.6;">
-  ${i + 1}
+<span style="width:28px; font-size:12px; font-weight:400;">
+  ${r.number}
 </span>
 
 <span>
@@ -1065,7 +1167,7 @@ window.addEventListener("click", function(e){
 });
 window.addEventListener("load", async function () {
   restoreFilterState();
-  createTimeChips();
+  
 
   // Firebase準備後にデータ取得
   await render();

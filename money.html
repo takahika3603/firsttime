@@ -383,6 +383,24 @@ input[type="date"]::-webkit-calendar-picker-indicator{
     国別・売上・指名を分析する
   </div>
 </div>
+<!-- 飛込 vs 予約 -->
+<div class="card">
+  <h3>飛込 vs 予約</h3>
+
+  <div class="barWrap">
+
+    <div class="bar">
+      <div class="barNew" id="barFly"></div>
+      <div class="barRe" id="barReserve"></div>
+    </div>
+
+    <div class="barLabel">
+      <span id="flyText">飛込 0%</span>
+      <span id="reserveText">予約 0%</span>
+    </div>
+
+  </div>
+</div>
 <div class="card">
   <h3>新規 vs 再来</h3>
 
@@ -530,6 +548,26 @@ function updateDashboard(data){
 
   document.getElementById("count").innerText = jpCount + overseasCount;
   document.getElementById("overseasCount").innerText = overseasCount;
+
+  // 飛込 vs 予約
+const fly = data.filter(r => r.visitType === "飛込").length;
+const reserve = data.filter(r => r.visitType === "予約").length;
+
+const totalVisit = fly + reserve;
+
+const flyRate = totalVisit ? (fly / totalVisit * 100) : 0;
+const reserveRate = totalVisit ? (reserve / totalVisit * 100) : 0;
+
+// バー反映
+document.getElementById("barFly").style.width = flyRate + "%";
+document.getElementById("barReserve").style.width = reserveRate + "%";
+
+// テキスト反映
+document.getElementById("flyText").innerHTML =
+  `飛込 ${flyRate.toFixed(1)}%<br>${fly}名`;
+
+document.getElementById("reserveText").innerHTML =
+  `予約 ${reserveRate.toFixed(1)}%<br>${reserve}名`;
 
   // 新規 vs 再来
   const newC = data.filter(r => r.type === "新規").length;

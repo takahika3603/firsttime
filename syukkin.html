@@ -72,6 +72,33 @@ h2{
   opacity:0.6;
   margin-bottom:10px;
 }
+  /* 下固定ボタン */
+.backBtn{
+  position:fixed;
+  bottom:20px;
+  left:20px;
+  right:20px;
+
+  padding:14px;
+  text-align:center;
+  border-radius:14px;
+
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+  color:white;
+
+  backdrop-filter: blur(20px);
+
+  transition:0.2s;
+  cursor:pointer;
+}
+
+/* ホバーで浮く */
+.backBtn:hover{
+  transform:translateY(-3px);
+  background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+  border:1px solid transparent;
+}
 </style>
 </head>
 
@@ -234,6 +261,8 @@ async function load(){
 
 load();
 </script>
-
+<div class="backBtn" onclick="location.href='index.html'">
+  来客名簿へ戻る
+</div>
 </body>
 </html>

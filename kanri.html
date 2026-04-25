@@ -421,7 +421,7 @@ input,select{
 
 </div>
 <!-- 出勤情報 -->
-<div class="dashboardCard" style="flex:1; padding:10px 18px;" onclick="location.href='attendance.html'">
+<div class="dashboardCard" style="flex:1; padding:10px 18px;" onclick="location.href='syukkin.html'">
   <div class="dashTitle" style="margin-bottom:2px;">出勤情報</div>
 </div>
   </div>
@@ -439,7 +439,8 @@ input,select{
 <input id="date" type="date">
 <!-- ① キャスト -->
 <input id="cast" placeholder="キャスト">
-
+<div class="label">今日の出勤</div>
+<div id="castChips" class="chip-group"></div>
 <!-- ② 新規 / 再来 -->
 <div class="label">区分</div>
 <div class="chip-group">
@@ -592,7 +593,41 @@ window.updateDoc = updateDoc;
 <script>
 let records = [];
 let allRecords = [];
+let todayCasts = [];
 
+async function loadAttendance(){
+  const today = new Date().toISOString().slice(0,10);
+
+  const snap = await getDocs(collection(window.db, "attendance"));
+
+  todayCasts = [];
+
+  snap.forEach(doc => {
+    const data = doc.data();
+
+    if(data.date === today){
+      todayCasts = data.casts || [];
+    }
+  });
+}
+function renderCastChips(){
+
+  const box = document.getElementById("castChips");
+  box.innerHTML = "";
+
+  todayCasts.forEach(c => {
+
+    const btn = document.createElement("button");
+    btn.className = "chip";
+    btn.innerText = `${c.name} ${c.start}-${c.end}`;
+
+    btn.onclick = () => {
+      document.getElementById("cast").value = c.name;
+    };
+
+    box.appendChild(btn);
+  });
+}
 let form = {
   course:"",
   country:"日本",
@@ -864,20 +899,34 @@ async function save(){
       extra: form.extra,
       createdAt: Date.now()
     };
+    const attendanceRecord = {
+  date: document.getElementById("date").value,
+  cast: document.getElementById("cast").value,
+  createdAt: Date.now()
+};
 
     if(editIndex !== null){
-      // ✏️ 編集モード（上書き）
-      await updateDoc(
-        doc(window.db, "records", editIndex),
-        record
-      );
-    }else{
-      // ➕ 新規追加
-      await addDoc(
-        collection(window.db, "records"),
-        record
-      );
-    }
+
+  // 編集は「来客データだけ更新」
+  await updateDoc(
+    doc(window.db, "records", editIndex),
+    record
+  );
+
+}else{
+
+  // ① 来客データ保存
+  await addDoc(
+    collection(window.db, "records"),
+    record
+  );
+
+  // ② 出勤データ保存
+  await addDoc(
+    collection(window.db, "attendance"),
+    attendanceRecord
+  );
+}
 
     await render();
     back();
@@ -888,6 +937,7 @@ async function save(){
     isSaving = false;
   }
 }
+
 async function deleteRecord(){
 
   if(editIndex === null){
@@ -1181,14 +1231,13 @@ window.addEventListener("click", function(e){
   }
 });
 window.addEventListener("load", async function () {
+
   restoreFilterState();
-  
 
-  // Firebase準備後にデータ取得
-  await render();
+  await render();          // 来客データ
+  await loadAttendance();  // 出勤データ
 
-  // KPI更新
-  updateKPI(records);
+  renderCastChips();       // チップ生成
 });
 </script>
 

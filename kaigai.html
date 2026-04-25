@@ -133,10 +133,18 @@ h3{ font-size:13px; margin:0 0 10px; opacity:0.8; }
 
 canvas{
   width:100% !important;
-  height:220px !important;
 }
-.smallCanvas{
-  height:180px !important;
+
+/* 円グラフ専用 */
+.chartWrap{
+  width:100%;
+  max-width:260px;
+  height:260px;
+  margin:0 auto;
+}
+
+.chartWrap canvas{
+  height:100% !important;
 }
 </style>
 </head>
@@ -248,7 +256,9 @@ canvas{
 <!-- 導線 -->
 <div class="card">
   <h3>導線</h3>
- <canvas id="routeChart" class="smallCanvas"></canvas>
+ <div class="chartWrap">
+  <canvas id="routeChart"></canvas>
+</div>
 </div>
 
 <!-- 指名方法 -->
@@ -273,7 +283,9 @@ canvas{
 <!-- 国籍 -->
 <div class="card">
   <h3>国籍</h3>
- <canvas id="nationalityChart" class="smallCanvas"></canvas>
+<div class="chartWrap">
+  <canvas id="nationalityChart"></canvas>
+</div>
 </div>
 <!-- キャスト接客回数 -->
 <div class="card">
@@ -330,18 +342,19 @@ function applyFilter(){
 function updateDashboard(data){
 
 // ★海外データ（これを必ず先に作る）
-const overseas = data.filter(r => r.country && r.country !== "日本");
-  // ★海外人数（来客数）
-const overseasPeople = data
-  .filter(r => r.country && r.country !== "日本")
-  .length;
+const overseas = data.filter(r => {
+  if(!r.country) return false;
+  const c = r.country.trim();
+  return c !== "日本" && c !== "Japan";
+});
+// ★海外人数（来客数）
+const overseasPeople = overseas.length;
 
 document.getElementById("overseasPeople").innerText =
   overseasPeople + "名";
 
-  // ★海外売上
-const overseasSales = data
-  .filter(r => r.country && r.country !== "日本")
+// ★海外売上
+const overseasSales = overseas
   .reduce((sum, r) => sum + (Number(r.price) || 0), 0);
 
 document.getElementById("overseasSales").innerText =
@@ -422,7 +435,7 @@ if (castVisitChart) {
     　}
   　);
 　}
-  // =====================
+// =====================
 // 導線グラフ
 // =====================
 const routeLabels = Object.keys(routeCount);
@@ -440,22 +453,40 @@ if (window.routeChartObj) {
       data: {
         labels: routeLabels,
         datasets: [{
-          data: routeValues
+          data: routeValues,
+          backgroundColor: [
+            "#6aa2ff",
+            "#7ad3ff",
+            "#ffd36a",
+            "#ff9f7a",
+            "#ff78b4",
+            "#c77dff"
+          ],
+          borderWidth: 0,
+          hoverOffset: 8
         }]
       },
-      options: {
+     options: {
+  maintainAspectRatio: true,
+  aspectRatio: 1,
+  cutout: "65%",
         plugins: {
           legend: {
             position: "bottom",
-            labels: { color: "white", font: { size: 10 } }
+            labels: {
+              color: "white",
+              font: { size: 11 },
+              padding: 12
+            }
           }
         }
       }
     }
   );
-}
+} // ←ここで完全に閉じる（超重要）
+
 // =====================
-// 国籍グラフ
+// 国籍グラフ（←完全に外に出す）
 // =====================
 const nationCount = {};
 
@@ -479,21 +510,37 @@ if (window.nationChartObj) {
       data: {
         labels: nationLabels,
         datasets: [{
-          data: nationValues
+          data: nationValues,
+          backgroundColor: [
+            "#6aa2ff",
+            "#00d4ff",
+            "#7bffb2",
+            "#ffd36a",
+            "#ff9f7a",
+            "#ff78b4",
+            "#c77dff"
+          ],
+          borderWidth: 0,
+          hoverOffset: 8
         }]
       },
       options: {
+        cutout: "65%",
         plugins: {
           legend: {
             position: "bottom",
-            labels: { color: "white", font: { size: 10 } }
+            labels: {
+              color: "white",
+              font: { size: 11 },
+              padding: 12
+            }
           }
         }
       }
     }
   );
 }
-}
+}  
 </script>
 
 </body>

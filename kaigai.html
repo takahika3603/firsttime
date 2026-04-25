@@ -28,7 +28,7 @@ const db = getFirestore(app);
 async function loadFromIndex(){
 
   // ★ここが「来客名簿の保存先」
-  const snap = await getDocs(collection(db, "来客名簿"));
+ const snap = await getDocs(collection(db, "records"));
 
   // Firestore → 配列に変換
   records = snap.docs.map(doc => doc.data());
@@ -217,12 +217,12 @@ canvas{
 
     <div class="kpiBox">
       <div class="kpiLabel">海外売上</div>
-      <div class="kpiValue">¥0</div>
+      <div class="kpiValue" id="overseasSales">¥0</div>
     </div>
 
     <div class="kpiBox">
       <div class="kpiLabel">海外人数</div>
-      <div class="kpiValue">0名</div>
+      <div class="kpiValue" id="overseasPeople">0名</div>
     </div>
 
   </div>
@@ -246,7 +246,7 @@ canvas{
 <!-- 導線 -->
 <div class="card">
   <h3>導線</h3>
-  <canvas class="smallCanvas"></canvas>
+ <canvas id="routeChart" class="smallCanvas"></canvas>
 </div>
 
 <!-- 指名方法 -->
@@ -329,6 +329,39 @@ function updateDashboard(data){
   // 新規 vs 再来
   const newC = 0;
   const reC = 0;
+
+  // ★海外人数（来客数）
+const overseasPeople = data
+  .filter(r => r.country && r.country !== "日本")
+  .length;
+
+document.getElementById("overseasPeople").innerText =
+  overseasPeople + "名";
+
+  // ★海外売上
+const overseasSales = data
+  .filter(r => r.country && r.country !== "日本")
+  .reduce((sum, r) => sum + (Number(r.price) || 0), 0);
+
+document.getElementById("overseasSales").innerText =
+  "¥" + overseasSales.toLocaleString();
+
+  // ★導線集計
+const routeCount = {};
+
+data.forEach(r => {
+  const route = r.route || "未設定";
+  routeCount[route] = (routeCount[route] || 0) + 1;
+});
+
+  // ★海外 新規・再来
+const overseas = data.filter(r => r.country && r.country !== "日本");
+
+const overseasNew = overseas.filter(r => r.type === "新規").length;
+const overseasRe = overseas.filter(r => r.type === "再来").length;
+
+const routeLabels = Object.keys(routeCount);
+const routeValues = Object.values(routeCount);
 
   // バー比率（仮）
   document.querySelector(".barNew").style.width = "50%";

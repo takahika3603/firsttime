@@ -413,16 +413,84 @@ data:Object.values(castMap)
 });
 
 loadData();
+
 async function loadData(){
 
   const snap = await getDocs(collection(db, "records"));
   records = snap.docs.map(d => d.data());
 
-  const data = records.filter(r =>
+  // 海外だけ抽出
+  const overseasData = records.filter(r =>
     r.country && r.country !== "日本"
   );
 
-  render(data);
+  render(overseasData);
+}
+  function render(data){
+
+  // KPI
+  const totalSales = data.reduce((s,r)=>s+(+r.price||0),0);
+
+  document.getElementById("totalSales").innerText =
+    "¥" + totalSales.toLocaleString();
+
+  document.getElementById("totalCount").innerText =
+    data.length + "名";
+
+  // グラフ更新
+  updateOverseasNewRe(data);
+  updateRouteBar(data);
+
+  // ここでグラフ全部描画
+  drawCharts(data);
+}
+  function drawCharts(data){
+
+  // 日本 vs 海外
+  let jp=0, overseas=0;
+
+  data.forEach(r=>{
+    if(r.country==="日本") jp += +r.price||0;
+    else overseas += +r.price||0;
+  });
+
+  new Chart(document.getElementById("chart1"),{
+    type:"doughnut",
+    data:{
+      labels:["日本","海外"],
+      datasets:[{ data:[jp,overseas] }]
+    },
+    options:{ cutout:"85%" }
+  });
+
+  // 国別
+  const countryMap = {};
+  data.forEach(r=>{
+    const c = r.country || "その他";
+    countryMap[c] = (countryMap[c]||0)+1;
+  });
+
+  new Chart(document.getElementById("chart2"),{
+    type:"doughnut",
+    data:{
+      labels:Object.keys(countryMap),
+      datasets:[{ data:Object.values(countryMap) }]
+    }
+  });
+
+  // キャスト
+  const castMap = {};
+  data.forEach(r=>{
+    castMap[r.cast]=(castMap[r.cast]||0)+(+r.price||0);
+  });
+
+  new Chart(document.getElementById("chart5"),{
+    type:"bar",
+    data:{
+      labels:Object.keys(castMap),
+      datasets:[{ data:Object.values(castMap) }]
+    }
+  });
 }
 </script>
 

@@ -126,9 +126,22 @@ h3{ font-size:13px; margin:0 0 10px; opacity:0.8; }
 .barLabel{
   display:flex;
   justify-content:space-between;
-  font-size:11px;
   margin-top:6px;
+}
+
+.barLabel > div{
+  flex:1;
+  text-align:center;
+  font-size:11px;
   opacity:0.8;
+}
+/* 左右に寄せる（これが本体） */
+.barLabel > div:first-child{
+  text-align:left;
+}
+
+.barLabel > div:last-child{
+  text-align:right;
 }
 
 canvas{
@@ -247,12 +260,20 @@ canvas{
     <div class="barRe"></div>
   </div>
 
-  <div class="barLabel">
-    <span>新規</span>
-    <span>再来</span>
-  </div>
-</div>
+<div class="barLabel">
 
+  <div>
+    <div id="newPercent">新規 0%</div>
+    <div id="newCount">0名</div>
+  </div>
+
+  <div>
+    <div id="rePercent">再来 0%</div>
+    <div id="reCount">0名</div>
+  </div>
+
+</div>
+</div>
 <!-- 導線 -->
 <div class="card">
   <h3>導線</h3>
@@ -266,17 +287,34 @@ canvas{
   <h3>指名方法</h3>
 
   <div class="bar">
-    <div style="width:25%;background:#6aa2ff"></div>
-    <div style="width:25%;background:#7ad3ff"></div>
-    <div style="width:25%;background:#ffd36a"></div>
-    <div style="width:25%;background:#ff78b4"></div>
+<div id="freeBar" style="background:#6aa2ff"></div>
+<div id="netBar" style="background:#7ad3ff"></div>
+<div id="pBar" style="background:#ffd36a"></div>
+<div id="repeatBar" style="background:#ff78b4"></div>
   </div>
 
   <div class="barLabel">
-    <span>フリー</span>
-    <span>NET</span>
-    <span>P</span>
-    <span>リピ</span>
+
+    <div>
+      <div id="freePercent">フリー 0%</div>
+      <div id="freeCount">0名</div>
+    </div>
+
+    <div>
+      <div id="netPercent">NET 0%</div>
+      <div id="netCount">0名</div>
+    </div>
+
+    <div>
+      <div id="pPercent">P 0%</div>
+      <div id="pCount">0名</div>
+    </div>
+
+    <div>
+      <div id="repeatPercent">リピ 0%</div>
+      <div id="repeatCount">0名</div>
+    </div>
+
   </div>
 </div>
 
@@ -367,7 +405,68 @@ overseas.forEach(r => {
   const route = r.route || "未設定";
   routeCount[route] = (routeCount[route] || 0) + 1;
 });
+// =====================
+// 指名方法（海外のみ）
+// =====================
+const shimeiCount = {
+  フリー: 0,
+  NET: 0,
+  P: 0,
+  リピ: 0
+};
 
+// ★ここが重要：overseasを使う
+overseas.forEach(r => {
+  const s = r.shimei;
+
+  if(s === "フリー") shimeiCount.フリー++;
+  if(s === "NET") shimeiCount.NET++;
+  if(s === "P") shimeiCount.P++;
+  if(s === "リピ") shimeiCount.リピ++;
+});
+
+const totalShimei =
+  shimeiCount.フリー +
+  shimeiCount.NET +
+  shimeiCount.P +
+  shimeiCount.リピ || 1;
+
+// 割合
+const freeRate = (shimeiCount.フリー / totalShimei) * 100;
+const netRate = (shimeiCount.NET / totalShimei) * 100;
+const pRate = (shimeiCount.P / totalShimei) * 100;
+const repeatRate = (shimeiCount.リピ / totalShimei) * 100;
+// ★バーの長さを動かす（これが重要）
+document.getElementById("freeBar").style.width = freeRate + "%";
+document.getElementById("netBar").style.width = netRate + "%";
+document.getElementById("pBar").style.width = pRate + "%";
+document.getElementById("repeatBar").style.width = repeatRate + "%";
+// バー反映
+// ％表示
+document.getElementById("freePercent").innerText =
+  `フリー ${freeRate.toFixed(1)}%`;
+
+document.getElementById("netPercent").innerText =
+  `NET ${netRate.toFixed(1)}%`;
+
+document.getElementById("pPercent").innerText =
+  `P ${pRate.toFixed(1)}%`;
+
+document.getElementById("repeatPercent").innerText =
+  `リピ ${repeatRate.toFixed(1)}%`;
+
+// 人数表示
+document.getElementById("freeCount").innerText =
+  `${shimeiCount.フリー}名`;
+
+document.getElementById("netCount").innerText =
+  `${shimeiCount.NET}名`;
+
+document.getElementById("pCount").innerText =
+  `${shimeiCount.P}名`;
+
+document.getElementById("repeatCount").innerText =
+  `${shimeiCount.リピ}名`;
   // =====================
   // 新規 vs 再来（ここ修正）
   // =====================
@@ -379,8 +478,23 @@ overseas.forEach(r => {
   const newRate = (newC / total) * 100;
   const reRate = (reC / total) * 100;
 
-  document.querySelector(".barNew").style.width = newRate + "%";
-  document.querySelector(".barRe").style.width = reRate + "%";
+// バーの割合（※これないと棒が動かない）
+document.querySelector(".barNew").style.width = newRate + "%";
+document.querySelector(".barRe").style.width = reRate + "%";
+
+// ％表示
+document.getElementById("newPercent").innerText =
+  `新規 ${newRate.toFixed(1)}%`;
+
+document.getElementById("rePercent").innerText =
+  `再来 ${reRate.toFixed(1)}%`;
+
+// 人数表示
+document.getElementById("newCount").innerText =
+  `${newC}名`;
+
+document.getElementById("reCount").innerText =
+  `${reC}名`;
 
     // =====================
   // キャスト接客回数

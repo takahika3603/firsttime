@@ -13,14 +13,9 @@ body{
   color:white;
 }
 
-.container{
-  padding:16px;
-}
+.container{ padding:16px; }
 
-h1{
-  font-size:18px;
-  margin-bottom:12px;
-}
+h1{ font-size:18px; margin-bottom:12px; }
 
 input{
   width:100%;
@@ -42,7 +37,6 @@ button{
   color:white;
   font-weight:600;
   margin-bottom:12px;
-  cursor:pointer;
 }
 
 .card{
@@ -71,6 +65,13 @@ h2{
   margin-top:20px;
   margin-bottom:10px;
 }
+
+/* ★追加：外部連携用コピー表示 */
+.copyBox{
+  font-size:11px;
+  opacity:0.6;
+  margin-bottom:10px;
+}
 </style>
 </head>
 
@@ -85,6 +86,10 @@ h2{
 <input id="end" type="number" placeholder="終了時間（例 18）">
 
 <button onclick="addCast()">追加</button>
+
+<div class="copyBox">
+※このデータは来客名簿と自動連携されます
+</div>
 
 <h2>今日の出勤</h2>
 <div id="list"></div>
@@ -101,7 +106,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
 /* =========================
-   Firebase設定
+   Firebase
 ========================= */
 const firebaseConfig = {
   apiKey: "AIzaSyDTwjQIjolOfaBUNqtzwBTIGKMbUN51e_Y",
@@ -113,7 +118,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 /* =========================
-   今日の日付
+   日付
 ========================= */
 function getToday(){
   return new Date().toISOString().slice(0,10);
@@ -144,7 +149,12 @@ window.addCast = async function(){
   );
 
   if(!exists){
-    casts.push({ name, start, end });
+    casts.push({
+      name,
+      start,
+      end,
+      id: crypto.randomUUID() // ★連携用ID（重要）
+    });
   }
 
   await setDoc(ref, {
@@ -159,7 +169,7 @@ window.addCast = async function(){
 /* =========================
    削除
 ========================= */
-window.removeCast = async function(index){
+window.removeCast = async function(id){
 
   const today = getToday();
   const ref = doc(db, "attendance", today);
@@ -169,7 +179,7 @@ window.removeCast = async function(index){
 
   let casts = snap.data().casts || [];
 
-  casts.splice(index, 1);
+  casts = casts.filter(c => c.id !== id);
 
   await setDoc(ref, {
     date: today,
@@ -180,7 +190,7 @@ window.removeCast = async function(index){
 };
 
 /* =========================
-   画面クリア
+   クリア
 ========================= */
 function clearForm(){
   document.getElementById("name").value = "";
@@ -205,7 +215,7 @@ async function load(){
 
   const data = snap.data();
 
-  (data.casts || []).forEach((c, index) => {
+  (data.casts || []).forEach((c) => {
 
     const div = document.createElement("div");
     div.className = "card";
@@ -215,7 +225,7 @@ async function load(){
         <div class="name">${c.name}</div>
         <div class="time">${c.start}:00 - ${c.end}:00</div>
       </div>
-      <div class="delete" onclick="removeCast(${index})">削除</div>
+      <div class="delete" onclick="removeCast('${c.id}')">削除</div>
     `;
 
     list.appendChild(div);

@@ -154,11 +154,24 @@ hr{
     line-height:1.2;
   }
 }
+#monthFilter, #dayFilter{
+  font-size:14px;
+}
 </style>
 </head>
 
 <body>
-
+<!-- 📅 フィルター（ここを追加） -->
+<div class="row">
+  <div class="col">
+    <input type="month" id="monthFilter">
+  </div>
+  <div class="col">
+    <select id="dayFilter">
+  <option value="">日▼</option>
+</select>
+  </div>
+</div>
 <!-- 🔍 検索 -->
 <input id="castSearch" placeholder="キャスト名を入力">
 <div id="suggestBox"></div>
@@ -187,8 +200,13 @@ hr{
 </div>
 
 <!-- 年間 -->
+<!-- 年間 -->
 <div class="card">
   <div class="small">年間目標</div>
+
+  <!-- ★追加：目標入力 -->
+  <input id="goalInput" placeholder="目標を入力">
+
   <div class="bar">
     <div id="yearBar" class="bar-inner" style="width:0%"></div>
   </div>
@@ -221,7 +239,11 @@ hr{
 
   </div>
 </div>
-
+<!-- 📈 今月売上推移 -->
+<div class="card">
+  <div class="small">今月売上推移</div>
+  <canvas id="lineChart"></canvas>
+</div>
 <!-- 日別 -->
 <div class="card">
   <div class="small">日別売上</div>
@@ -243,10 +265,48 @@ const db = getFirestore(app);
 const castList = ["あめり","かえで","かりん","はるか","すい","せれん"];
 
 let all = [];
+let chartInstance = null;
+let lineChartInstance = null;
+let currentCast = "";
+function updateDayOptions(){
 
+  const monthVal = document.getElementById("monthFilter").value;
+  const select = document.getElementById("dayFilter");
+
+  // リセット
+  select.innerHTML = '<option value="">日▼</option>';
+
+  if(!monthVal) return;
+
+  const [year, month] = monthVal.split("-");
+  const lastDay = new Date(year, month, 0).getDate();
+
+  // 全日
+  const allOpt = document.createElement("option");
+  allOpt.value = "";
+  allOpt.textContent = "全日";
+  select.appendChild(allOpt);
+
+  // 日付
+  for(let i=1;i<=lastDay;i++){
+    const day = String(i).padStart(2,"0");
+    const dateStr = `${monthVal}-${day}`;
+
+    const opt = document.createElement("option");
+    opt.value = dateStr;
+    opt.textContent = `${i}日`;
+
+    select.appendChild(opt);
+  }
+}
 async function load(){
   const snap = await getDocs(collection(db,"records"));
   snap.forEach(doc=> all.push(doc.data()));
+  // 初期表示（最初のキャストを表示）
+if(castList.length > 0){
+  document.getElementById("castSearch").value = castList[0];
+  selectCast(castList[0]);
+}
 }
 
 document.getElementById("castSearch").addEventListener("input", function(){
@@ -267,10 +327,33 @@ document.getElementById("castSearch").addEventListener("input", function(){
     box.appendChild(div);
   });
 });
-
 function selectCast(name){
 
-  const data = all.filter(r=>r.cast===name);
+  currentCast = name;
+
+  // ★目標を読み込み（キャストごと）
+  const savedGoal = localStorage.getItem("goal_" + name);
+  if(savedGoal){
+    document.getElementById("goalInput").value = savedGoal;
+  }else{
+    document.getElementById("goalInput").value = "";
+  }
+
+  const monthVal = document.getElementById("monthFilter").value;
+  const dayVal = document.getElementById("dayFilter").value;
+
+  const data = all.filter(r=>{
+    if(r.cast !== name) return false;
+    if(!r.date) return false;
+
+    // 月フィルター
+    if(monthVal && !r.date.startsWith(monthVal)) return false;
+
+    // 日フィルター
+    if(dayVal && r.date !== dayVal) return false;
+
+    return true;
+  });
 
   const total = data.reduce((s,r)=>s+(r.price||0),0);
 
@@ -287,6 +370,7 @@ function selectCast(name){
   document.getElementById("rSales").innerText = sumBy(data,"リピ");
 
   drawChart(total);
+  drawLineChart(data);
   drawDaily(data);
 }
 
@@ -297,43 +381,150 @@ function sumBy(data,type){
 
 function drawChart(total){
 
-  const goal = 1000000;
+  const goal = Number(document.getElementById("goalInput").value) || 0;
 
-  new Chart(document.getElementById("donut"),{
+  if(chartInstance){
+    chartInstance.destroy();
+  }
+
+  chartInstance = new Chart(document.getElementById("donut"),{
     type:"doughnut",
     data:{
       datasets:[{
-        data:[total,goal-total],
+        data: goal ? [total, goal-total] : [total],
         backgroundColor:["#ffb6d9","#ffe4ee"]
       }]
     },
     options:{
-  cutout:"75%",
-  plugins:{
-    legend:{ display:false }
-  }
-}
+      cutout:"75%",
+      plugins:{
+        legend:{ display:false }
+      }
+    }
   });
 
-  document.getElementById("progress").innerText =
-    (total/goal*100).toFixed(1)+"%";
+  // 進捗
+  const percent = goal ? (total/goal*100).toFixed(1) : 0;
+  document.getElementById("progress").innerText = percent + "%";
+
+  // バー
+  document.getElementById("yearBar").style.width = percent + "%";
+  document.getElementById("yearText").innerText =
+    `${total.toLocaleString()} / ${goal.toLocaleString()}`;
 }
 
 function drawDaily(data){
 
-  const box = document.getElementById("dailyList");
-  box.innerHTML="";
+const box = document.getElementById("dailyList");
+box.innerHTML="";
 
-  data.sort((a,b)=>b.createdAt-a.createdAt);
+// 日ごとに合計
+const dailyMap = {};
 
+data.forEach(r=>{
+  if(!r.date) return;
+
+  if(!dailyMap[r.date]){
+    dailyMap[r.date] = 0;
+  }
+
+  dailyMap[r.date] += (r.price || 0);
+});
+
+// 配列に変換してソート
+const dailyArray = Object.entries(dailyMap)
+  .sort((a,b)=> new Date(b[0]) - new Date(a[0]));
+
+// 表示
+dailyArray.forEach(([date,total])=>{
+  const div = document.createElement("div");
+  div.innerText = `${date}　${total.toLocaleString()}円`;
+  box.appendChild(div);
+});
+}
+function drawLineChart(data){
+
+  const monthVal = document.getElementById("monthFilter").value;
+  if(!monthVal) return;
+
+  const [year, month] = monthVal.split("-");
+  const lastDay = new Date(year, month, 0).getDate();
+
+  // 日ごとの売上
+  const dailyMap = {};
   data.forEach(r=>{
-    const div = document.createElement("div");
-    div.innerText = `${r.date}　${r.price}円`;
-    box.appendChild(div);
+    if(!r.date) return;
+    if(!dailyMap[r.date]) dailyMap[r.date] = 0;
+    dailyMap[r.date] += (r.price || 0);
+  });
+
+  const labels = [];
+  const values = [];
+
+  for(let i=1;i<=lastDay;i++){
+    const day = String(i).padStart(2,"0");
+    const dateStr = `${monthVal}-${day}`;
+
+    labels.push(i + "日");
+    values.push(dailyMap[dateStr] || 0);
+  }
+
+  // 上限：最大値 + 10万
+  const max = Math.max(...values);
+  const maxY = max + 100000;
+
+  if(lineChartInstance){
+    lineChartInstance.destroy();
+  }
+
+  lineChartInstance = new Chart(document.getElementById("lineChart"),{
+    type:"line",
+    data:{
+      labels: labels,
+      datasets:[{
+        data: values,
+        tension:0.3,
+        fill:true,
+        backgroundColor:"rgba(255,182,217,0.2)",
+        borderColor:"#ff7aa2"
+      }]
+    },
+    options:{
+      plugins:{
+        legend:{ display:false }
+      },
+      scales:{
+        y:{
+          beginAtZero:true,
+          suggestedMax: maxY
+        }
+      }
+    }
   });
 }
-
 load();
+updateDayOptions();
+document.getElementById("monthFilter").addEventListener("change", ()=>{
+
+  updateDayOptions(); // ←追加
+
+  const name = document.getElementById("castSearch").value;
+  if(name) selectCast(name);
+});
+
+document.getElementById("dayFilter").addEventListener("change", ()=>{
+  const name = document.getElementById("castSearch").value;
+  if(name) selectCast(name);
+});
+document.getElementById("goalInput").addEventListener("input", function(){
+
+  if(!currentCast) return;
+
+  localStorage.setItem("goal_" + currentCast, this.value);
+
+  // 再描画（グラフ更新）
+  selectCast(currentCast);
+});
 </script>
 
 </body>

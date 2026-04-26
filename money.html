@@ -373,15 +373,29 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   <span class="labelSmall">名）</span>
 
 </div>
-<!-- 海外分析ボタン -->
-<div class="card" onclick="location.href='kaigai.html'" style="cursor:pointer;">
-  <div style="font-size:14px; font-weight:600;">
-    
-海外分析
+<!-- ★2カラム分析カード -->
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+
+  <!-- 左：海外分析 -->
+  <div class="card" onclick="location.href='kaigai.html'" style="cursor:pointer;">
+    <div style="font-size:14px; font-weight:600;">
+      海外分析
+    </div>
+    <div style="font-size:11px; opacity:0.7; margin-top:4px;">
+      国別・売上・導線を分析
+    </div>
   </div>
-  <div style="font-size:11px; opacity:0.7; margin-top:4px;">
-    国別・売上・指名を分析する
+
+  <!-- 右：キャスト分析 -->
+  <div class="card" onclick="location.href='girls.html'" style="cursor:pointer;">
+    <div style="font-size:14px; font-weight:600;">
+      キャスト分析
+    </div>
+    <div style="font-size:11px; opacity:0.7; margin-top:4px;">
+      個別売上・リピ率・指名分析
+    </div>
   </div>
+
 </div>
 <!-- 飛込 vs 予約 -->
 <div class="card">

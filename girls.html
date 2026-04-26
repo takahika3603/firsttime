@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- フォント -->
+<link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+  background:#fff7fb;
+  font-family: 'Kiwi Maru', serif;
+  color:#555;
+  padding:16px;
+}
+
+/* 入力 */
+input{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  background:#ffeef6;
+  margin-bottom:10px;
+}
+
+/* カード */
+.card{
+  background:#ffffff;
+  border-radius:20px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:0 4px 12px rgba(255,182,193,0.2);
+}
+
+/* 2カラム */
+.row{
+  display:flex;
+  gap:12px;
+}
+.col{ flex:1; }
+
+.center{ text-align:center; }
+
+/* KPI文字 */
+.big{
+  font-size:20px;
+  font-weight:500;
+  color:#ff7aa2;
+}
+
+.small{
+  font-size:12px;
+  color:#999;
+}
+
+/* 区切り線 */
+hr{
+  border:none;
+  border-top:1px solid #f1d5e0;
+  margin:10px 0;
+}
+
+/* 年間バー */
+.bar{
+  height:14px;
+  background:#ffe4ee;
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.bar-inner{
+  height:100%;
+  background:linear-gradient(90deg,#ffb6d9,#a0e7ff);
+}
+
+/* 指名 */
+.circleWrap{
+  display:flex;
+  justify-content:space-around;
+}
+
+.circleItem{
+  text-align:center;
+}
+
+.circle{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  background:#ffe4ee;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:auto;
+  margin-bottom:6px;
+}
+
+/* 候補 */
+#suggestBox div{
+  background:#fff;
+  padding:8px;
+  border-radius:10px;
+  margin-bottom:5px;
+  cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* リスト */
+#dailyList div{
+  padding:8px;
+  border-bottom:1px solid #f5dbe6;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🔍 検索 -->
+<input id="castSearch" placeholder="キャスト名を入力">
+<div id="suggestBox"></div>
+
+<!-- KPI -->
+<div class="row">
+
+  <!-- 左 -->
+  <div class="col card">
+    <div>組数 <span id="kumi" class="big">0</span></div>
+    <div>リピート率 <span id="repeat" class="big">0</span>%</div>
+
+    <hr>
+
+    <div>売上 <span id="sales" class="big">0</span>円</div>
+    <div class="small">前月比 <span id="compare">0</span>%</div>
+  </div>
+
+  <!-- 右 -->
+  <div class="col card center">
+    <canvas id="donut"></canvas>
+    <div id="progress" class="big">0%</div>
+    <div class="small">進捗率</div>
+  </div>
+
+</div>
+
+<!-- 年間 -->
+<div class="card">
+  <div class="small">年間目標</div>
+  <div class="bar">
+    <div id="yearBar" class="bar-inner" style="width:0%"></div>
+  </div>
+  <div id="yearText" class="small">0 / 0</div>
+</div>
+
+<!-- 指名 -->
+<div class="card">
+  <div class="circleWrap">
+
+    <div class="circleItem">
+      <div class="circle">F</div>
+      <div id="fSales">0</div>
+    </div>
+
+    <div class="circleItem">
+      <div class="circle">P</div>
+      <div id="pSales">0</div>
+    </div>
+
+    <div class="circleItem">
+      <div class="circle">N</div>
+      <div id="nSales">0</div>
+    </div>
+
+    <div class="circleItem">
+      <div class="circle">R</div>
+      <div id="rSales">0</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 日別 -->
+<div class="card">
+  <div class="small">日別売上</div>
+  <div id="dailyList"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIza...",
+  authDomain: "luxuryspa-fuga.firebaseapp.com",
+  projectId: "luxuryspa-fuga"
+});
+
+const db = getFirestore(app);
+
+const castList = ["あめり","かえで","かりん","はるか","すい","せれん"];
+
+let all = [];
+
+async function load(){
+  const snap = await getDocs(collection(db,"records"));
+  snap.forEach(doc=> all.push(doc.data()));
+}
+
+document.getElementById("castSearch").addEventListener("input", function(){
+
+  const val = this.value;
+
+  const result = castList
+    .filter(n=>n.startsWith(val))
+    .concat(castList.filter(n=>!n.startsWith(val)&&n.includes(val)));
+
+  const box = document.getElementById("suggestBox");
+  box.innerHTML="";
+
+  result.forEach(name=>{
+    const div = document.createElement("div");
+    div.innerText = name;
+    div.onclick = ()=> selectCast(name);
+    box.appendChild(div);
+  });
+});
+
+function selectCast(name){
+
+  const data = all.filter(r=>r.cast===name);
+
+  const total = data.reduce((s,r)=>s+(r.price||0),0);
+
+  document.getElementById("kumi").innerText = data.length;
+  document.getElementById("sales").innerText = total.toLocaleString();
+
+  const repeat = data.filter(r=>r.type==="再来").length;
+  const rate = data.length ? (repeat/data.length*100).toFixed(1):0;
+  document.getElementById("repeat").innerText = rate;
+
+  document.getElementById("fSales").innerText = sumBy(data,"フリー");
+  document.getElementById("pSales").innerText = sumBy(data,"P");
+  document.getElementById("nSales").innerText = sumBy(data,"NET");
+  document.getElementById("rSales").innerText = sumBy(data,"リピ");
+
+  drawChart(total);
+  drawDaily(data);
+}
+
+function sumBy(data,type){
+  return data.filter(r=>r.shimei===type)
+    .reduce((s,r)=>s+(r.price||0),0);
+}
+
+function drawChart(total){
+
+  const goal = 1000000;
+
+  new Chart(document.getElementById("donut"),{
+    type:"doughnut",
+    data:{
+      datasets:[{
+        data:[total,goal-total],
+        backgroundColor:["#ffb6d9","#ffe4ee"]
+      }]
+    },
+    options:{ cutout:"70%" }
+  });
+
+  document.getElementById("progress").innerText =
+    (total/goal*100).toFixed(1)+"%";
+}
+
+function drawDaily(data){
+
+  const box = document.getElementById("dailyList");
+  box.innerHTML="";
+
+  data.sort((a,b)=>b.createdAt-a.createdAt);
+
+  data.forEach(r=>{
+    const div = document.createElement("div");
+    div.innerText = `${r.date}　${r.price}円`;
+    box.appendChild(div);
+  });
+}
+
+load();
+</script>
+
+</body>
+</html>

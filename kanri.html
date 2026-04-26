@@ -895,6 +895,7 @@ async function save(){
       cast: document.getElementById("cast").value,
       price: Number(document.getElementById("price").value),
 
+       course: form.course, 
       country: form.country,
       countryDetail: form.countryDetail,
       route: form.route,
@@ -1104,22 +1105,17 @@ function drawList(data){
   const list = document.getElementById("listPage");
   list.innerHTML = "";
 
-  // ① 古い順に並べる
-  const sorted = data
+  // 日付順（古い→新しい）で並べる
+const sorted = data
     .slice()
-   .sort((a, b) => (a.order || 0) - (b.order || 0));
+    .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0))
+    .map((r, index) => ({
+      ...r,
+      number: index + 1
+    }))
+    .reverse();
 
-  // ② 番号付け
-  const numbered = sorted.map((r, index) => ({
-    ...r,
-    number: index + 1
-  }));
-
-  // ③ 新しい順で表示（番号付き）
-  numbered
-    .slice()
-    .reverse()
-    .forEach((r) => {
+  sorted.forEach((r) => {
 
       const div = document.createElement("div");
 

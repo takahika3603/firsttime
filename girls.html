@@ -114,6 +114,46 @@ hr{
   padding:8px;
   border-bottom:1px solid #f5dbe6;
 }
+/* スマホでも2カラム維持 */
+@media (max-width: 600px){
+
+  .row{
+    flex-direction: row;
+    gap:8px;
+  }
+
+  .col{
+    flex:1;
+    min-width:0;
+  }
+
+  .card{
+    padding:10px;
+    border-radius:16px;
+  }
+
+  .big{
+    font-size:16px;
+  }
+
+  .small{
+    font-size:10px;
+  }
+
+  canvas{
+    width:100% !important;
+    height:120px !important;
+  }
+
+  #progress{
+    font-size:14px;
+  }
+
+  /* 行間を詰める */
+  .card div{
+    line-height:1.2;
+  }
+}
 </style>
 </head>
 
@@ -267,7 +307,12 @@ function drawChart(total){
         backgroundColor:["#ffb6d9","#ffe4ee"]
       }]
     },
-    options:{ cutout:"70%" }
+    options:{
+  cutout:"75%",
+  plugins:{
+    legend:{ display:false }
+  }
+}
   });
 
   document.getElementById("progress").innerText =

@@ -608,6 +608,24 @@ const coursePriceMap = {
   "120分": 30000,
   "極液": 28000
 };
+const specialCasts = [
+  "みおん","すい","なつき","あめり","ゆいか","かえで","ゆん","きょうか"
+];
+
+const specialCoursePriceMap = {
+  "60分": 18000,
+  "75分": 23000,
+  "90分": 28000,
+  "120分": 38000,
+  "極液": 34000
+};
+const serennPriceMap = {
+  "60分": 22000,
+  "75分": 28000,
+  "90分": 34000,
+  "120分": 46000,
+  "極液": 40000
+};
 const optionPriceMap = {
   "AN": 3000,
   "SL": 2000,
@@ -632,8 +650,22 @@ function recalcPrice(){
 
   // ③ 指名料金
 // ① コース
-let coursePrice = coursePriceMap[form.course] || 0;
+const castName = document.getElementById("cast").value;
 
+let coursePrice;
+
+// ★① せれんは最優先
+if(castName === "せれん"){
+  coursePrice = serennPriceMap[form.course] || 0;
+
+// ★② 特別キャスト
+}else if(specialCasts.includes(castName)){
+  coursePrice = specialCoursePriceMap[form.course] || 0;
+
+// ★③ 通常
+}else{
+  coursePrice = coursePriceMap[form.course] || 0;
+}
 // ② 深夜
 let nightFee = 0;
 if(form.course && form.course !== "30分" && form.course !== "45分"){

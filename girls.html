@@ -217,25 +217,33 @@ hr{
 <div class="card">
   <div class="circleWrap">
 
-    <div class="circleItem">
-      <div class="circle">F</div>
-      <div id="fSales">0</div>
-    </div>
+  <div class="circleItem">
+  <div class="circle">F</div>
+  <div id="fSales">0</div>
+  <div id="fCount" class="small">0本</div>
+  <div id="fRate" class="small">0%</div>
+</div>
 
-    <div class="circleItem">
-      <div class="circle">P</div>
-      <div id="pSales">0</div>
-    </div>
+<div class="circleItem">
+  <div class="circle">P</div>
+  <div id="pSales">0</div>
+  <div id="pCount" class="small">0本</div>
+  <div id="pRate" class="small">0%</div>
+</div>
 
-    <div class="circleItem">
-      <div class="circle">N</div>
-      <div id="nSales">0</div>
-    </div>
+<div class="circleItem">
+  <div class="circle">N</div>
+  <div id="nSales">0</div>
+  <div id="nCount" class="small">0本</div>
+  <div id="nRate" class="small">0%</div>
+</div>
 
-    <div class="circleItem">
-      <div class="circle">R</div>
-      <div id="rSales">0</div>
-    </div>
+<div class="circleItem">
+  <div class="circle">R</div>
+  <div id="rSales">0</div>
+  <div id="rCount" class="small">0本</div>
+  <div id="rRate" class="small">0%</div>
+</div>
 
   </div>
 </div>
@@ -248,6 +256,11 @@ hr{
 <div class="card">
   <div class="small">日別売上</div>
   <div id="dailyList"></div>
+</div>
+<div class="card">
+  <div class="small">メモ</div>
+  <textarea id="memoInput" placeholder="今日の気づき・反省など"
+    style="width:100%;height:100px;border:none;border-radius:12px;background:#ffeef6;padding:10px;"></textarea>
 </div>
 
 <script type="module">
@@ -268,6 +281,12 @@ let all = [];
 let chartInstance = null;
 let lineChartInstance = null;
 let currentCast = "";
+// メモ読み込み
+function loadMemo(){
+  if(!currentCast) return;
+  const memo = localStorage.getItem("memo_" + currentCast) || "";
+  document.getElementById("memoInput").value = memo;
+}
 function updateDayOptions(){
 
   const monthVal = document.getElementById("monthFilter").value;
@@ -368,10 +387,35 @@ function selectCast(name){
   document.getElementById("pSales").innerText = sumBy(data,"P");
   document.getElementById("nSales").innerText = sumBy(data,"NET");
   document.getElementById("rSales").innerText = sumBy(data,"リピ");
+  // 件数（本数）
+const fCount = data.filter(r => r.shimei === "フリー").length;
+const pCount = data.filter(r => r.shimei === "P").length;
+const nCount = data.filter(r => r.shimei === "NET").length;
+const rCount = data.filter(r => r.shimei === "リピ").length;
+
+// 合計本数（0割防止）
+const totalCount = data.length;
+
+const fRate = totalCount ? (fCount / totalCount * 100).toFixed(1) : 0;
+const pRate = totalCount ? (pCount / totalCount * 100).toFixed(1) : 0;
+const nRate = totalCount ? (nCount / totalCount * 100).toFixed(1) : 0;
+const rRate = totalCount ? (rCount / totalCount * 100).toFixed(1) : 0;
+
+// 表示
+document.getElementById("fCount").innerText = fCount + "本";
+document.getElementById("pCount").innerText = pCount + "本";
+document.getElementById("nCount").innerText = nCount + "本";
+document.getElementById("rCount").innerText = rCount + "本";
+
+document.getElementById("fRate").innerText = fRate + "%";
+document.getElementById("pRate").innerText = pRate + "%";
+document.getElementById("nRate").innerText = nRate + "%";
+document.getElementById("rRate").innerText = rRate + "%";
 
   drawChart(total);
   drawLineChart(data);
   drawDaily(data);
+  loadMemo();
 }
 
 function sumBy(data,type){
@@ -438,7 +482,20 @@ const dailyArray = Object.entries(dailyMap)
 // 表示
 dailyArray.forEach(([date,total])=>{
   const div = document.createElement("div");
-  div.innerText = `${date}　${total.toLocaleString()}円`;
+  const dayData = data.filter(r => r.date === date);
+  const f = dayData.filter(r => r.shimei === "フリー").length;
+const n = dayData.filter(r => r.shimei === "NET").length;
+const p = dayData.filter(r => r.shimei === "P").length;
+const rCount = dayData.filter(r => r.shimei === "リピ").length;
+  div.innerHTML = `
+  ${date}　${total.toLocaleString()}円
+  <span style="font-size:10px;color:#aaa;margin-left:6px;">
+    F:${f} <span style="color:#ccc;">/</span>
+    N:${n} <span style="color:#ccc;">/</span>
+    P:${p} <span style="color:#ccc;">/</span>
+    R:${rCount}
+  </span>
+`;
   box.appendChild(div);
 });
 }
@@ -524,6 +581,10 @@ document.getElementById("goalInput").addEventListener("input", function(){
 
   // 再描画（グラフ更新）
   selectCast(currentCast);
+});
+document.getElementById("memoInput").addEventListener("input", function(){
+  if(!currentCast) return;
+  localStorage.setItem("memo_" + currentCast, this.value);
 });
 </script>
 

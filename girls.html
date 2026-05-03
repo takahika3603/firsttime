@@ -157,6 +157,10 @@ hr{
 #monthFilter, #dayFilter{
   font-size:14px;
 }
+.money{
+  font-size:14px; /* ←今より少し小さく */
+  font-weight:500;
+}
 </style>
 </head>
 
@@ -213,34 +217,82 @@ hr{
   <div id="yearText" class="small">0 / 0</div>
 </div>
 
+<!-- 🌏 日本 vs 海外（1本バー） -->
+<div class="card">
+  <div class="small">日本 vs 海外</div>
+
+  <div class="bar" style="display:flex;">
+    <div id="jpBar" style="
+      height:100%;
+      width:50%;
+      background:#ffb6d9;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:10px;
+      color:#fff;
+    ">
+      JP
+    </div>
+
+    <div id="overseaBar" style="
+      height:100%;
+      width:50%;
+      background:#a0e7ff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:10px;
+      color:#fff;
+    ">
+      海外
+    </div>
+  </div>
+
+<div style="display:flex; justify-content:space-between; margin-top:6px;">
+
+  <!-- 日本 -->
+  <div>
+    <div id="jpSalesText" class="small">日本 0円</div>
+    <div id="jpCountText" class="small">0本</div>
+  </div>
+
+  <!-- 海外 -->
+  <div style="text-align:right;">
+    <div id="overseaSalesText" class="small">海外 0円</div>
+    <div id="overseaCountText" class="small">0本</div>
+</div>
+</div>
+</div>
+
 <!-- 指名 -->
 <div class="card">
   <div class="circleWrap">
 
-  <div class="circleItem">
+<div class="circleItem">
   <div class="circle">F</div>
-  <div id="fSales">0</div>
+  <div id="fSales" class="money">0</div>
   <div id="fCount" class="small">0本</div>
   <div id="fRate" class="small">0%</div>
 </div>
 
 <div class="circleItem">
   <div class="circle">P</div>
-  <div id="pSales">0</div>
+  <div id="pSales" class="money">0</div>
   <div id="pCount" class="small">0本</div>
   <div id="pRate" class="small">0%</div>
 </div>
 
 <div class="circleItem">
   <div class="circle">N</div>
-  <div id="nSales">0</div>
+  <div id="nSales" class="money">0</div>
   <div id="nCount" class="small">0本</div>
   <div id="nRate" class="small">0%</div>
 </div>
 
 <div class="circleItem">
   <div class="circle">R</div>
-  <div id="rSales">0</div>
+  <div id="rSales" class="money">0</div>
   <div id="rCount" class="small">0本</div>
   <div id="rRate" class="small">0%</div>
 </div>
@@ -375,18 +427,59 @@ function selectCast(name){
   });
 
   const total = data.reduce((s,r)=>s+(r.price||0),0);
+// 🌏 日本 vs 海外（売上）
+const jpSales = data
+  .filter(r => r.country === "日本")
+  .reduce((s,r)=>s+(r.price||0),0);
+
+const overseaSales = data
+  .filter(r => r.country === "海外")
+  .reduce((s,r)=>s+(r.price||0),0);
+
+// 合計
+const totalSales = jpSales + overseaSales;
+
+// 本数（件数）
+const jpCount = data.filter(r => r.country === "日本").length;
+const overseaCount = data.filter(r => r.country === "海外").length;
+
+// 割合（バー用）
+const jpRate = totalSales ? (jpSales / totalSales * 100) : 0;
+const overseaRate = totalSales ? (overseaSales / totalSales * 100) : 0;
+
+// バー反映
+document.getElementById("jpBar").style.width = jpRate + "%";
+document.getElementById("overseaBar").style.width = overseaRate + "%";
+
+// バー内の％表示
+document.getElementById("jpBar").innerText = jpRate.toFixed(0) + "%";
+document.getElementById("overseaBar").innerText = overseaRate.toFixed(0) + "%";
+
+// ▼ 下の表示（ここが今回の目的）
+document.getElementById("jpSalesText").innerText =
+  `日本 ${jpSales.toLocaleString()}円`;
+
+document.getElementById("overseaSalesText").innerText =
+  `海外 ${overseaSales.toLocaleString()}円`;
+
+document.getElementById("jpCountText").innerText =
+  `${jpCount}本`;
+
+document.getElementById("overseaCountText").innerText =
+  `${overseaCount}本`;
+  
 
   document.getElementById("kumi").innerText = data.length;
   document.getElementById("sales").innerText = total.toLocaleString();
 
-  const repeat = data.filter(r=>r.type==="再来").length;
-  const rate = data.length ? (repeat/data.length*100).toFixed(1):0;
+const repeat = data.filter(r=>r.shimei==="リピ").length;
+const rate = data.length ? (repeat/data.length*100).toFixed(1):0;
   document.getElementById("repeat").innerText = rate;
 
-  document.getElementById("fSales").innerText = sumBy(data,"フリー");
-  document.getElementById("pSales").innerText = sumBy(data,"P");
-  document.getElementById("nSales").innerText = sumBy(data,"NET");
-  document.getElementById("rSales").innerText = sumBy(data,"リピ");
+document.getElementById("fSales").innerText = sumBy(data,"フリー").toLocaleString();
+document.getElementById("pSales").innerText = sumBy(data,"P").toLocaleString();
+document.getElementById("nSales").innerText = sumBy(data,"NET").toLocaleString();
+document.getElementById("rSales").innerText = sumBy(data,"リピ").toLocaleString();
   // 件数（本数）
 const fCount = data.filter(r => r.shimei === "フリー").length;
 const pCount = data.filter(r => r.shimei === "P").length;

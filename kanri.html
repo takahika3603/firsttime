@@ -426,6 +426,27 @@ input,select{
   <button class="chip" onclick="setChip('visitType','予約',this)">予約</button>
 </div>  
 
+<!-- 時間帯 -->
+<div class="label">時間帯</div>
+<div class="chip-group">
+  <button class="chip" onclick="setChip('time','8時',this)">8時</button>
+  <button class="chip" onclick="setChip('time','9時',this)">9時</button>
+  <button class="chip" onclick="setChip('time','10時',this)">10時</button>
+  <button class="chip" onclick="setChip('time','11時',this)">11時</button>
+  <button class="chip" onclick="setChip('time','12時',this)">12時</button>
+  <button class="chip" onclick="setChip('time','13時',this)">13時</button>
+  <button class="chip" onclick="setChip('time','14時',this)">14時</button>
+  <button class="chip" onclick="setChip('time','15時',this)">15時</button>
+  <button class="chip" onclick="setChip('time','16時',this)">16時</button>
+  <button class="chip" onclick="setChip('time','17時',this)">17時</button>
+  <button class="chip" onclick="setChip('time','18時',this)">18時</button>
+  <button class="chip" onclick="setChip('time','19時',this)">19時</button>
+  <button class="chip" onclick="setChip('time','20時',this)">20時</button>
+  <button class="chip" onclick="setChip('time','21時',this)">21時</button>
+  <button class="chip" onclick="setChip('time','22時',this)">22時</button>
+  <button class="chip" onclick="setChip('time','23時',this)">23時</button>
+</div>
+  
 <!-- ⑤ 指名 -->
 <div class="label">指名</div>
 <div class="chip-group">
@@ -445,6 +466,8 @@ input,select{
 <button class="chip" onclick="setChip('course','90分',this)">90分</button>
   <button class="chip" onclick="setChip('course','極液',this)">極液</button>
 <button class="chip" onclick="setChip('course','120分',this)">120分</button>
+<button class="chip" onclick="setChip('course','150分',this)">150分</button>
+<button class="chip" onclick="setChip('course','180分',this)">180分</button>
 <button class="chip" onclick="setChip('course','その他',this)">その他</button>
 </div>
 
@@ -918,7 +941,7 @@ async function save(){
       country: form.country,
       countryDetail: form.countryDetail,
       route: form.route,
-
+      time: form.time,
       type: form.type,
       shimei: form.shimei,
       visitType: form.visitType,

@@ -161,6 +161,16 @@ hr{
   font-size:14px; /* ←今より少し小さく */
   font-weight:500;
 }
+.dailyMain{
+  font-size:12px;   /* ←少し小さく */
+  color:#777;
+}
+
+.dailySub{
+  font-size:10px;
+  color:#aaa;
+  margin-left:6px;
+}
 </style>
 </head>
 
@@ -580,9 +590,9 @@ dailyArray.forEach(([date,total])=>{
 const n = dayData.filter(r => r.shimei === "NET").length;
 const p = dayData.filter(r => r.shimei === "P").length;
 const rCount = dayData.filter(r => r.shimei === "リピ").length;
-  div.innerHTML = `
-  ${date}　${total.toLocaleString()}円
-  <span style="font-size:10px;color:#aaa;margin-left:6px;">
+div.innerHTML = `
+  <span class="dailyMain">${date}　${total.toLocaleString()}円</span>
+  <span class="dailySub">
     F:${f} <span style="color:#ccc;">/</span>
     N:${n} <span style="color:#ccc;">/</span>
     P:${p} <span style="color:#ccc;">/</span>

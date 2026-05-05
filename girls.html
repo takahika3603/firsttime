@@ -140,10 +140,15 @@ hr{
     font-size:10px;
   }
 
-  canvas{
-    width:100% !important;
-    height:120px !important;
-  }
+/* 全体canvasは触らない or 消す */
+canvas{
+  height:140px !important;
+}
+
+/* コース割合だけ高さ指定 */
+#courseChart{
+  height:240px !important;
+}
 
   #progress{
     font-size:14px;
@@ -275,6 +280,12 @@ hr{
 </div>
 </div>
 
+<!-- コース割合（←ここに追加） -->
+<div class="card">
+  <div class="small">コース割合</div>
+  <canvas id="courseChart"></canvas>
+</div>
+  
 <!-- 指名 -->
 <div class="card">
   <div class="circleWrap">
@@ -456,6 +467,23 @@ const overseaCount = data.filter(r => r.country === "海外").length;
 // 割合（バー用）
 const jpRate = totalSales ? (jpSales / totalSales * 100) : 0;
 const overseaRate = totalSales ? (overseaSales / totalSales * 100) : 0;
+
+// コース集計
+const courseMap = {};
+
+data.forEach(r=>{
+  if(!r.course) return;
+
+  if(!courseMap[r.course]){
+    courseMap[r.course] = 0;
+  }
+
+  courseMap[r.course]++;
+});
+const labels = Object.keys(courseMap);
+const values = Object.values(courseMap);
+
+drawCourseChart(labels, values);
 
 // バー反映
 document.getElementById("jpBar").style.width = jpRate + "%";
@@ -689,6 +717,41 @@ document.getElementById("memoInput").addEventListener("input", function(){
   if(!currentCast) return;
   localStorage.setItem("memo_" + currentCast, this.value);
 });
+
+let courseChartInstance = null;
+
+function drawCourseChart(labels, values){
+
+  if(courseChartInstance){
+    courseChartInstance.destroy();
+  }
+
+  courseChartInstance = new Chart(document.getElementById("courseChart"),{
+    type:"doughnut",
+    data:{
+      labels: labels,
+      datasets:[{
+        data: values,
+        backgroundColor:[
+          "#ffb6d9",
+          "#a0e7ff",
+          "#ffd166",
+          "#caffbf",
+          "#bdb2ff",
+          "#ffc6ff",
+          "#9bf6ff"
+        ]
+      }]
+    },
+    options:{
+      plugins:{
+        legend:{
+          position:"bottom"
+        }
+      }
+    }
+  });
+}
 </script>
 
 </body>

@@ -483,7 +483,64 @@ BUSINESS DASHBOARD
 <!-- =========================
 CONTAINER
 ========================= -->
+<!-- ★フィルター（ここを追加） -->
+<div style="display:flex; gap:8px; margin-bottom:10px;">
 
+  <!-- 月 -->
+  <select id="monthFilter" class="smallBtn" onchange="filterData(); saveFilterState()">
+    <option value="">全ての月</option>
+    <option value="01">1月</option>
+    <option value="02">2月</option>
+    <option value="03">3月</option>
+    <option value="04">4月</option>
+    <option value="05">5月</option>
+    <option value="06">6月</option>
+    <option value="07">7月</option>
+    <option value="08">8月</option>
+    <option value="09">9月</option>
+    <option value="10">10月</option>
+    <option value="11">11月</option>
+    <option value="12">12月</option>
+  </select>
+
+  <!-- 日 -->
+  <select id="dateFilter" class="smallBtn" onchange="filterData(); saveFilterState()">
+    <option value="">全日</option>
+    <option value="01">1日</option>
+    <option value="02">2日</option>
+    <option value="03">3日</option>
+    <option value="04">4日</option>
+    <option value="05">5日</option>
+    <option value="06">6日</option>
+    <option value="07">7日</option>
+    <option value="08">8日</option>
+    <option value="09">9日</option>
+    <option value="10">10日</option>
+    <option value="11">11日</option>
+    <option value="12">12日</option>
+    <option value="13">13日</option>
+    <option value="14">14日</option>
+    <option value="15">15日</option>
+    <option value="16">16日</option>
+    <option value="17">17日</option>
+    <option value="18">18日</option>
+    <option value="19">19日</option>
+    <option value="20">20日</option>
+    <option value="21">21日</option>
+    <option value="22">22日</option>
+    <option value="23">23日</option>
+    <option value="24">24日</option>
+    <option value="25">25日</option>
+    <option value="26">26日</option>
+    <option value="27">27日</option>
+    <option value="28">28日</option>
+    <option value="29">29日</option>
+    <option value="30">30日</option>
+    <option value="31">31日</option>
+
+  </select>
+
+</div>
 <div class="container">
 
 <!-- MAIN -->
@@ -865,7 +922,33 @@ function updateTotalSales(total){
   document.getElementById("totalSales").innerText =
     "¥" + total.toLocaleString();
 }
- 
+
+function filterData(){
+
+  const month = document.getElementById("monthFilter").value;
+  const date = document.getElementById("dateFilter").value;
+
+  const filtered = allRecords.filter(r => {
+
+    if(!r.date) return false;
+
+    // ★ここがポイント（日付を安全に変換）
+    const d = new Date(r.date);
+
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+
+    const matchMonth = month ? mm === month : true;
+    const matchDate = date ? dd === date : true;
+
+    return matchMonth && matchDate;
+  });
+
+  records = filtered;
+
+  // ★ここでダッシュボード更新（TODAY SALESもここで変わる）
+  calcDashboard(records);
+}
 /* =========================
 DONUT
 ========================= */
@@ -1224,6 +1307,49 @@ function calcDashboard(data){
   kpi[3].innerText =
     Math.round((repeatCount / (count || 1)) * 100) + "%";
 }
+
+let allRecords = [];
+let records = [];
+
+async function loadData(){
+
+  const snap = await getDocs(collection(db, "records"));
+
+  const data = [];
+
+  snap.forEach(doc => {
+    data.push(doc.data());
+  });
+
+  allRecords = data;
+  records = data;
+
+  loadFilterState();   // ★追加
+  filterData();        // ★追加（最初から反映）
+
+}
+
+function loadFilterState(){
+  const month = localStorage.getItem("month");
+  const date = localStorage.getItem("date");
+
+  if(month){
+    document.getElementById("monthFilter").value = month;
+  }
+
+  if(date){
+    document.getElementById("dateFilter").value = date;
+  }
+}
+
+function saveFilterState(){
+  const month = document.getElementById("monthFilter").value;
+  const date = document.getElementById("dateFilter").value;
+
+  localStorage.setItem("month", month);
+  localStorage.setItem("date", date);
+}
+
   // =========================
   // ③ ページ読み込み時に実行
   // =========================

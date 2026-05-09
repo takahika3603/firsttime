@@ -865,6 +865,46 @@ function updateTotalSales(total){
   document.getElementById("totalSales").innerText =
     "¥" + total.toLocaleString();
 }
+
+function calcDashboard(data){
+
+  let totalSales = 0;
+  let count = 0;
+
+  let newCount = 0;
+  let repeatCount = 0;
+
+  let japan = 0;
+  let overseas = 0;
+
+  let walkin = 0;
+  let reserve = 0;
+
+  data.forEach(r=>{
+
+    const price = Number(r.price || 0);
+    totalSales += price;
+    count++;
+
+    // 新規・再来
+    if(r.type === "新規") newCount++;
+    if(r.type === "再来") repeatCount++;
+
+    // 日本・海外
+    if(r.country === "日本") japan++;
+    if(r.country === "海外") overseas++;
+
+    // 飛込・予約
+    if(r.visitType === "飛込") walkin++;
+    if(r.visitType === "予約") reserve++;
+  });
+
+  // KPI反映
+  updateTotalSales(totalSales);
+
+  document.querySelector(".kpiValue").innerText = count; // 組数（簡易）
+}
+  
 /* =========================
 DONUT
 ========================= */
@@ -1141,6 +1181,87 @@ return "¥" + value.toLocaleString();
 }
 }
 );
+
+</script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDTwjQIjolOfaBUNqtzwBTIGKMbUN51e_Y",
+    authDomain: "luxuryspa-fuga.firebaseapp.com",
+    projectId: "luxuryspa-fuga",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // =========================
+  // ① データ集計関数
+  // =========================
+  function calcDashboard(data){
+
+    let totalSales = 0;
+    let count = 0;
+
+    let newCount = 0;
+    let repeatCount = 0;
+    let japan = 0;
+    let overseas = 0;
+    let walkin = 0;
+    let reserve = 0;
+
+    data.forEach(r=>{
+
+      const price = Number(r.price || 0);
+      totalSales += price;
+      count++;
+
+      if(r.type === "新規") newCount++;
+      if(r.type === "再来") repeatCount++;
+
+      if(r.country === "日本") japan++;
+      if(r.country === "海外") overseas++;
+
+      if(r.visitType === "飛込") walkin++;
+      if(r.visitType === "予約") reserve++;
+    });
+
+    updateTotalSales(totalSales);
+
+    // ⚠️ 今は仮：最初のKPIだけ更新
+    document.querySelectorAll(".kpiValue")[0].innerText = count;
+  }
+
+  function updateTotalSales(total){
+    document.getElementById("totalSales").innerText =
+      "¥" + total.toLocaleString();
+  }
+
+  // =========================
+  // ② Firebaseからデータ取得
+  // =========================
+  async function loadData(){
+
+    const snap = await getDocs(collection(db, "records"));
+
+    let data = [];
+
+    snap.forEach(doc=>{
+      data.push(doc.data());
+    });
+
+    calcDashboard(data);
+  }
+
+  // =========================
+  // ③ ページ読み込み時に実行
+  // =========================
+  window.addEventListener("load", loadData);
 
 </script>
 

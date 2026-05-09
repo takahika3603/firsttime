@@ -6,6 +6,11 @@
 <title>Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<!-- ▼これを追加 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <style>
 body{
   margin:0;
@@ -24,6 +29,8 @@ body{
   filter:blur(60px);
   top:-100px;
   right:-100px;
+
+  pointer-events:none;
 }
 
 /* レイアウト */
@@ -52,16 +59,23 @@ body{
   display:flex;
   justify-content:space-between;
   margin-bottom:10px;
+
+  position:relative;
+  z-index:99999;
 }
 
 .btn{
   padding:10px 14px;
   border-radius:12px;
-  background:rgba(255,255,255,0.08);
+  background:red;
   text-decoration:none;
   color:white;
   font-size:12px;
   border:1px solid rgba(255,255,255,0.1);
+
+  position:relative;
+  z-index:999999;
+  pointer-events:auto;
 }
 
 /* KPI */
@@ -76,6 +90,115 @@ body{
   font-weight:700;
 }
 
+/* =========================
+PDF REPORT
+========================= */
+
+#pdfReport{
+  width:794px;
+  background:#070b14;
+  color:white;
+  padding:40px;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display";
+}
+
+.pdfPage{
+  width:100%;
+}
+
+.pdfHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:40px;
+}
+
+.pdfSub{
+  font-size:12px;
+  letter-spacing:3px;
+  opacity:0.5;
+}
+
+.pdfTitle{
+  font-size:38px;
+  font-weight:800;
+  margin-top:8px;
+}
+
+.pdfDate{
+  font-size:14px;
+  opacity:0.6;
+}
+
+.pdfKpiGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-bottom:30px;
+}
+
+.pdfKpiCard{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:24px;
+  padding:24px;
+}
+
+.pdfKpiLabel{
+  font-size:11px;
+  letter-spacing:2px;
+  opacity:0.5;
+}
+
+.pdfKpiValue{
+  margin-top:10px;
+  font-size:30px;
+  font-weight:700;
+}
+
+.pdfCharts{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  margin-top:20px;
+}
+
+.pdfChartCard{
+  background:rgba(255,255,255,0.05);
+  border-radius:24px;
+  padding:20px;
+}
+
+.pdfChartTitle{
+  font-size:13px;
+  letter-spacing:1px;
+  margin-bottom:14px;
+  opacity:0.7;
+}
+
+.pdfChartCard img{
+  width:100%;
+}
+
+.pdfComment{
+  margin-top:30px;
+  padding:24px;
+  border-radius:24px;
+  background:rgba(255,255,255,0.04);
+}
+
+.pdfCommentTitle{
+  font-size:13px;
+  letter-spacing:2px;
+  opacity:0.5;
+  margin-bottom:12px;
+}
+
+#pdfCommentText{
+  line-height:1.9;
+  opacity:0.85;
+}
+  
 /* タイトル */
 h3{
   margin:0 0 10px;
@@ -90,6 +213,9 @@ canvas{
 }
   #chart4Wrap{
   width:100%;
+}
+#chart3Wrap{
+  height: 400px;
 }
   /* ===== フィルターUI ===== */
 .filterCard{
@@ -263,8 +389,20 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 <div class="container">
 
 <div class="topBar">
-  <a class="btn" href="index.html">← 名簿へ戻る</a>
+
+  <a class="btn" href="index.html">
+    ← 名簿へ戻る
+  </a>
+
+<button
+  id="pdfBtn"
+  class="btn"
+>
+  PDFレポート
+</button>
+
 </div>
+  
   <div class="filterCard">
 
   <div class="filterTitle">期間フィルター</div>
@@ -327,7 +465,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 </div>
     </div>
 
-  </div>
+
 
 </div>
 
@@ -453,8 +591,12 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 
 <!-- キャスト売上 -->
 <div class="card">
-<h3>キャスト売上</h3>
-<canvas id="chart3"></canvas>
+  <h3>キャスト売上</h3>
+
+  <div id="chart3Wrap">
+    <canvas id="chart3"></canvas>
+  </div>
+
 </div>
 <!-- ★接客回数ランキング -->
 <div class="card">
@@ -464,6 +606,16 @@ input[type="date"]::-webkit-calendar-picker-indicator{
     <canvas id="chartCount"></canvas>
   </div>
 </div>
+
+<!-- ★追加：リピ数ランキング -->
+<div class="card">
+  <h3>リピート数ランキング</h3>
+
+  <div id="chartRepeatWrap">
+    <canvas id="chartRepeat"></canvas>
+  </div>
+</div>
+
 <!-- ★追加：リピート率ランキング -->
 <div class="card">
   <h3>リピート率ランキング</h3>
@@ -525,7 +677,7 @@ Chart.register({
 });
 
 
-  let chart1, chart2, chart3, chart4, chartCount;
+ let chart1, chart2, chart3, chart4, chartCount, chartRepeat;
 function applyFilter(){
 
   const monthValue = document.getElementById("monthFilter").value;
@@ -655,12 +807,22 @@ document.getElementById("overseasText").innerHTML =
 
 chart3 = new Chart(document.getElementById("chart3"),{
   type:"doughnut",
+
   data:{
     labels:castLabels,
     datasets:[{
-      data: castValues,
-      cutout: "80%"  // ←ここを追加
+      data: castValues
     }]
+  },
+
+  options:{
+    cutout:"80%",
+
+    plugins:{
+      legend:{
+        display:false
+      }
+    }
   }
 });
 /* ======================
@@ -716,6 +878,63 @@ chartCount = new Chart(document.getElementById("chartCount"),{
     }
   }
 });
+
+/* ======================
+リピ数ランキング（回数）
+====================== */
+const repeatMap = {};
+
+data.forEach(r=>{
+  if(r.shimei === "リピ"){
+    if(!repeatMap[r.cast]){
+      repeatMap[r.cast] = 0;
+    }
+    repeatMap[r.cast]++;
+  }
+});
+
+// 多い順
+const sortedRepeat = Object.keys(repeatMap).map(name=>{
+  return { name, count: repeatMap[name] };
+}).sort((a,b)=>b.count-a.count);
+
+// グラフ描画
+if(chartRepeat) chartRepeat.destroy();
+
+const repeatLen = Math.min(sortedRepeat.length, 20);
+const rowHeightR = 20;
+const heightR = Math.max(200, repeatLen * rowHeightR);
+
+document.getElementById("chartRepeatWrap").style.height = heightR + "px";
+
+chartRepeat = new Chart(document.getElementById("chartRepeat"),{
+  type:"bar",
+  data:{
+    labels: sortedRepeat.slice(0,20).map(s=>s.name),
+    datasets:[{
+      data: sortedRepeat.slice(0,20).map(s=>s.count)
+    }]
+  },
+  options:{
+    indexAxis: "y",
+    responsive: true,
+    maintainAspectRatio: false,
+    scales:{
+      x:{
+        beginAtZero:true
+      },
+      y:{
+        ticks:{
+          font:{ size:8 }
+        }
+      }
+    },
+    plugins:{
+      legend:{ display:false }
+    }
+  }
+});
+
   /* ======================
 リピート率
 ====================== */
@@ -825,5 +1044,241 @@ async function loadData(){
 loadData();
 
 </script>
+
+<!-- =========================
+PDF専用レポート
+========================= -->
+
+<div id="pdfReport" style="display:none;">
+
+  <div class="pdfPage">
+
+    <div class="pdfHeader">
+
+      <div>
+        <div class="pdfSub">
+          MONTHLY ANALYTICS REPORT
+        </div>
+
+        <div class="pdfTitle">
+          LUXURY SPA FUGA
+        </div>
+      </div>
+
+      <div class="pdfDate" id="pdfDate"></div>
+
+    </div>
+
+    <div class="pdfKpiGrid">
+
+      <div class="pdfKpiCard">
+        <div class="pdfKpiLabel">TOTAL SALES</div>
+        <div class="pdfKpiValue" id="pdfSales">¥0</div>
+      </div>
+
+      <div class="pdfKpiCard">
+        <div class="pdfKpiLabel">VISITORS</div>
+        <div class="pdfKpiValue" id="pdfVisitors">0</div>
+      </div>
+
+      <div class="pdfKpiCard">
+        <div class="pdfKpiLabel">OVERSEAS</div>
+        <div class="pdfKpiValue" id="pdfOverseas">0%</div>
+      </div>
+
+      <div class="pdfKpiCard">
+        <div class="pdfKpiLabel">REPEAT RATE</div>
+        <div class="pdfKpiValue" id="pdfRepeat">0%</div>
+      </div>
+
+    </div>
+
+    <div class="pdfCharts">
+
+      <div class="pdfChartCard">
+        <div class="pdfChartTitle">
+          CAST SALES
+        </div>
+
+        <img id="pdfChartSales">
+      </div>
+
+      <div class="pdfChartCard">
+        <div class="pdfChartTitle">
+          REPEAT RANKING
+        </div>
+
+        <img id="pdfChartRepeat">
+      </div>
+
+    </div>
+
+    <div class="pdfComment">
+
+      <div class="pdfCommentTitle">
+        ANALYSIS
+      </div>
+
+      <div id="pdfCommentText">
+        analysis...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<script>
+
+window.exportLuxuryPDF = async function(){
+
+  try{
+
+    alert("PDF開始");
+
+    // データ読込チェック
+    if(records.length === 0){
+      alert("データ読み込み中です");
+      return;
+    }
+
+    // グラフ存在チェック
+    if(!chart3 || !chart4){
+      alert("グラフ生成前です");
+      return;
+    }
+
+    // jsPDFチェック
+    if(!window.jspdf){
+      alert("jsPDF読込失敗");
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+
+    // KPI計算
+    const totalSales = filtered.reduce((s,r)=>s+(+r.price||0),0);
+
+    const visitors = filtered.length;
+
+    const overseas = filtered.filter(r =>
+      r.country && r.country !== "日本"
+    ).length;
+
+    const overseasRate = visitors
+      ? ((overseas / visitors) * 100).toFixed(1)
+      : 0;
+
+    const repeat = filtered.filter(r =>
+      r.shimei === "リピ"
+    ).length;
+
+    const repeatRate = visitors
+      ? ((repeat / visitors) * 100).toFixed(1)
+      : 0;
+
+    // PDFへ反映
+    document.getElementById("pdfSales").innerText =
+      "¥" + totalSales.toLocaleString();
+
+    document.getElementById("pdfVisitors").innerText =
+      visitors;
+
+    document.getElementById("pdfOverseas").innerText =
+      overseasRate + "%";
+
+    document.getElementById("pdfRepeat").innerText =
+      repeatRate + "%";
+
+    document.getElementById("pdfDate").innerText =
+      new Date().toLocaleDateString("ja-JP");
+
+    // グラフ画像
+    document.getElementById("pdfChartSales").src =
+      chart3.toBase64Image();
+
+    document.getElementById("pdfChartRepeat").src =
+      chart4.toBase64Image();
+
+    // コメント
+    let comment = "";
+
+    if(overseasRate >= 50){
+      comment += "海外比率が高く、インバウンド需要が強い状態です。";
+    }else{
+      comment += "国内顧客比率が安定しています。";
+    }
+
+    if(repeatRate >= 40){
+      comment += " リピート率も高水準です。";
+    }else{
+      comment += " 新規流入強化の余地があります。";
+    }
+
+    document.getElementById("pdfCommentText").innerText =
+      comment;
+
+    // PDF表示
+    const report = document.getElementById("pdfReport");
+
+    report.style.display = "block";
+
+    // 少し待つ
+    await new Promise(r=>setTimeout(r,300));
+
+    // HTMLを画像化
+    const canvas = await html2canvas(report,{
+      scale:2,
+      backgroundColor:"#070b14"
+    });
+
+    report.style.display = "none";
+
+    const imgData = canvas.toDataURL("image/png");
+
+    // PDF生成
+    const pdf = new jsPDF({
+      orientation:"p",
+      unit:"mm",
+      format:"a4"
+    });
+
+    const width = 210;
+    const height = canvas.height * width / canvas.width;
+
+    pdf.addImage(imgData,"PNG",0,0,width,height);
+
+    // 保存
+    pdf.save("Luxury_Report.pdf");
+
+  }catch(e){
+
+    console.error(e);
+
+    alert("エラー：" + e.message);
+
+  }
+
+}
+window.addEventListener("DOMContentLoaded", () => {
+
+  const btn = document.getElementById("pdfBtn");
+
+  console.log("ボタン取得:", btn);
+
+  btn.addEventListener("click", () => {
+
+    alert("クリック成功");
+
+    window.exportLuxuryPDF();
+
+  });
+
+});
+</script>
+  
 </body>
 </html>

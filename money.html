@@ -1166,9 +1166,12 @@ return "¥" + value.toLocaleString();
   // =========================
 function calcDashboard(data){
 
+  // =========================
+  // 初期化
+  // =========================
   let totalSales = 0;
 
-  let count = 0;
+  let count = data.length; // ← 組数（基本これでOK）
   let newCount = 0;
   let repeatCount = 0;
   let japan = 0;
@@ -1176,11 +1179,13 @@ function calcDashboard(data){
   let walkin = 0;
   let reserve = 0;
 
-  data.forEach(r=>{
+  // =========================
+  // データ集計
+  // =========================
+  data.forEach(r => {
 
     const price = Number(r.price || 0);
     totalSales += price;
-    count++;
 
     if(r.type === "新規") newCount++;
     if(r.type === "再来") repeatCount++;
@@ -1192,44 +1197,33 @@ function calcDashboard(data){
     if(r.visitType === "予約") reserve++;
   });
 
-  // ===== KPI反映 =====
+  // =========================
+  // 売上反映
+  // =========================
   updateTotalSales(totalSales);
 
   const kpi = document.querySelectorAll(".kpiValue");
 
-  kpi[0].innerText = count; // 組数
-kpi[1].innerText =
-  "¥" + Math.floor(totalSales / (count || 1)).toLocaleString();// 客単価
-
-const totalVisit = walkin + reserve;
-
-kpi[2].innerText =
-  Math.round((reserve / (totalVisit || 1)) * 100) + "%";
-
-kpi[3].innerText =
-  Math.round((repeatCount / (count || 1)) * 100) + "%";
-
-  function updateTotalSales(total){
-    document.getElementById("totalSales").innerText =
-      "¥" + total.toLocaleString();
-  }
-
   // =========================
-  // ② Firebaseからデータ取得
+  // KPI反映
   // =========================
-  async function loadData(){
 
-    const snap = await getDocs(collection(db, "records"));
+  // ① 組数
+  kpi[0].innerText = count;
 
-    let data = [];
+  // ② 客単価
+  kpi[1].innerText =
+    "¥" + Math.floor(totalSales / (count || 1)).toLocaleString();
 
-    snap.forEach(doc=>{
-      data.push(doc.data());
-    });
+  // ③ 予約率
+  const totalVisit = walkin + reserve;
+  kpi[2].innerText =
+    Math.round((reserve / (totalVisit || 1)) * 100) + "%";
 
-    calcDashboard(data);
-  }
-
+  // ④ リピ率
+  kpi[3].innerText =
+    Math.round((repeatCount / (count || 1)) * 100) + "%";
+}
   // =========================
   // ③ ページ読み込み時に実行
   // =========================

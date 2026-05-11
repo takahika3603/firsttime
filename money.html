@@ -1585,7 +1585,9 @@ data.forEach(r => {
 
 
 
-document.querySelectorAll(".courseItem").forEach(el => {
+const salesCard =
+  document.querySelector(".doubleGrid .card");
+salesCard.querySelectorAll(".courseItem").forEach(el => {
 
   const name = el.querySelector(".courseName")?.innerText;
   const priceEl = el.querySelector(".priceText");
@@ -1649,8 +1651,8 @@ document.querySelectorAll(".courseItem").forEach(el => {
     Object.values(courseCountStats)
     .reduce((a,b)=>a+b,0) || 1;
 
-  const countCard =
-    document.querySelectorAll(".card")[4];
+const countCard =
+  document.querySelectorAll(".doubleGrid .card")[1];
 
   countCard.querySelectorAll(".courseItem").forEach(el => {
 

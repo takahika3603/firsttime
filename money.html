@@ -792,6 +792,23 @@ KPI分析
 <div class="courseItem">
 
   <div class="courseTop">
+    <div class="courseName">極液</div>
+
+    <div class="coursePrice">
+      <span class="priceText">¥0</span>
+      <span class="percentText"></span>
+    </div>
+  </div>
+
+  <div class="courseBar">
+    <div class="courseInner" style="width:0%;"></div>
+  </div>
+
+</div>
+
+<div class="courseItem">
+
+  <div class="courseTop">
     <div class="courseName">120分</div>
 
     <div class="coursePrice">
@@ -805,6 +822,24 @@ KPI分析
   </div>
 
 </div>
+
+<div class="courseItem">
+
+  <div class="courseTop">
+    <div class="courseName">それ以上</div>
+
+    <div class="coursePrice">
+      <span class="priceText">¥0</span>
+      <span class="percentText"></span>
+    </div>
+  </div>
+
+  <div class="courseBar">
+    <div class="courseInner" style="width:0%;"></div>
+  </div>
+
+</div>
+
 </div>
 
 <!-- コース別組数 -->
@@ -817,59 +852,107 @@ KPI分析
 
 <div class="courseItem">
 
-<div class="courseTop">
-<div class="courseName">フリー</div>
-<div class="coursePrice">38%</div>
-</div>
+  <div class="courseTop">
+    <div class="courseName">60分</div>
 
-<div class="courseBar">
-<div class="courseInner" style="width:38%;"></div>
-</div>
+    <div class="coursePrice">
+      <span class="countText">0組</span>
+      <span class="percentText"></span>
+    </div>
+  </div>
 
-</div>
-
-<div class="courseItem">
-
-<div class="courseTop">
-<div class="courseName">本指名</div>
-<div class="coursePrice">47%</div>
-</div>
-
-<div class="courseBar">
-<div class="courseInner" style="width:47%;"></div>
-</div>
+  <div class="courseBar">
+    <div class="courseInner courseCountBar" style="width:0%;"></div>
+  </div>
 
 </div>
 
 <div class="courseItem">
 
-<div class="courseTop">
-<div class="courseName">場内</div>
-<div class="coursePrice">15%</div>
-</div>
+  <div class="courseTop">
+    <div class="courseName">75分</div>
 
-<div class="courseBar">
-<div class="courseInner" style="width:15%;"></div>
-</div>
+    <div class="coursePrice">
+      <span class="countText">0組</span>
+      <span class="percentText"></span>
+    </div>
+  </div>
+
+  <div class="courseBar">
+    <div class="courseInner courseCountBar" style="width:0%;"></div>
+  </div>
 
 </div>
 
 <div class="courseItem">
 
-<div class="courseTop">
-<div class="courseName">ネット予約</div>
-<div class="coursePrice">62%</div>
+  <div class="courseTop">
+    <div class="courseName">90分</div>
+
+    <div class="coursePrice">
+      <span class="countText">0組</span>
+      <span class="percentText"></span>
+    </div>
+  </div>
+
+  <div class="courseBar">
+    <div class="courseInner courseCountBar" style="width:0%;"></div>
+  </div>
+
 </div>
 
-<div class="courseBar">
-<div class="courseInner" style="width:62%;"></div>
-</div>
+<div class="courseItem">
+
+  <div class="courseTop">
+    <div class="courseName">極液</div>
+
+    <div class="coursePrice">
+      <span class="countText">0組</span>
+      <span class="percentText"></span>
+    </div>
+  </div>
+
+  <div class="courseBar">
+    <div class="courseInner courseCountBar" style="width:0%;"></div>
+  </div>
 
 </div>
 
-</div>
+<div class="courseItem">
+
+  <div class="courseTop">
+    <div class="courseName">120分</div>
+
+    <div class="coursePrice">
+      <span class="countText">0組</span>
+      <span class="percentText"></span>
+    </div>
+  </div>
+
+  <div class="courseBar">
+    <div class="courseInner courseCountBar" style="width:0%;"></div>
+  </div>
 
 </div>
+
+<div class="courseItem">
+
+  <div class="courseTop">
+    <div class="courseName">それ以上</div>
+
+    <div class="coursePrice">
+      <span class="countText">0組</span>
+      <span class="percentText"></span>
+    </div>
+  </div>
+
+  <div class="courseBar">
+    <div class="courseInner courseCountBar" style="width:0%;"></div>
+  </div>
+
+</div>
+
+</div></div>
 
 <!-- =========================
 追加2カラム
@@ -1470,18 +1553,35 @@ function calcDashboard(data){
   // ⭐ コース別売上（ここが正しい場所）
   // =========================
 
-  const courseStats = {
-    "60分": 0,
-    "75分": 0,
-    "90分": 0,
-    "120分": 0
-  };
+const courseStats = {
+  "60分": 0,
+  "75分": 0,
+  "90分": 0,
+  "極液": 0,
+  "120分": 0,
+  "それ以上": 0
+};
 
-  data.forEach(r => {
-    if (r.course && courseStats[r.course] !== undefined) {
-      courseStats[r.course] += Number(r.price || 0);
-    }
-  });
+data.forEach(r => {
+
+  const price = Number(r.price || 0);
+  const course = r.course || "";
+
+  // そのまま一致
+  if (courseStats[course] !== undefined) {
+    courseStats[course] += price;
+  }
+
+  // 120分超えを「それ以上」にまとめる
+  else if (
+    course.includes("150") ||
+    course.includes("180") ||
+    course.includes("210")
+  ) {
+    courseStats["それ以上"] += price;
+  }
+
+});
 
 
 
@@ -1514,6 +1614,75 @@ document.querySelectorAll(".courseItem").forEach(el => {
     bar.style.width = percent + "%";
   }
 });
+  // =========================
+  // コース別組数
+  // =========================
+
+  const courseCountStats = {
+    "60分": 0,
+    "75分": 0,
+    "90分": 0,
+    "極液": 0,
+    "120分": 0,
+    "それ以上": 0
+  };
+
+  data.forEach(r => {
+
+    const course = r.course || "";
+
+    if (courseCountStats[course] !== undefined) {
+      courseCountStats[course]++;
+    }
+
+    else if (
+      course.includes("150") ||
+      course.includes("180") ||
+      course.includes("210")
+    ) {
+      courseCountStats["それ以上"]++;
+    }
+
+  });
+
+  const totalCourseCount =
+    Object.values(courseCountStats)
+    .reduce((a,b)=>a+b,0) || 1;
+
+  const countCard =
+    document.querySelectorAll(".card")[4];
+
+  countCard.querySelectorAll(".courseItem").forEach(el => {
+
+    const name =
+      el.querySelector(".courseName")?.innerText;
+
+    const countEl =
+      el.querySelector(".countText");
+
+    const percentEl =
+      el.querySelector(".percentText");
+
+    const bar =
+      el.querySelector(".courseCountBar");
+
+    if (courseCountStats[name] !== undefined) {
+
+      const count = courseCountStats[name];
+
+      const percent =
+        Math.round((count / totalCourseCount) * 100);
+
+      countEl.innerText = count + "組";
+
+      percentEl.innerText =
+        `（${percent}%）`;
+
+      bar.style.width =
+        percent + "%";
+    }
+
+  });
 }
 let records = [];
 let filtered = [];

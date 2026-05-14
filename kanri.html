@@ -401,19 +401,37 @@ input,select{
 <option>アメリカ</option>
 <option>シンガポール</option>
 <option>マレーシア</option>
+<option>オランダ</option>
+<option>タイ</option>
 <option>その他</option>
+<option>不明</option>
 </select>
 </div>
-<!-- 導線 -->
-<div id="routeBox" class="hidden">
-  <div class="label">来店導線</div>
+<!-- 日本用 -->
+<div id="routeBoxJP" class="hidden">
+  <div class="label">来店導線（日本）</div>
+  <div class="chip-group">
+    <button class="chip" onclick="setChip('route','シティヘブン',this)">シティヘブン</button>
+    <button class="chip" onclick="setChip('route','駅ちか',this)">駅ちか</button>
+    <button class="chip" onclick="setChip('route','風俗じゃぱん',this)">風俗じゃぱん</button>
+    <button class="chip" onclick="setChip('route','直接来店',this)">直接来店</button>
+    <button class="chip" onclick="setChip('route','姫予約',this)">姫予約</button>
+    <button class="chip" onclick="setChip('route','ぴゅあらば',this)">ぴゅあらば</button>
+    <button class="chip" onclick="setChip('route','マンステ',this)">マンステ</button>
+    <button class="chip" onclick="setChip('route','口コミ',this)">口コミ</button>
+    <button class="chip" onclick="setChip('route','その他',this)">その他</button>
+    <button class="chip" onclick="setChip('route','不明',this)">不明</button>
+  </div>
+</div>
+
+<!-- 海外用 -->
+<div id="routeBoxOverseas" class="hidden">
+  <div class="label">来店導線（海外）</div>
   <div class="chip-group">
     <button class="chip" onclick="setChip('route','YOASOBI',this)">YOASOBI</button>
     <button class="chip" onclick="setChip('route','JPS',this)">JPS</button>
-    <button class="chip" onclick="setChip('route','通りすがり',this)">通りすがり</button>
-    <button class="chip" onclick="setChip('route','友人紹介',this)">友人紹介</button>
-    <button class="chip" onclick="setChip('route','協力店紹介',this)">協力店紹介</button>
     <button class="chip" onclick="setChip('route','駅ちか',this)">駅ちか</button>
+    <button class="chip" onclick="setChip('route','直接来店',this)">直接来店</button>
     <button class="chip" onclick="setChip('route','その他',this)">その他</button>
     <button class="chip" onclick="setChip('route','不明',this)">不明</button>
   </div>
@@ -575,6 +593,7 @@ const routeMap = {
     "姫予約",
     "ぴゅあらば",
     "マンステ",
+    "口コミ",
     "その他",
     "不明"
   ],
@@ -866,7 +885,6 @@ recalcPrice(); // ←ここで1回だけ
 function setCountry(val,el){
   form.country = val;
 
-  // 日本・海外ボタンのactive制御
   document.querySelectorAll(".chip-group .chip").forEach(c=>{
     if(c.innerText==="日本" || c.innerText==="海外"){
       c.classList.remove("active");
@@ -875,26 +893,27 @@ function setCountry(val,el){
 
   el.classList.add("active");
 
-  const routeBox = document.getElementById("routeBox");
+  const jp = document.getElementById("routeBoxJP");
+  const ov = document.getElementById("routeBoxOverseas");
 
-  // ★ここがポイント（国ごとに切替）
-  const routes = routeMap[val] || [];
+  if(val === "日本"){
+    jp.classList.remove("hidden");
+    ov.classList.add("hidden");
+    form.route = "";
+  } else {
+    jp.classList.add("hidden");
+    ov.classList.remove("hidden");
+    form.route = "";
+  }
 
-  routeBox.classList.remove("hidden");
-
-  routeBox.innerHTML = `
-    <div class="label">来店導線</div>
-    <div class="chip-group">
-      ${routes.map(r => `
-        <button class="chip" onclick="setChip('route','${r}',this)">
-          ${r}
-        </button>
-      `).join("")}
-    </div>
-  `;
-
-  // リセット
-  form.route = "";
+  // 国籍詳細
+  const countryBox = document.getElementById("countrySelectBox");
+  if(val === "海外"){
+    countryBox.classList.remove("hidden");
+  } else {
+    countryBox.classList.add("hidden");
+    form.countryDetail = "";
+  }
 }
 
 function toggleOp(val,el){

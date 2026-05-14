@@ -2237,6 +2237,138 @@ const countCard =
     Object.values(overseasHourSales);
 
   salesChart.update();
+// =========================
+// リピ指名分析（正しい定義）
+// =========================
+
+const ripStats = {};
+
+data.forEach(r => {
+
+  const name = r.staff || r.cast || r.name || "不明";
+
+  if(!ripStats[name]){
+    ripStats[name] = {
+      total: 0,
+      rip: 0
+    };
+  }
+
+  ripStats[name].total++;
+
+  // ★ここが「リピ指名」
+  if(r.shimei === "リピ"){
+    ripStats[name].rip++;
+  }
+
+});
+
+
+// =========================
+// リピ数 TOP10
+// =========================
+
+const ripCountRanking =
+  Object.entries(ripStats)
+  .sort((a,b)=>b[1].rip - a[1].rip)
+  .slice(0,10);
+
+const ripCountCard =
+  document.querySelector(".repeatCountCard");
+
+ripCountCard.innerHTML = `
+  <div class="sectionTitle">リピ指名数 TOP10</div>
+`;
+
+const maxRip =
+  ripCountRanking[0]?.[1]?.rip || 1;
+
+ripCountRanking.forEach((item,index)=>{
+
+  const name = item[0];
+  const rip = item[1].rip;
+  const total = item[1].total; // ★追加
+
+  const percent =
+    Math.round((rip / maxRip) * 100);
+
+  ripCountCard.innerHTML += `
+    <div class="courseItem">
+
+      <div class="courseTop">
+        <div class="courseName">
+          ${index + 1}. ${name}
+        </div>
+
+        <div class="coursePrice">
+          （${rip}/${total}組）${rip}本
+        </div>
+      </div>
+
+      <div class="courseBar">
+        <div class="courseInner"
+          style="width:${percent}%;"></div>
+      </div>
+
+    </div>
+  `;
+});
+
+
+// =========================
+// リピ率 TOP10
+// =========================
+
+const ripRateRanking =
+  Object.entries(ripStats)
+  .filter(item => item[1].total >= 3) // ノイズ除外
+  .sort((a,b)=>{
+
+    const rateA = a[1].rip / a[1].total;
+    const rateB = b[1].rip / b[1].total;
+
+    return rateB - rateA;
+
+  })
+  .slice(0,10);
+
+const ripRateCard =
+  document.querySelector(".repeatRateCard");
+
+ripRateCard.innerHTML = `
+  <div class="sectionTitle">リピ指名率 TOP10</div>
+`;
+
+ripRateRanking.forEach((item,index)=>{
+
+  const name = item[0];
+  const total = item[1].total;
+  const rip = item[1].rip;
+
+  const rate =
+    Math.round((rip / total) * 100);
+
+  ripRateCard.innerHTML += `
+    <div class="courseItem">
+
+      <div class="courseTop">
+        <div class="courseName">
+          ${index + 1}. ${name}
+        </div>
+
+        <div class="coursePrice">
+          （${rip}/${total}組）${rate}%
+        </div>
+      </div>
+
+      <div class="courseBar">
+        <div class="courseInner"
+          style="width:${rate}%;"></div>
+      </div>
+
+    </div>
+  `;
+});
 }
 let records = [];
 let filtered = [];

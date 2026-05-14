@@ -566,7 +566,27 @@ const castList = [
 let records = [];
 let allRecords = [];
 let todayCasts = [];
-
+const routeMap = {
+  日本: [
+    "シティヘブン",
+    "駅ちか",
+    "風俗じゃぱん",
+    "直接来店",
+    "姫予約",
+    "ぴゅあらば",
+    "マンステ",
+    "その他",
+    "不明"
+  ],
+  海外: [
+    "YOASOBI",
+    "駅ちか",
+    "JPS",
+    "直接来店",
+    "その他",
+    "不明"
+  ]
+};
 async function loadAttendance(){
   const today = new Date().toISOString().slice(0,10);
 
@@ -846,6 +866,7 @@ recalcPrice(); // ←ここで1回だけ
 function setCountry(val,el){
   form.country = val;
 
+  // 日本・海外ボタンのactive制御
   document.querySelectorAll(".chip-group .chip").forEach(c=>{
     if(c.innerText==="日本" || c.innerText==="海外"){
       c.classList.remove("active");
@@ -854,19 +875,26 @@ function setCountry(val,el){
 
   el.classList.add("active");
 
-  const box = document.getElementById("countrySelectBox");
-  const route = document.getElementById("routeBox");
+  const routeBox = document.getElementById("routeBox");
 
-  if(val === "海外"){
-    box.classList.remove("hidden");
-    route.classList.remove("hidden");
-  }else{
-    box.classList.add("hidden");
-    route.classList.add("hidden");
+  // ★ここがポイント（国ごとに切替）
+  const routes = routeMap[val] || [];
 
-    form.countryDetail = ""; // ★リセット
-    form.route = "";         // ★リセット
-  }
+  routeBox.classList.remove("hidden");
+
+  routeBox.innerHTML = `
+    <div class="label">来店導線</div>
+    <div class="chip-group">
+      ${routes.map(r => `
+        <button class="chip" onclick="setChip('route','${r}',this)">
+          ${r}
+        </button>
+      `).join("")}
+    </div>
+  `;
+
+  // リセット
+  form.route = "";
 }
 
 function toggleOp(val,el){

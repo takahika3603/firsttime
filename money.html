@@ -1535,7 +1535,7 @@ donut3 = createDonut("donut3",35);
 時間別売上
 ========================= */
 
-new Chart(
+const salesChart = new Chart(
 document.getElementById("salesChart"),
 {
 type:"line",
@@ -2002,6 +2002,215 @@ const countCard =
     }
 
   });
+    // =========================
+  // 指名別売上
+  // =========================
+
+  const shimeiSalesStats = {
+    "フリー": 0,
+    "P": 0,
+    "NET": 0,
+    "リピ": 0
+  };
+
+  data.forEach(r => {
+
+    const shimei = r.shimei || "";
+    const price = Number(r.price || 0);
+
+    if(shimeiSalesStats[shimei] !== undefined){
+      shimeiSalesStats[shimei] += price;
+    }
+
+  });
+
+  const totalShimeiSales =
+    Object.values(shimeiSalesStats)
+    .reduce((a,b)=>a+b,0) || 1;
+
+  // 指名別売上カード取得
+  const shimeiSalesCard =
+    document.querySelectorAll(".doubleGrid .card")[4];
+
+  shimeiSalesCard
+    .querySelectorAll(".courseItem")
+    .forEach(el => {
+
+      const name =
+        el.querySelector(".courseName").innerText;
+
+      let key = name;
+
+      // 表示名 → Firestore値へ変換
+      if(name === "P指名") key = "P";
+      if(name === "NET指名") key = "NET";
+      if(name === "リピート") key = "リピ";
+
+      const amount = shimeiSalesStats[key] || 0;
+
+      const percent =
+        Math.round((amount / totalShimeiSales) * 100);
+
+      el.querySelector(".coursePrice").innerText =
+        `¥${amount.toLocaleString()}（${percent}%）`;
+
+      el.querySelector(".courseInner").style.width =
+        percent + "%";
+    });
+
+  // =========================
+  // 指名別組数
+  // =========================
+
+  const shimeiCountStats = {
+    "フリー": 0,
+    "P": 0,
+    "NET": 0,
+    "リピ": 0
+  };
+
+  data.forEach(r => {
+
+    const shimei = r.shimei || "";
+
+    if(shimeiCountStats[shimei] !== undefined){
+      shimeiCountStats[shimei]++;
+    }
+
+  });
+
+  const totalShimeiCount =
+    Object.values(shimeiCountStats)
+    .reduce((a,b)=>a+b,0) || 1;
+
+  // 指名別組数カード取得
+  const shimeiCountCard =
+    document.querySelectorAll(".doubleGrid .card")[5];
+
+  shimeiCountCard
+    .querySelectorAll(".courseItem")
+    .forEach(el => {
+
+      const name =
+        el.querySelector(".courseName").innerText;
+
+      let key = name;
+
+      if(name === "P指名") key = "P";
+      if(name === "NET指名") key = "NET";
+      if(name === "リピート") key = "リピ";
+
+      const count =
+        shimeiCountStats[key] || 0;
+
+      const percent =
+        Math.round((count / totalShimeiCount) * 100);
+
+      el.querySelector(".coursePrice").innerText =
+        `${count}組（${percent}%）`;
+
+      el.querySelector(".courseInner").style.width =
+        percent + "%";
+    });
+    // =========================
+  // 時間別売上
+  // =========================
+
+  const hourSales = {
+    "8時":0,
+    "9時":0,
+    "10時":0,
+    "11時":0,
+    "12時":0,
+    "13時":0,
+    "14時":0,
+    "15時":0,
+    "16時":0,
+    "17時":0,
+    "18時":0,
+    "19時":0,
+    "20時":0,
+    "21時":0,
+    "22時":0,
+    "23時":0
+  };
+
+  const japanHourSales = {
+    "8時":0,
+    "9時":0,
+    "10時":0,
+    "11時":0,
+    "12時":0,
+    "13時":0,
+    "14時":0,
+    "15時":0,
+    "16時":0,
+    "17時":0,
+    "18時":0,
+    "19時":0,
+    "20時":0,
+    "21時":0,
+    "22時":0,
+    "23時":0
+  };
+
+  const overseasHourSales = {
+    "8時":0,
+    "9時":0,
+    "10時":0,
+    "11時":0,
+    "12時":0,
+    "13時":0,
+    "14時":0,
+    "15時":0,
+    "16時":0,
+    "17時":0,
+    "18時":0,
+    "19時":0,
+    "20時":0,
+    "21時":0,
+    "22時":0,
+    "23時":0
+  };
+
+  data.forEach(r => {
+
+    const time = r.time || "";
+    const price = Number(r.price || 0);
+
+    if(hourSales[time] !== undefined){
+
+      hourSales[time] += price;
+
+      if(r.country === "日本"){
+        japanHourSales[time] += price;
+      }
+
+      if(r.country === "海外"){
+        overseasHourSales[time] += price;
+      }
+    }
+
+  });
+
+  const labels = Object.keys(hourSales);
+
+  salesChart.data.labels =
+    labels.map(v => v.replace("時",""));
+
+  // 総売上
+  salesChart.data.datasets[0].data =
+    Object.values(hourSales);
+
+  // 日本
+  salesChart.data.datasets[1].data =
+    Object.values(japanHourSales);
+
+  // 海外
+  salesChart.data.datasets[2].data =
+    Object.values(overseasHourSales);
+
+  salesChart.update();
 }
 let records = [];
 let filtered = [];

@@ -8,8 +8,13 @@
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Meiryo";
-  background:#0f1117;
-  color:white;
+
+  background:
+    linear-gradient(180deg,#f6fbff 0%, #edf5ff 100%);
+
+  color:#24324a;
+
+  min-height:100vh;
 }
 
 .container{
@@ -32,25 +37,39 @@ h1{
 
 /* LIST */
 .list > div{
-  padding:12px 14px;
-  border-radius:16px;
-  margin-bottom:8px;
+  padding:13px 14px;
+  border-radius:18px;
+  margin-bottom:10px;
 
-  width:100%;                 /* ←これ追加 */
-  box-sizing:border-box;      /* ←これ追加 */
+  width:100%;
+  box-sizing:border-box;
 
   display:flex;
   align-items:center;
   gap:14px;
 
-  font-size:12px;  /* ←これ */
+  font-size:12px;
 
-  background:rgba(255,255,255,0.03);
+  background:rgba(255,255,255,0.62);
+
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+
+  border:1px solid rgba(255,255,255,0.9);
+
+  box-shadow:
+    0 4px 12px rgba(140,180,255,0.08);
+
+  color:#24324a;
+
+  transition:
+  transform 0.2s,
+  background 0.2s;
 }
 
 .list > div:hover{
-  transform:scale(1.02);
-  background:rgba(255,255,255,0.06);
+  transform:translateY(-1px);
+  background:rgba(255,255,255,0.75);
 }
 
 /* CHIP */
@@ -68,18 +87,31 @@ h1{
 }
 
 .chip{
-  padding:9px 13px;
+  padding:9px 14px;
   border-radius:999px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.06);
-  color:rgba(255,255,255,0.75);
+
+  background:rgba(255,255,255,0.6);
+
+  border:1px solid rgba(220,230,245,0.95);
+
+  color:#4a5a74;
+
   font-size:12px;
+
+  backdrop-filter:blur(10px);
+
   transition:0.2s;
 }
 
 .chip.active{
-  background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
-  color:white;
+  background:#d9ebff;
+
+  color:#2563eb;
+
+  border:1px solid #b8d8ff;
+
+  box-shadow:
+    0 2px 8px rgba(120,170,255,0.15);
 }
 .bikou{
   padding:9px 13px;
@@ -94,24 +126,47 @@ h1{
   color:white;
 }
 /* DETAIL */
-#detailPage{ display:none; }
+#detailPage{
+  display:none;
+  padding:16px;
+  height:100vh;
+  overflow-y:auto;
+  box-sizing:border-box;
+}
 
 .card{
-  padding:16px;
-  border-radius:20px;
-  background:rgba(255,255,255,0.03);
-  backdrop-filter: blur(35px);
-  border:1px solid rgba(255,255,255,0.06);
+  padding:18px;
+  border-radius:24px;
+
+  background:rgba(255,255,255,0.58);
+
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
+
+  border:1px solid rgba(255,255,255,0.9);
+
+  box-shadow:
+    0 8px 24px rgba(120,160,220,0.08);
 }
 
 input,select{
   width:100%;
-  padding:10px;
+  padding:12px;
   margin:6px 0;
-  border-radius:12px;
-  border:none;
-  background:rgba(255,255,255,0.06);
-  color:white;
+
+  border-radius:14px;
+
+  border:1px solid rgba(210,225,245,0.9);
+
+  background:rgba(255,255,255,0.72);
+
+  backdrop-filter:blur(10px);
+
+  color:#24324a;
+
+  box-sizing:border-box;
+
+  font-size:14px;
 }
 
 .smallBtn{
@@ -129,14 +184,28 @@ input,select{
   position:fixed;
   bottom:20px;
   right:20px;
-  width:56px;
-  height:56px;
+
+  width:58px;
+  height:58px;
+
   border-radius:50%;
-  background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+
+  background:rgba(255,255,255,0.72);
+
+  backdrop-filter:blur(20px);
+
+  border:1px solid rgba(255,255,255,0.95);
+
+  color:#4a90ff;
+
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:28px;
+
+  font-size:30px;
+
+  box-shadow:
+    0 6px 18px rgba(120,170,255,0.12);
 }
 
 /* hidden */
@@ -265,6 +334,56 @@ input,select{
 .dashSub{
   font-size:12px;
   opacity:0.7;
+}
+.bottomActions{
+  position:sticky;
+  bottom:0;
+  left:0;
+
+  display:flex;
+  gap:10px;
+
+  padding:14px 0 20px;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(246,251,255,0.96),
+      rgba(246,251,255,0)
+    );
+
+  backdrop-filter:blur(12px);
+}
+
+.saveBtn,
+.backBtn{
+  flex:1;
+
+  padding:16px;
+
+  border:none;
+  border-radius:18px;
+
+  font-size:16px;
+  font-weight:700;
+
+  cursor:pointer;
+}
+
+.saveBtn{
+  background:linear-gradient(135deg,#7dd3fc,#60a5fa);
+  color:white;
+
+  box-shadow:
+    0 8px 24px rgba(96,165,250,0.25);
+}
+
+.backBtn{
+  background:rgba(255,255,255,0.7);
+
+  border:1px solid rgba(180,210,255,0.9);
+
+  color:#3b4a68;
 }
 </style>
 </head>
@@ -486,6 +605,11 @@ input,select{
 <button class="chip" onclick="setChip('course','120分',this)">120分</button>
 <button class="chip" onclick="setChip('course','150分',this)">150分</button>
 <button class="chip" onclick="setChip('course','180分',this)">180分</button>
+<button class="chip" onclick="setChip('course','210分',this)">210分</button>
+<button class="chip" onclick="setChip('course','240分',this)">240分</button>
+<button class="chip" onclick="setChip('course','270分',this)">270分</button>
+<button class="chip" onclick="setChip('course','300分',this)">300分</button>
+<button class="chip" onclick="setChip('course','330分',this)">330分</button>
 <button class="chip" onclick="setChip('course','その他',this)">その他</button>
 </div>
 
@@ -523,8 +647,10 @@ input,select{
 </div>
 
 
-<button class="smallBtn" onclick="save()">保存</button>
-<button class="smallBtn" onclick="back()">戻る</button>
+<div class="bottomActions">
+  <button class="saveBtn" onclick="save()">保存</button>
+  <button class="backBtn" onclick="back()">戻る</button>
+</div>
   <button id="deleteBtn" class="smallBtn" onclick="deleteRecord()" style="background:#ff4d4d;">削除</button>
 
 
@@ -664,29 +790,54 @@ let editIndex = null;
 const coursePriceMap = {
   "30分": 8000,
   "45分": 12000,
-  "60分": 14000,
-  "75分": 18000,
-  "90分": 22000,
-  "120分": 30000,
-  "極液": 28000
+  "60分": 16000,
+  "75分": 20000,
+  "90分": 24000,
+  "120分": 32000,
+  "極液": 30000,
+  "150分": 40000,
+  "180分": 48000,
+  "210分": 56000,
+  "240分": 64000,
+  "270分": 72000,
+  "300分": 80000,
+  "330分": 88000
 };
 const specialCasts = [
   "みおん","すい","なつき","あめり","ゆいか","かえで","ゆん","きょうか"
 ];
 
 const specialCoursePriceMap = {
-  "60分": 18000,
-  "75分": 23000,
-  "90分": 28000,
-  "120分": 38000,
-  "極液": 34000
+  "30分": 10000,
+  "45分": 15000,
+  "60分": 20000,
+  "75分": 25000,
+  "90分": 30000,
+  "120分": 40000,
+  "極液": 36000,
+  "150分": 50000,
+  "180分": 60000,
+  "210分": 70000,
+  "240分": 80000,
+  "270分": 90000,
+  "300分": 110000,
+  "330分": 110000
 };
 const serennPriceMap = {
-  "60分": 22000,
-  "75分": 28000,
-  "90分": 34000,
-  "120分": 46000,
-  "極液": 40000
+  "30分": 12000,
+  "45分": 18000,
+  "60分": 24000,
+  "75分": 30000,
+  "90分": 36000,
+  "120分": 48000,
+  "極液": 42000,
+  "150分": 60000,
+  "180分": 72000,
+  "210分": 84000,
+  "240分": 96000,
+  "270分": 108000,
+  "300分": 120000,
+  "330分": 132000
 };
 const optionPriceMap = {
   "AN": 3000,
@@ -728,11 +879,49 @@ if(castName === "せれん"){
 }else{
   coursePrice = coursePriceMap[form.course] || 0;
 }
-// ② 深夜
+// ② 深夜・夜料金
 let nightFee = 0;
-if(form.course && form.course !== "30分" && form.course !== "45分"){
-  if(isNightOrWeekend()){
-    nightFee = 1000;
+
+// 20〜23時なら +1000
+if(
+  form.time === "20時" ||
+  form.time === "21時" ||
+  form.time === "22時" ||
+  form.time === "23時"
+){
+  nightFee = 1000;
+}
+// ②-2 曜日割引
+let weekdayDiscount = 0;
+
+// 入力された日付を取得
+const selectedDate = document.getElementById("date").value;
+
+if(selectedDate){
+
+  const dateObj = new Date(selectedDate);
+
+  const month = dateObj.getMonth() + 1;
+  const date = dateObj.getDate();
+  const day = dateObj.getDay();
+
+  // ★ GW期間（5/1〜5/6）は割引なし
+  if(month === 5 && date >= 1 && date <= 6){
+
+    weekdayDiscount = 0;
+
+  }else{
+
+    // 土日
+    if(day === 0 || day === 6){
+
+      weekdayDiscount = -1000;
+
+    }else{
+
+      // 平日
+      weekdayDiscount = -2000;
+    }
   }
 }
 
@@ -761,7 +950,7 @@ if(form.bikou.includes("口コミ")){
   bikouDiscount -= 1000;
 }
 // 合計に追加
-total += coursePrice + nightFee + shimeiFee + bikouDiscount;
+total += coursePrice + nightFee + shimeiFee + bikouDiscount + weekdayDiscount;
 // オプション加算
 form.op.forEach(op=>{
   total += optionPriceMap[op] || 0;
@@ -778,6 +967,36 @@ if(form.bikou.includes("クレカ")){
   // ※追加オプションは除外（既存のtoggleExtraで処理）
 
   document.getElementById("price").value = total;
+}
+function scrollNext(el){
+
+  // 今押したボタンの親グループ
+  const currentGroup = el.closest(".chip-group");
+
+  if(!currentGroup) return;
+
+  // 次の要素を探す
+  let next = currentGroup.nextElementSibling;
+
+  while(next){
+
+    // label / input / select を見つけたらスクロール
+    if(
+      next.classList?.contains("label") ||
+      next.tagName === "INPUT" ||
+      next.tagName === "SELECT"
+    ){
+
+      next.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+      });
+
+      break;
+    }
+
+    next = next.nextElementSibling;
+  }
 }
 /* ===== 画面切替 ===== */
 function add(){
@@ -809,15 +1028,26 @@ document.getElementById("price").value = "";
   document.getElementById("date").value = `${yyyy}-${mm}-${dd}`;
   // ↑ここまで追加
 
-  const detailPage = document.getElementById("detailPage");
-  document.getElementById("listPage").style.display="none";
-document.getElementById("detailPage").style.display="block";
+const detailPage = document.getElementById("detailPage");
+
+document.getElementById("listPage").
+style.display = "none";
+document.getElementById("detailPage").style.display = "block";
+
+// ★追加
+detailPage.scrollTop = 0;
+window.scrollTo(0, 0);
 }
 
 function back(){
+
   document.getElementById("listPage").style.display="block";
   document.getElementById("detailPage").style.display="none";
   document.getElementById("deleteBtn").style.display = "none";
+
+  // ★追加
+  document.getElementById("detailPage").scrollTop = 0;
+  window.scrollTo(0,0);
 }
 document.getElementById("cast").addEventListener("input", function(){
 
@@ -867,7 +1097,8 @@ function setChip(type,value,el){
   el.classList.add("active");
 
   // ★これ追加（超重要）
-  recalcPrice();
+recalcPrice();
+scrollNext(el);
 }
 function setCoursePrice(course, el){
   form.course = course;
@@ -879,7 +1110,8 @@ document.querySelectorAll(".chip").forEach(c=>{
 });
 
 el.classList.add("active");
-recalcPrice(); // ←ここで1回だけ
+recalcPrice();
+scrollNext(el);
 
 }
 function setCountry(val,el){
@@ -935,7 +1167,9 @@ function toggleOp(val,el){
     el.classList.add("active");
   }
 
-  input.value = current;
+input.value = current;
+
+scrollNext(el);
 }
 
 function toggleBikou(val,el){
@@ -947,7 +1181,8 @@ function toggleBikou(val,el){
     el.classList.add("active");
   }
 
-  recalcPrice(); // ←これ絶対必要
+recalcPrice();
+scrollNext(el);
 }
 
 function toggleExtra(name, price, el){
@@ -967,7 +1202,9 @@ function toggleExtra(name, price, el){
     el.classList.add("active");
   }
 
-  input.value = current;
+input.value = current;
+
+scrollNext(el);
 }
 /* ===== 保存 ===== */
 let isSaving = false;
@@ -979,24 +1216,31 @@ async function save(){
 
   try {
 
-    const record = {
-      date: document.getElementById("date").value,
-      cast: document.getElementById("cast").value,
-      price: Number(document.getElementById("price").value),
+const record = {
+  date: document.getElementById("date").value,
+  cast: document.getElementById("cast").value,
+  price: Number(document.getElementById("price").value),
 
-       course: form.course, 
-      country: form.country,
-      countryDetail: form.countryDetail,
-      route: form.route,
-      time: form.time,
-      type: form.type,
-      shimei: form.shimei,
-      visitType: form.visitType,
-      op: form.op,
-      bikou: form.bikou,
-      extra: form.extra,
-      createdAt: Date.now(),
-    };
+  course: form.course,
+  country: form.country,
+  countryDetail: form.countryDetail,
+  route: form.route,
+  time: form.time,
+  type: form.type,
+  shimei: form.shimei,
+  visitType: form.visitType,
+  op: form.op,
+  bikou: form.bikou,
+  extra: form.extra,
+  createdAt: Date.now(),
+};
+
+// undefined対策
+Object.keys(record).forEach(key=>{
+  if(record[key] === undefined){
+    record[key] = "";
+  }
+});
 
     const attendanceRecord = {
       date: record.date,
@@ -1092,6 +1336,21 @@ function editRecord(r){
   document.getElementById("cast").value = r.cast || "";
   document.getElementById("price").value = r.price || "";
 
+  const countrySelect = document.getElementById("countrySelect");
+
+// 保存されている国名
+const savedCountry = r.countryDetail || "";
+
+// optionの中に存在するか確認
+const exists = [...countrySelect.options]
+  .some(option => option.value === savedCountry);
+
+// 存在するならその国
+// 無ければ「不明」
+countrySelect.value = exists
+  ? savedCountry
+  : "不明";
+
   form.time = r.time;
   form.course = r.course;
   form.country = r.country || "日本";
@@ -1104,7 +1363,7 @@ function editRecord(r){
   form.extra = r.extra || [];
 
   document.getElementById("listPage").style.display="none";
-  document.getElementById("detailPage").style.display="block";
+  document.getElementById("detailPage").style.display = "block";
 
   reflectChips();
 }
@@ -1115,7 +1374,7 @@ function editRecord(r){
     if(c.innerText == form.course) c.classList.add("active");
     if(c.innerText == form.shimei) c.classList.add("active");
     if(c.innerText == form.type) c.classList.add("active");
-    if(c.innerText == form.time+"時") c.classList.add("active");
+    if(c.innerText == form.time) c.classList.add("active");
     if(c.innerText == form.visitType) c.classList.add("active");
     
 
@@ -1132,13 +1391,20 @@ if(form.extra && form.extra.includes(c.innerText.replace(/ [+-].*/,""))){
 }
   });
  
-  if(form.country==="海外"){
-    document.getElementById("countrySelectBox").classList.remove("hidden");
-    document.getElementById("routeBox").classList.remove("hidden");
-  }else{
-    document.getElementById("countrySelectBox").classList.add("hidden");
-    document.getElementById("routeBox").classList.add("hidden");
-  }
+if(form.country==="海外"){
+
+  document.getElementById("countrySelectBox").classList.remove("hidden");
+
+  document.getElementById("routeBoxJP").classList.add("hidden");
+  document.getElementById("routeBoxOverseas").classList.remove("hidden");
+
+}else{
+
+  document.getElementById("countrySelectBox").classList.add("hidden");
+
+  document.getElementById("routeBoxJP").classList.remove("hidden");
+  document.getElementById("routeBoxOverseas").classList.add("hidden");
+}
 }
 
   
@@ -1226,11 +1492,86 @@ const sorted = data
 </span>
 `;
 
-      div.onclick = () => editRecord(r);
-      list.appendChild(div);
-    });
+let startX = 0;
+let currentX = 0;
+let isDragging = false;
 
-  updateKPI(data);
+div.addEventListener("touchstart", e => {
+
+  startX = e.touches[0].clientX;
+  isDragging = true;
+
+});
+
+div.addEventListener("touchmove", e => {
+
+  if(!isDragging) return;
+
+  currentX = e.touches[0].clientX - startX;
+
+  // 右スワイプのみ
+  if(currentX > 0){
+
+    // 半分まで
+    const moveX = Math.min(
+      currentX,
+      window.innerWidth / 2
+    );
+
+    div.style.transform =
+      `translateX(${moveX}px)`;
+
+    // グレー化
+    const ratio =
+      moveX / (window.innerWidth / 2);
+
+    const gray =
+      255 - (ratio * 55);
+
+    div.style.background =
+      `rgb(${gray},${gray},${gray})`;
+  }
+
+});
+
+div.addEventListener("touchend", () => {
+
+  isDragging = false;
+
+  // 半分以上なら固定
+  if(currentX > window.innerWidth / 2){
+
+    div.style.transform =
+      `translateX(${window.innerWidth / 2}px)`;
+
+    div.style.background =
+      `rgb(200,200,200)`;
+
+  }else{
+
+    // 戻す
+    div.style.transform =
+      `translateX(0px)`;
+
+    div.style.background =
+      `rgba(255,255,255,0.62)`;
+  }
+
+  currentX = 0;
+
+});
+
+// タップ編集
+div.addEventListener("click", () => {
+
+  if(Math.abs(currentX) < 10){
+    editRecord(r);
+  }
+
+});
+
+list.appendChild(div);
+    });
 }
 function toggleMenu(){
   document.getElementById("menu").classList.toggle("hidden");

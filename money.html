@@ -872,22 +872,6 @@ KPI分析
       </div>
     </div>
 
-    <!-- その他 -->
-    <div class="courseItem" data-route="その他">
-      <div class="courseTop">
-        <div class="courseName">その他</div>
-
-        <div class="coursePrice">
-          <span class="routeSales">¥0</span>
-          <span class="routePercent"></span>
-        </div>
-      </div>
-
-      <div class="courseBar">
-        <div class="courseInner routeBar" style="width:0%;"></div>
-      </div>
-    </div>
-
   </div>
 
   <!-- =========================
@@ -1028,21 +1012,7 @@ KPI分析
       </div>
     </div>
 
-    <!-- その他 -->
-    <div class="courseItem" data-route="その他">
-      <div class="courseTop">
-        <div class="courseName">その他</div>
 
-        <div class="coursePrice">
-          <span class="routeCount">0組</span>
-          <span class="routeCountPercent"></span>
-        </div>
-      </div>
-
-      <div class="courseBar">
-        <div class="courseInner routeCountBar" style="width:0%;"></div>
-      </div>
-    </div>
 
   </div>
 
@@ -2237,6 +2207,141 @@ const countCard =
     Object.values(overseasHourSales);
 
   salesChart.update();
+
+  // =========================
+// 導線別売上
+// =========================
+
+const routeSalesStats = {
+  "シティヘブン": 0,
+  "駅ちか": 0,
+  "風俗じゃぱん": 0,
+  "直接来店": 0,
+  "姫予約": 0,
+  "ぴゅあらば": 0,
+  "マンステ": 0,
+  "海外": 0,
+  "その他": 0
+};
+
+data.forEach(r => {
+
+  let route = r.route || "その他";
+
+// 顧客区分が海外なら強制的に海外導線
+const customerType =
+  r.customerType || r.country || "";
+
+if(customerType === "海外"){
+  route = "海外";
+}
+  const price = Number(r.price || 0);
+
+  if(routeSalesStats[route] !== undefined){
+    routeSalesStats[route] += price;
+  }else{
+    routeSalesStats["その他"] += price;
+  }
+
+});
+
+const totalRouteSales =
+  Object.values(routeSalesStats)
+  .reduce((a,b)=>a+b,0) || 1;
+
+const routeSalesCard =
+  document.querySelector(".routeSalesCard");
+
+routeSalesCard
+  .querySelectorAll(".courseItem")
+  .forEach(el => {
+
+    const route =
+      el.dataset.route;
+
+    const amount =
+      routeSalesStats[route] || 0;
+
+    const percent =
+      Math.round((amount / totalRouteSales) * 100);
+
+    el.querySelector(".routeSales").innerText =
+      "¥" + amount.toLocaleString();
+
+    el.querySelector(".routePercent").innerText =
+      `（${percent}%）`;
+
+    el.querySelector(".routeBar").style.width =
+      percent + "%";
+
+  });
+
+
+// =========================
+// 導線別組数
+// =========================
+
+const routeCountStats = {
+  "シティヘブン": 0,
+  "駅ちか": 0,
+  "風俗じゃぱん": 0,
+  "直接来店": 0,
+  "姫予約": 0,
+  "ぴゅあらば": 0,
+  "マンステ": 0,
+  "海外": 0,
+  "その他": 0
+};
+
+data.forEach(r => {
+
+  let route = r.route || "その他";
+
+const customerType =
+  r.customerType || r.country || "";
+
+if(customerType === "海外"){
+  route = "海外";
+}
+
+  if(routeCountStats[route] !== undefined){
+    routeCountStats[route]++;
+  }else{
+    routeCountStats["その他"]++;
+  }
+
+});
+
+const totalRouteCount =
+  Object.values(routeCountStats)
+  .reduce((a,b)=>a+b,0) || 1;
+
+const routeCountCard =
+  document.querySelector(".routeCountCard");
+
+routeCountCard
+  .querySelectorAll(".courseItem")
+  .forEach(el => {
+
+    const route =
+      el.dataset.route;
+
+    const count =
+      routeCountStats[route] || 0;
+
+    const percent =
+      Math.round((count / totalRouteCount) * 100);
+
+    el.querySelector(".routeCount").innerText =
+      `${count}組`;
+
+    el.querySelector(".routeCountPercent").innerText =
+      `（${percent}%）`;
+
+    el.querySelector(".routeCountBar").style.width =
+      percent + "%";
+
+  });
 // =========================
 // リピ指名分析（正しい定義）
 // =========================

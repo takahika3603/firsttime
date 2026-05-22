@@ -2252,25 +2252,43 @@ const routeSalesStats = {
 
 data.forEach(r => {
 
-  let route = r.route || "その他";
+  const route = r.route || "その他";
 
-// 顧客区分が海外なら強制的に海外導線
-const customerType =
-  r.customerType || r.country || "";
+  const customerType =
+    r.customerType || r.country || "";
 
-if(customerType === "海外"){
-  route = "海外";
-}
-  const price = Number(r.price || 0);
+  const price =
+    Number(r.price || 0);
+
+  // =========================
+  // 元の導線へ加算
+  // =========================
 
   if(routeSalesStats[route] !== undefined){
+
     routeSalesStats[route] += price;
+
   }else{
+
     routeSalesStats["その他"] += price;
+
   }
 
-});
+  // =========================
+  // 海外なら海外にも加算
+  // =========================
 
+if(
+  customerType === "海外" ||
+  route === "ぴゅあらば" ||
+  route === "マンステ"
+){
+
+  routeSalesStats["海外"] += price;
+
+}
+
+});
 const totalRouteSales =
   Object.values(routeSalesStats)
   .reduce((a,b)=>a+b,0) || 1;
@@ -2321,23 +2339,40 @@ const routeCountStats = {
 
 data.forEach(r => {
 
-  let route = r.route || "その他";
+  const route = r.route || "その他";
 
-const customerType =
-  r.customerType || r.country || "";
+  const customerType =
+    r.customerType || r.country || "";
 
-if(customerType === "海外"){
-  route = "海外";
-}
+  // =========================
+  // 元の導線へ加算
+  // =========================
 
   if(routeCountStats[route] !== undefined){
+
     routeCountStats[route]++;
+
   }else{
+
     routeCountStats["その他"]++;
+
   }
 
-});
+  // =========================
+  // 海外なら海外にも加算
+  // =========================
 
+if(
+  customerType === "海外" ||
+  route === "ぴゅあらば" ||
+  route === "マンステ"
+){
+
+  routeCountStats["海外"]++;
+
+}
+
+});
 const totalRouteCount =
   Object.values(routeCountStats)
   .reduce((a,b)=>a+b,0) || 1;

@@ -372,7 +372,6 @@ width:100%;
 min-width:700px;
 height:190px;
 }
-
 /* =========================
 BOTTOM NAV
 ========================= */
@@ -1399,7 +1398,7 @@ KPI分析
   <div class="card repeatCountCard">
 
     <div class="sectionTitle">
-      リピート数 TOP10
+      リピート数 TOP20
     </div>
 
   </div>
@@ -1409,7 +1408,34 @@ KPI分析
   <div class="card repeatRateCard">
 
     <div class="sectionTitle">
-      リピート率 TOP10
+      リピート率 TOP20
+    </div>
+
+  </div>
+
+</div>
+<!-- =========================
+接客分析
+========================= -->
+
+<div class="doubleGrid">
+
+  <!-- 接客回数 TOP20 -->
+
+  <div class="card serviceCountCard">
+
+    <div class="sectionTitle">
+      接客回数 TOP20
+    </div>
+
+  </div>
+
+  <!-- 接客回数 リピ率 TOP20 -->
+
+  <div class="card serviceRateCard">
+
+    <div class="sectionTitle">
+      接客回数 リピ率 TOP20
     </div>
 
   </div>
@@ -2376,13 +2402,13 @@ data.forEach(r => {
 const ripCountRanking =
   Object.entries(ripStats)
   .sort((a,b)=>b[1].rip - a[1].rip)
-  .slice(0,10);
+  .slice(0,20);
 
 const ripCountCard =
   document.querySelector(".repeatCountCard");
 
 ripCountCard.innerHTML = `
-  <div class="sectionTitle">リピ指名数 TOP10</div>
+  <div class="sectionTitle">リピ指名数 TOP20</div>
 `;
 
 const maxRip =
@@ -2435,13 +2461,13 @@ const ripRateRanking =
     return rateB - rateA;
 
   })
-  .slice(0,10);
+  .slice(0,20);
 
 const ripRateCard =
   document.querySelector(".repeatRateCard");
 
 ripRateCard.innerHTML = `
-  <div class="sectionTitle">リピ指名率 TOP10</div>
+  <div class="sectionTitle">リピ指名率 TOP20</div>
 `;
 
 ripRateRanking.forEach((item,index)=>{
@@ -2472,6 +2498,152 @@ ripRateRanking.forEach((item,index)=>{
       </div>
 
     </div>
+  `;
+});
+// =========================
+// 接客回数 TOP20
+// =========================
+
+const serviceStats = {};
+
+data.forEach(r => {
+
+  const name =
+    r.staff || r.cast || r.name || "不明";
+
+  if(!serviceStats[name]){
+    serviceStats[name] = {
+      total: 0,
+      rip: 0
+    };
+  }
+
+  serviceStats[name].total++;
+
+  if(r.shimei === "リピ"){
+    serviceStats[name].rip++;
+  }
+
+});
+
+// 接客回数順
+const serviceCountRanking =
+  Object.entries(serviceStats)
+  .sort((a,b)=>b[1].total - a[1].total)
+  .slice(0,20);
+
+const serviceCountCard =
+  document.querySelector(".serviceCountCard");
+
+serviceCountCard.innerHTML = `
+  <div class="sectionTitle">
+    接客回数 TOP20
+  </div>
+`;
+
+const maxService =
+  serviceCountRanking[0]?.[1]?.total || 1;
+
+serviceCountRanking.forEach((item,index)=>{
+
+  const name = item[0];
+  const total = item[1].total;
+  const rip = item[1].rip;
+
+  const percent =
+    Math.round((total / maxService) * 100);
+
+  serviceCountCard.innerHTML += `
+
+    <div class="courseItem">
+
+      <div class="courseTop">
+
+        <div class="courseName">
+          ${index + 1}. ${name}
+        </div>
+
+        <div class="coursePrice">
+          （${rip}/${total}組）${total}回
+        </div>
+
+      </div>
+
+      <div class="courseBar">
+
+        <div class="courseInner"
+          style="width:${percent}%;">
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+});
+
+
+// =========================
+// 接客回数 リピ率 TOP20
+// =========================
+
+// =========================
+// 接客回数 リピ率 TOP20
+// ※ 左のランキングと同じ順番
+// =========================
+
+// 左側のランキングをそのまま使う
+const serviceRateRanking =
+  serviceCountRanking;
+
+const serviceRateCard =
+  document.querySelector(".serviceRateCard");
+
+serviceRateCard.innerHTML = `
+  <div class="sectionTitle">
+    接客回数 リピ率 TOP20
+  </div>
+`;
+
+serviceRateRanking.forEach((item,index)=>{
+
+  const name = item[0];
+
+  const total = item[1].total;
+
+  const rip = item[1].rip;
+
+const rate =
+  total > 0
+    ? Math.round((rip / total) * 100)
+    : 0;
+
+  serviceRateCard.innerHTML += `
+
+    <div class="courseItem">
+
+      <div class="courseTop">
+
+        <div class="courseName">
+          ${index + 1}. ${name}
+        </div>
+
+        <div class="coursePrice">
+          （${rip}/${total}組）${rate}%
+        </div>
+
+      </div>
+
+      <div class="courseBar">
+
+        <div class="courseInner"
+          style="width:${rate}%;">
+        </div>
+
+      </div>
+
+    </div>
+
   `;
 });
 }

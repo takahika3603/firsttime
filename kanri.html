@@ -62,9 +62,7 @@ h1{
 
   color:#24324a;
 
-  transition:
-  transform 0.2s,
-  background 0.2s;
+  transition:0.2s;
 }
 
 .list > div:hover{
@@ -550,6 +548,8 @@ input,select{
     <button class="chip" onclick="setChip('route','YOASOBI',this)">YOASOBI</button>
     <button class="chip" onclick="setChip('route','JPS',this)">JPS</button>
     <button class="chip" onclick="setChip('route','駅ちか',this)">駅ちか</button>
+    <button class="chip" onclick="setChip('route','ぴゅあらば',this)">ぴゅあらば</button>
+    <button class="chip" onclick="setChip('route','マンステ',this)">マンステ</button>
     <button class="chip" onclick="setChip('route','直接来店',this)">直接来店</button>
     <button class="chip" onclick="setChip('route','その他',this)">その他</button>
     <button class="chip" onclick="setChip('route','不明',this)">不明</button>
@@ -583,7 +583,7 @@ input,select{
   <button class="chip" onclick="setChip('time','22時',this)">22時</button>
   <button class="chip" onclick="setChip('time','23時',this)">23時</button>
 </div>
-  
+ 
 <!-- ⑤ 指名 -->
 <div class="label">指名</div>
 <div class="chip-group">
@@ -654,8 +654,8 @@ input,select{
   <button id="deleteBtn" class="smallBtn" onclick="deleteRecord()" style="background:#ff4d4d;">削除</button>
 
 
-  
-</div> 
+ 
+</div>
 </div>
 </div>
 
@@ -727,6 +727,8 @@ const routeMap = {
     "YOASOBI",
     "駅ちか",
     "JPS",
+    "ぴゅあらば",
+    "マンステ",
     "直接来店",
     "その他",
     "不明"
@@ -1376,7 +1378,7 @@ countrySelect.value = exists
     if(c.innerText == form.type) c.classList.add("active");
     if(c.innerText == form.time) c.classList.add("active");
     if(c.innerText == form.visitType) c.classList.add("active");
-    
+   
 
     if(form.country == "日本" && c.innerText=="日本") c.classList.add("active");
     if(form.country == "海外" && c.innerText=="海外") c.classList.add("active");
@@ -1407,7 +1409,7 @@ if(form.country==="海外"){
 }
 }
 
-  
+ 
 /* ===== 描画 ===== */
 function filterData(){
 
@@ -1492,85 +1494,8 @@ const sorted = data
 </span>
 `;
 
-let startX = 0;
-let currentX = 0;
-let isDragging = false;
-
-div.addEventListener("touchstart", e => {
-
-  startX = e.touches[0].clientX;
-  isDragging = true;
-
-});
-
-div.addEventListener("touchmove", e => {
-
-  if(!isDragging) return;
-
-  currentX = e.touches[0].clientX - startX;
-
-  // 右スワイプのみ
-  if(currentX > 0){
-
-    // 半分まで
-    const moveX = Math.min(
-      currentX,
-      window.innerWidth / 2
-    );
-
-    div.style.transform =
-      `translateX(${moveX}px)`;
-
-    // グレー化
-    const ratio =
-      moveX / (window.innerWidth / 2);
-
-    const gray =
-      255 - (ratio * 55);
-
-    div.style.background =
-      `rgb(${gray},${gray},${gray})`;
-  }
-
-});
-
-div.addEventListener("touchend", () => {
-
-  isDragging = false;
-
-  // 半分以上なら固定
-  if(currentX > window.innerWidth / 2){
-
-    div.style.transform =
-      `translateX(${window.innerWidth / 2}px)`;
-
-    div.style.background =
-      `rgb(200,200,200)`;
-
-  }else{
-
-    // 戻す
-    div.style.transform =
-      `translateX(0px)`;
-
-    div.style.background =
-      `rgba(255,255,255,0.62)`;
-  }
-
-  currentX = 0;
-
-});
-
-// タップ編集
-div.addEventListener("click", () => {
-
-  if(Math.abs(currentX) < 10){
-    editRecord(r);
-  }
-
-});
-
-list.appendChild(div);
+      div.onclick = () => editRecord(r);
+      list.appendChild(div);
     });
 }
 function toggleMenu(){
@@ -1614,7 +1539,7 @@ window.addEventListener("click", function(e){
     document.querySelectorAll(".subMenu").forEach(el=>{
       el.classList.remove("open");
     });
-    
+   
   }
 });
 window.addEventListener("load", async function () {

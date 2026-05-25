@@ -351,7 +351,7 @@ const STORAGE_KEY_FLOOR = 'elevatorCurrentFloor';
 // =========================
 // ルームデータ
 // =========================
-const rooms = [
+const defaultRooms = [
   {room:'201',name:'ひめか',end:'00:40',status:'busy'},
   {room:'202',name:'みれい',end:'01:00',status:'wait'},
   {room:'203',name:'あや',end:'01:15',status:'clean'},
@@ -362,6 +362,12 @@ const rooms = [
   {room:'402',name:'ゆい',end:'01:10',status:'clean'},
   {room:'501',name:'さら',end:'01:50',status:'wait'},
 ];
+
+const STORAGE_KEY_ROOMS = 'roomData';
+
+const rooms =
+  JSON.parse(localStorage.getItem(STORAGE_KEY_ROOMS))
+  || defaultRooms;
 
 const statusText = {
   busy:'接客中',
@@ -384,7 +390,9 @@ rooms.forEach(room=>{
     <div class="room-top">
       <div class="room-number">${room.room}</div>
 
-      <select class="status-select ${room.status}">
+      <select
+  class="status-select ${room.status}"
+  data-room="${room.room}">
         <option value="busy" ${room.status==='busy'?'selected':''}>接客中</option>
         <option value="wait" ${room.status==='wait'?'selected':''}>待機</option>
         <option value="move" ${room.status==='move'?'selected':''}>移動中</option>
@@ -393,14 +401,18 @@ rooms.forEach(room=>{
     </div>
 
 <div>
-  <input
-    type="time"
-    class="input time-input"
-    value="${room.end}">
+<input
+  type="time"
+  class="input time-input end-input"
+  data-room="${room.room}"
+  value="${room.end}">
 </div>
 
     <div style="margin-top:6px;">
-      <input class="input" value="${room.name}">
+      <input
+  class="input name-input"
+  data-room="${room.room}"
+  value="${room.name}">
     </div>
 
   </div>
@@ -463,6 +475,68 @@ document.querySelectorAll('.status-select').forEach(select=>{
   updateColor();
 
   select.addEventListener('change',updateColor);
+
+});
+// =========================
+// データ保存
+// =========================
+function saveRooms(){
+
+  localStorage.setItem(
+    STORAGE_KEY_ROOMS,
+    JSON.stringify(rooms)
+  );
+
+}
+
+// 時間保存
+document.querySelectorAll('.end-input').forEach(input=>{
+
+  input.addEventListener('change',()=>{
+
+    const room = rooms.find(
+      r => r.room === input.dataset.room
+    );
+
+    room.end = input.value;
+
+    saveRooms();
+
+  });
+
+});
+
+// 名前保存
+document.querySelectorAll('.name-input').forEach(input=>{
+
+  input.addEventListener('input',()=>{
+
+    const room = rooms.find(
+      r => r.room === input.dataset.room
+    );
+
+    room.name = input.value;
+
+    saveRooms();
+
+  });
+
+});
+
+// ステータス保存
+document.querySelectorAll('.status-select').forEach(select=>{
+
+  select.addEventListener('change',()=>{
+
+    const room = rooms.find(
+      r => r.room === select.dataset.room
+    );
+
+    room.status = select.value;
+
+    saveRooms();
+
+  });
 
 });
 </script>

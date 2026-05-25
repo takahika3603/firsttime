@@ -392,9 +392,12 @@ rooms.forEach(room=>{
       </select>
     </div>
 
-    <div>
-      <input class="input" value="${room.end}">
-    </div>
+<div>
+  <input
+    type="time"
+    class="input time-input"
+    value="${room.end}">
+</div>
 
     <div style="margin-top:6px;">
       <input class="input" value="${room.name}">

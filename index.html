@@ -1,188 +1,395 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>外国人口コミトラッカー</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ルーム管理システム</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
 
 <style>
-body{
+*{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans","Meiryo";
-  background:linear-gradient(#000,#05070c);
-  color:white;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter',sans-serif;
 }
 
-h2{
-  text-align:center;
-  margin:20px 0;
+body{
+  background:#0f172a;
+  color:#fff;
+  overflow:hidden;
 }
 
 .wrapper{
-  padding:20px;
+  display:flex;
+  height:100vh;
 }
 
-.box{
-  padding:20px;
-  border-radius:20px;
-  background:rgba(255,255,255,0.05);
+/* =====================
+エレベーター
+===================== */
+.elevator-side{
+  width:90px;
+  background:#111827;
+  border-right:1px solid rgba(255,255,255,0.1);
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
-.percent{
-  font-size:32px;
-  text-align:center;
+.elevator-line{
+  width:6px;
+  height:78%;
+  background:rgba(255,255,255,0.15);
+  border-radius:999px;
+  position:relative;
 }
 
-.info,.msg{
-  text-align:center;
+.floor-dot{
+  position:absolute;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.5);
+  border:1px solid rgba(255,255,255,0.3);
+  transition:0.25s;
+  cursor:pointer;
+}
+
+.floor-dot.active{
+  width:30px;
+  height:30px;
+  background:#34d399;
+  box-shadow:0 0 20px rgba(52,211,153,0.9);
+}
+
+.floor-label{
+  position:absolute;
+  left:-35px;
+  color:#d1d5db;
   font-size:12px;
-  margin:5px 0;
+  transform:translateY(-50%);
 }
 
-button{
+.current-floor{
+  position:absolute;
+  bottom:20px;
+  text-align:center;
+}
+
+.current-floor small{
+  color:#94a3b8;
+  font-size:11px;
+}
+
+.current-floor h2{
+  color:#6ee7b7;
+  font-size:28px;
+}
+
+/* =====================
+メイン
+===================== */
+.main{
+  flex:1;
+  padding:14px;
+  overflow:auto;
+}
+
+.top-bar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+.title h1{
+  font-size:30px;
+  font-weight:900;
+}
+
+.title p{
+  color:#94a3b8;
+  margin-top:4px;
+  font-size:13px;
+}
+
+.summary{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  padding:12px 18px;
+  border-radius:18px;
+}
+
+.summary small{
+  color:#94a3b8;
+}
+
+.summary h2{
+  font-size:28px;
+}
+
+/* =====================
+ルーム
+===================== */
+.room-grid{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:12px;
+}
+
+.room-card{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;
+  padding:7px;
+  backdrop-filter:blur(10px);
+}
+
+.room-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:5px;
+}
+
+.room-number{
+  font-size:18px;
+  font-weight:900;
+  color:#7dd3fc;
+}
+
+.status{
+  padding:3px 7px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+}
+
+.status.busy{
+  background:#ec4899;
+}
+
+.status.wait{
+  background:#38bdf8;
+}
+
+.status.clean{
+  background:#f59e0b;
+}
+
+.status.move{
+  background:#a855f7;
+}
+
+.label{
+  font-size:11px;
+  color:#94a3b8;
+  margin-bottom:6px;
+}
+
+.input{
   width:100%;
-  padding:12px;
-  margin:6px 0;
-  border-radius:12px;
-  background:#222;
-  color:white;
+  background:#1e293b;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:9px;
+  padding:5px;
+  color:#fff;
+  outline:none;
+  font-size:11px;
+  margin-bottom:4px;
 }
 
-canvas{
-  display:block;
-  margin:10px auto;
+.bottom-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.stats{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.stat-box{
+  border-radius:20px;
+  padding:14px;
+}
+
+.stat-box h3{
+  font-size:13px;
+  margin-bottom:6px;
+}
+
+.stat-box strong{
+  font-size:34px;
+}
+
+.green{
+  background:rgba(16,185,129,0.12);
+  border:1px solid rgba(16,185,129,0.25);
+}
+
+.blue{
+  background:rgba(56,189,248,0.12);
+  border:1px solid rgba(56,189,248,0.25);
+}
+
+.orange{
+  background:rgba(245,158,11,0.12);
+  border:1px solid rgba(245,158,11,0.25);
+}
+
+@media(max-width:900px){
+  .room-grid{
+    grid-template-columns:1fr;
+  }
 }
 </style>
 </head>
-
 <body>
 
-<h2>外国人口コミトラッカー</h2>
-
 <div class="wrapper">
-<div class="box">
 
-<h3>口コミ獲得（外国人）</h3>
+  <!-- エレベーター -->
+  <div class="elevator-side">
 
-<div class="percent" id="percent">0%</div>
-<canvas id="chart"></canvas>
+    <div class="elevator-line">
 
-<div class="info" id="info"></div>
-<div class="msg" id="msg"></div>
+      <div class="floor-label" style="top:0%;">5F</div>
+      <div class="floor-dot" style="top:0%;"></div>
 
-<button onclick="addAcquired()">口コミGET</button>
-<button onclick="addMiss()">未獲得（理由入力）</button>
-<button onclick="showHistory()">履歴を見る</button>
-<button onclick="resetAll()">リセット</button>
+      <div class="floor-label" style="top:23%;">4F</div>
+      <div class="floor-dot" style="top:23%;"></div>
 
-</div>
+      <div class="floor-label" style="top:46%;">3F</div>
+      <div class="floor-dot active" style="top:46%;"></div>
+
+      <div class="floor-label" style="top:69%;">2F</div>
+      <div class="floor-dot" style="top:69%;"></div>
+
+      <div class="floor-label" style="top:92%;">1F</div>
+      <div class="floor-dot" style="top:92%;"></div>
+
+    </div>
+
+    <div class="current-floor">
+      <small>現在位置</small>
+      <h2 id="floorText">3F</h2>
+    </div>
+  </div>
+
+
+  <!-- メイン -->
+  <div class="main">
+
+    <div class="top-bar">
+      <div class="title">
+        <h1>ルームリアルタイム管理</h1>
+        <p>iPhone横画面対応 / エレベーター位置固定表示</p>
+      </div>
+
+      <div class="summary">
+        <small>稼働部屋</small>
+        <h2>9 ROOM</h2>
+      </div>
+    </div>
+
+
+    <div class="room-grid" id="roomGrid"></div>
+
+
+    <div class="stats">
+      <div class="stat-box green">
+        <h3>接客中</h3>
+        <strong>3</strong>
+      </div>
+
+      <div class="stat-box blue">
+        <h3>待機</h3>
+        <strong>3</strong>
+      </div>
+
+      <div class="stat-box orange">
+        <h3>清掃・移動</h3>
+        <strong>3</strong>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
+const rooms = [
+  {room:'201',name:'ひめか',end:'00:40',status:'busy'},
+  {room:'202',name:'みれい',end:'01:00',status:'wait'},
+  {room:'203',name:'あや',end:'01:15',status:'clean'},
+  {room:'301',name:'るな',end:'00:55',status:'busy'},
+  {room:'302',name:'ここな',end:'01:20',status:'move'},
+  {room:'303',name:'のあ',end:'01:40',status:'wait'},
+  {room:'401',name:'えま',end:'00:50',status:'busy'},
+  {room:'402',name:'ゆい',end:'01:10',status:'clean'},
+  {room:'501',name:'さら',end:'01:50',status:'wait'},
+];
 
-let data = {
-  response: Number(localStorage.getItem("response")||0),
-  acquired: Number(localStorage.getItem("acquired")||0),
-  miss: Number(localStorage.getItem("miss")||0),
-  history: JSON.parse(localStorage.getItem("history")||"[]")
+const statusText = {
+  busy:'接客中',
+  wait:'待機',
+  clean:'清掃中',
+  move:'移動中'
 };
 
-let chart;
+const grid = document.getElementById('roomGrid');
 
-/* 初期化 */
-function init(){
-  chart = new Chart(document.getElementById("chart"),{
-    type:'doughnut',
-    data:{
-      labels:['獲得','未獲得'],
-      datasets:[{data:[0,0]}]
-    },
-    options:{
-      cutout:'75%',
-      plugins:{legend:{display:false}}
-    }
+rooms.forEach(room=>{
+  grid.innerHTML += `
+  <div class="room-card">
+
+    <div class="room-top">
+      <div class="room-number">${room.room}</div>
+      <div class="status ${room.status}">${statusText[room.status]}</div>
+    </div>
+
+    <div>
+      <div class="label">女の子</div>
+      <input class="input" value="${room.name}">
+    </div>
+
+    <div class="bottom-grid">
+      <div>
+        <div class="label">部屋番号</div>
+        <input class="input" value="${room.room}">
+      </div>
+
+      <div>
+        <div class="label">終了時間</div>
+        <input class="input" value="${room.end}">
+      </div>
+    </div>
+
+  </div>
+  `;
+});
+
+// エレベーター位置切り替え
+const dots = document.querySelectorAll('.floor-dot');
+const floorText = document.getElementById('floorText');
+
+const floors = ['5F','4F','3F','2F','1F'];
+
+dots.forEach((dot,index)=>{
+  dot.addEventListener('click',()=>{
+    dots.forEach(d=>d.classList.remove('active'));
+    dot.classList.add('active');
+    floorText.innerText = floors[index];
   });
-  update();
-}
-
-/* 更新 */
-function update(){
-  const total = data.response;
-  const percent = total===0?0:Math.floor((data.acquired/total)*100);
-
-  document.getElementById("percent").innerText = percent+"%";
-  document.getElementById("info").innerText =
-    `応対:${data.response} / 獲得:${data.acquired} / 未獲得:${data.miss}`;
-
-  chart.data.datasets[0].data = [data.acquired,data.miss];
-  chart.update();
-
-  // 保存
-  localStorage.setItem("response",data.response);
-  localStorage.setItem("acquired",data.acquired);
-  localStorage.setItem("miss",data.miss);
-  localStorage.setItem("history",JSON.stringify(data.history));
-}
-
-/* 成功 */
-function addAcquired(){
-  data.response++;
-  data.acquired++;
-  data.history.push({
-    type:"成功",
-    time:new Date().toLocaleString()
-  });
-  document.getElementById("msg").innerText="成功 +1";
-  update();
-}
-
-/* 未獲得 */
-function addMiss(){
-  const reason = prompt("未獲得の理由を入力");
-
-  data.response++;
-  data.miss++;
-
-  data.history.push({
-    type:"未獲得",
-    reason: reason || "未入力",
-    time:new Date().toLocaleString()
-  });
-
-  document.getElementById("msg").innerText="未獲得";
-  update();
-}
-
-/* 履歴 */
-function showHistory(){
-  if(data.history.length===0){
-    alert("履歴なし");
-    return;
-  }
-
-  const text = data.history.map(h=>{
-    if(h.type==="未獲得"){
-      return `${h.time}｜未獲得｜${h.reason}`;
-    }else{
-      return `${h.time}｜成功`;
-    }
-  }).join("\n");
-
-  alert(text);
-}
-
-/* リセット */
-function resetAll(){
-  if(confirm("リセットしますか？")){
-    data = {response:0,acquired:0,miss:0,history:[]};
-    update();
-  }
-}
-
-init();
-
+});
 </script>
 
 </body>

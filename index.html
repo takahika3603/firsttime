@@ -138,7 +138,7 @@ body{
 ===================== */
 .room-grid{
   display:grid;
-  grid-template-columns:repeat(12,1fr);
+  grid-template-columns:repeat(24,1fr);
   gap:12px;
 }
 
@@ -146,10 +146,12 @@ body{
   background:rgba(255,255,255,0.05);
   border:1px solid rgba(255,255,255,0.08);
   border-radius:14px;
-  padding:7px;
+  padding:5px;
   backdrop-filter:blur(10px);
 }
-
+.room-card.half{
+  grid-column:span 1;
+}
 .room-top{
   display:flex;
   justify-content:space-between;

@@ -343,6 +343,14 @@ body{
 </div>
 
 <script>
+// =========================
+// 保存キー
+// =========================
+const STORAGE_KEY_FLOOR = 'elevatorCurrentFloor';
+
+// =========================
+// ルームデータ
+// =========================
 const rooms = [
   {room:'201',name:'ひめか',end:'00:40',status:'busy'},
   {room:'202',name:'みれい',end:'01:00',status:'wait'},
@@ -375,43 +383,78 @@ rooms.forEach(room=>{
 
     <div class="room-top">
       <div class="room-number">${room.room}</div>
-<select class="status-select ${room.status}">
-  <option value="busy" ${room.status==='busy'?'selected':''}>接客中</option>
-  <option value="wait" ${room.status==='wait'?'selected':''}>待機</option>
-  <option value="move" ${room.status==='move'?'selected':''}>移動中</option>
-  <option value="clean" ${room.status==='clean'?'selected':''}>清掃中</option>
-</select>
+
+      <select class="status-select ${room.status}">
+        <option value="busy" ${room.status==='busy'?'selected':''}>接客中</option>
+        <option value="wait" ${room.status==='wait'?'selected':''}>待機</option>
+        <option value="move" ${room.status==='move'?'selected':''}>移動中</option>
+        <option value="clean" ${room.status==='clean'?'selected':''}>清掃中</option>
+      </select>
     </div>
 
     <div>
-  
       <input class="input" value="${room.end}">
     </div>
-<div style="margin-top:6px;">
-  <input class="input" value="${room.name}">
-</div>
+
+    <div style="margin-top:6px;">
+      <input class="input" value="${room.name}">
+    </div>
+
   </div>
   `;
 });
 
-// エレベーター位置切り替え
+// =========================
+// エレベーター位置保存機能
+// =========================
 const dots = document.querySelectorAll('.floor-dot');
 const floorText = document.getElementById('floorText');
 
 const floors = ['5F','4F','3F','2F','1F'];
 
+// 階数表示更新関数
+function setFloor(index){
+
+  dots.forEach(d=>d.classList.remove('active'));
+
+  dots[index].classList.add('active');
+
+  floorText.innerText = floors[index];
+
+  // 保存
+  localStorage.setItem(STORAGE_KEY_FLOOR,index);
+}
+
+// 保存済み階数を読み込み
+const savedFloor = localStorage.getItem(STORAGE_KEY_FLOOR');
+
+// 保存があれば反映
+if(savedFloor !== null){
+  setFloor(Number(savedFloor));
+}
+
+// クリック時
 dots.forEach((dot,index)=>{
+
   dot.addEventListener('click',()=>{
-    dots.forEach(d=>d.classList.remove('active'));
-    dot.classList.add('active');
-    floorText.innerText = floors[index];
+
+    setFloor(index);
+
   });
+
 });
+
+// =========================
+// ステータス色変更
+// =========================
 document.querySelectorAll('.status-select').forEach(select=>{
 
   const updateColor = ()=>{
+
     select.classList.remove('busy','wait','clean','move');
+
     select.classList.add(select.value);
+
   };
 
   updateColor();

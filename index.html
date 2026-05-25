@@ -350,29 +350,29 @@ const statusText = {
 const grid = document.getElementById('roomGrid');
 
 rooms.forEach(room=>{
+
+  const cardClass = room.room === '201'
+    ? 'room-card half-card'
+    : 'room-card';
+
   grid.innerHTML += `
-  <div class="room-card">
+  <div class="${cardClass}">
 
     <div class="room-top">
       <div class="room-number">${room.room}</div>
-      <div class="status ${room.status}">${statusText[room.status]}</div>
+      <div class="status ${room.status}">
+        ${statusText[room.status]}
+      </div>
     </div>
 
     <div>
-      <div class="label">女の子</div>
-      <input class="input" value="${room.name}">
+      <div class="label">終了時間</div>
+      <input class="input" value="${room.end}">
     </div>
 
-    <div class="bottom-grid">
-      <div>
-        <div class="label">部屋番号</div>
-        <input class="input" value="${room.room}">
-      </div>
-
-      <div>
-        <div class="label">終了時間</div>
-        <input class="input" value="${room.end}">
-      </div>
+    <div style="margin-top:6px;">
+      <div class="label">女の子</div>
+      <input class="input" value="${room.name}">
     </div>
 
   </div>

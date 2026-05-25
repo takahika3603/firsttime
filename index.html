@@ -187,7 +187,32 @@ body{
 .status.move{
   background:#a855f7;
 }
+.status-select{
+  padding:4px 8px;
+  border-radius:999px;
+  border:none;
+  font-size:12px;
+  font-weight:700;
+  color:#fff;
+  outline:none;
+  cursor:pointer;
+}
 
+.status-select.busy{
+  background:#ec4899;
+}
+
+.status-select.wait{
+  background:#38bdf8;
+}
+
+.status-select.clean{
+  background:#f59e0b;
+}
+
+.status-select.move{
+  background:#a855f7;
+}
 .label{
   font-size:11px;
   color:#94a3b8;
@@ -360,9 +385,12 @@ rooms.forEach(room=>{
 
     <div class="room-top">
       <div class="room-number">${room.room}</div>
-      <div class="status ${room.status}">
-        ${statusText[room.status]}
-      </div>
+<select class="status-select ${room.status}">
+  <option value="busy" ${room.status==='busy'?'selected':''}>接客中</option>
+  <option value="wait" ${room.status==='wait'?'selected':''}>待機</option>
+  <option value="move" ${room.status==='move'?'selected':''}>移動中</option>
+  <option value="clean" ${room.status==='clean'?'selected':''}>清掃中</option>
+</select>
     </div>
 
     <div>
@@ -391,6 +419,18 @@ dots.forEach((dot,index)=>{
     dot.classList.add('active');
     floorText.innerText = floors[index];
   });
+});
+document.querySelectorAll('.status-select').forEach(select=>{
+
+  const updateColor = ()=>{
+    select.classList.remove('busy','wait','clean','move');
+    select.classList.add(select.value);
+  };
+
+  updateColor();
+
+  select.addEventListener('change',updateColor);
+
 });
 </script>
 

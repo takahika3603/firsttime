@@ -213,6 +213,10 @@ body{
 .status-select.move{
   background:#a855f7;
 }
+/* 追加 */
+.status-select.empty{
+  background:#10b981;
+}
 .label{
   font-size:11px;
   color:#94a3b8;
@@ -374,6 +378,7 @@ const statusText = {
   wait:'待機',
   clean:'清掃中',
   move:'移動中'
+  empty:'空き'
 };
 
 const grid = document.getElementById('roomGrid');
@@ -397,6 +402,7 @@ rooms.forEach(room=>{
         <option value="wait" ${room.status==='wait'?'selected':''}>待機</option>
         <option value="move" ${room.status==='move'?'selected':''}>移動中</option>
         <option value="clean" ${room.status==='clean'?'selected':''}>清掃中</option>
+        <option value="empty" ${room.status==='empty'?'selected':''}>空き</option>
       </select>
     </div>
 
@@ -466,8 +472,7 @@ document.querySelectorAll('.status-select').forEach(select=>{
 
   const updateColor = ()=>{
 
-    select.classList.remove('busy','wait','clean','move');
-
+    select.classList.remove('busy','wait','clean','move','empty');
     select.classList.add(select.value);
 
   };

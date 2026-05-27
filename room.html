@@ -102,7 +102,7 @@ ROOM CARD
 
   padding:10px;
 
-  min-height:104px;
+  min-height:82px;
 
   box-shadow:
     0 4px 14px rgba(0,0,0,.06);
@@ -111,9 +111,9 @@ ROOM CARD
 }
 
 .room-number{
-  font-size:18px;
+  font-size:10px;
   font-weight:800;
-  margin-bottom:8px;
+  min-width:38px;
 }
 
 .input{
@@ -128,6 +128,20 @@ ROOM CARD
   font-size:14px;
 
   margin-top:6px;
+}
+.room-top{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.name-input{
+  flex:1;
+}
+
+.time-input{
+  width:100%;
+  margin-top:8px;
 }
 
 /* ======================
@@ -279,15 +293,27 @@ function createRoom(side,roomNo){
       ? "right"
       : "left";
 
-  room.innerHTML = `
-    <div class="connector ${connectorSide}"></div>
+room.innerHTML = `
+  <div class="connector ${connectorSide}"></div>
 
-    <div class="room-number">${roomNo}</div>
+  <div class="room-top">
 
-    <input class="input" placeholder="女の子の名前">
+    <div class="room-number">
+      ${roomNo}
+    </div>
 
-    <input class="input" placeholder="時間">
-  `;
+    <input
+      class="input name-input"
+      placeholder="女の子の名前"
+    >
+
+  </div>
+
+  <input
+    class="input time-input"
+    placeholder="時間"
+  >
+`;
 
   return room;
 }

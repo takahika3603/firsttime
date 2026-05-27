@@ -115,7 +115,7 @@ ROOM CARD
 
 .time-input{
   width:100%;
-  margin-top:5x;
+  margin-top:5px;
 }
 
 /* ======================
@@ -399,12 +399,9 @@ function moveDrag(x,y){
   tempLine.setAttribute("y2",y);
 }
 
-function finishDrag(targetConnector){
+function finishDrag(targetElement){
 
-  if(
-    !targetConnector ||
-    targetConnector === startConnector
-  ){
+  if(!targetElement){
     cleanup();
     return;
   }
@@ -413,7 +410,12 @@ function finishDrag(targetConnector){
     startConnector.closest(".room");
 
   const targetRoom =
-    targetConnector.closest(".room");
+    targetElement.closest(".room");
+
+  if(!targetRoom){
+    cleanup();
+    return;
+  }
 
   const side1 = startRoom.dataset.side;
   const side2 = targetRoom.dataset.side;
@@ -422,6 +424,9 @@ function finishDrag(targetConnector){
     cleanup();
     return;
   }
+
+  const targetConnector =
+    targetRoom.querySelector(".connector");
 
   createConnection(
     startConnector,
@@ -569,10 +574,7 @@ document.querySelectorAll(".connector")
           e.clientY
         );
 
-      const targetConnector =
-        target?.closest(".connector");
-
-      finishDrag(targetConnector);
+finishDrag(target);
     }
   );
 
@@ -613,10 +615,7 @@ window.addEventListener(
         e.clientY
       );
 
-    const targetConnector =
-      target?.closest(".connector");
-
-    finishDrag(targetConnector);
+finishDrag(target);
   }
 );
 

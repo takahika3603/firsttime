@@ -259,7 +259,7 @@ function createTimeOptions(){
 
   let html = `<option value="">時間</option>`;
 
-  for(let h = 0; h < 24; h++){
+  for(let h = 12; h <= 23; h++){
 
     for(let m = 0; m < 60; m += 10){
 
@@ -308,9 +308,9 @@ room.innerHTML = `
 
   </div>
 
-  <select class="input time-input">
-    ${createTimeOptions()}
-  </select>
+<select class="input time-input">
+  ${createTimeOptions()}
+</select>
 `;
 
   return room;

@@ -333,6 +333,27 @@ input,select{
   font-size:12px;
   opacity:0.7;
 }
+/* ←ここに追加がベスト */
+.totalCard{
+  background:
+    linear-gradient(
+      135deg,
+      rgba(125,211,252,0.22),
+      rgba(96,165,250,0.18)
+    );
+
+  border:1px solid rgba(180,220,255,0.9);
+
+  box-shadow:
+    0 10px 30px rgba(96,165,250,0.12);
+}
+
+.totalPrice{
+  font-size:28px;
+  font-weight:800;
+  color:#2563eb;
+  margin-top:8px;
+}
 .bottomActions{
   position:sticky;
   bottom:0;
@@ -481,6 +502,1536 @@ input,select{
 <div class="dashboardCard" onclick="location.href='https://luxuryspa-fuga.web.app/money.html'">
   <div class="dashTitle">分析ダッシュボード</div>
   <div class="dashSub">売上・海外比率・詳細分析を見る →</div>
+</div>
+<!-- 合計金額カード -->
+<div class="dashboardCard totalCard">
+  <div class="dashTitle">現在の合計売上</div>
+  <div id="totalPrice" class="totalPrice">0円</div>
+</div>
+</div>
+<div id="listPage" class="list"></div>
+<!-- 詳細 -->
+<div id="detailPage">
+<div class="card">
+
+<input id="date" type="date">
+<!-- ① キャスト -->
+<input id="cast" placeholder="キャスト">
+<div id="suggestBox" class="chip-group"></div>
+<div class="label">今日の出勤</div>
+<div id="castChips" class="chip-group"></div>
+<!-- ② 新規 / 再来 -->
+<div class="label">区分</div>
+<div class="chip-group">
+<button class="chip" onclick="setChip('type','新規',this)">新規</button>
+<button class="chip" onclick="setChip('type','再来',this)">再来</button>
+</div>
+
+<!-- ③ 顧客区分 -->
+<div class="label">顧客区分</div>
+<div class="chip-group">
+<button class="chip" onclick="setCountry('日本',this)">日本</button>
+<button class="chip" onclick="setCountry('海外',this)">海外</button>
+</div>
+
+<div id="countrySelectBox" class="hidden">
+<select id="countrySelect">
+<option>香港</option>
+<option>台湾</option>
+<option>韓国</option>
+<option>中国</option>
+<option>オーストラリア</option>
+<option>アメリカ</option>
+<option>シンガポール</option>
+<option>マレーシア</option>
+<option>オランダ</option>
+<option>タイ</option>
+<option>その他</option>
+<option>不明</option>
+</select>
+</div>
+<!-- 日本用 -->
+<div id="routeBoxJP" class="hidden">
+  <div class="label">来店導線（日本）</div>
+  <div class="chip-group">
+    <button class="chip" onclick="setChip('route','シティヘブン',this)">シティヘブン</button>
+    <button class="chip" onclick="setChip('route','駅ちか',this)">駅ちか</button>
+    <button class="chip" onclick="setChip('route','風俗じゃぱん',this)">風俗じゃぱん</button>
+    <button class="chip" onclick="setChip('route','直接来店',this)">直接来店</button>
+    <button class="chip" onclick="setChip('route','姫予約',this)">姫予約</button>
+    <button class="chip" onclick="setChip('route','ぴゅあらば',this)">ぴゅあらば</button>
+    <button class="chip" onclick="setChip('route','マンステ',this)">マンステ</button>
+    <button class="chip" onclick="setChip('route','口コミ',this)">口コミ</button>
+    <button class="chip" onclick="setChip('route','その他',this)">その他</button>
+    <button class="chip" onclick="setChip('route','不明',this)">不明</button>
+  </div>
+</div>
+
+<!-- 海外用 -->
+<div id="routeBoxOverseas" class="hidden">
+  <div class="label">来店導線（海外）</div>
+  <div class="chip-group">
+    <button class="chip" onclick="setChip('route','YOASOBI',this)">YOASOBI</button>
+    <button class="chip" onclick="setChip('route','JPS',this)">JPS</button>
+    <button class="chip" onclick="setChip('route','駅ちか',this)">駅ちか</button>
+    <button class="chip" onclick="setChip('route','ぴゅあらば',this)">ぴゅあらば</button>
+    <button class="chip" onclick="setChip('route','マンステ',this)">マンステ</button>
+    <button class="chip" onclick="setChip('route','直接来店',this)">直接来店</button>
+    <button class="chip" onclick="setChip('route','その他',this)">その他</button>
+    <button class="chip" onclick="setChip('route','不明',this)">不明</button>
+  </div>
+</div>
+
+<!-- ④ 来店経路 -->
+<div class="label">来店経路</div>
+<div class="chip-group">
+  <button class="chip" onclick="setChip('visitType','飛込',this)">飛込</button>
+  <button class="chip" onclick="setChip('visitType','予約',this)">予約</button>
+</div>  
+
+<!-- 時間帯 -->
+<div class="label">時間帯</div>
+<div class="chip-group">
+  <button class="chip" onclick="setChip('time','8時',this)">8時</button>
+  <button class="chip" onclick="setChip('time','9時',this)">9時</button>
+  <button class="chip" onclick="setChip('time','10時',this)">10時</button>
+  <button class="chip" onclick="setChip('time','11時',this)">11時</button>
+  <button class="chip" onclick="setChip('time','12時',this)">12時</button>
+  <button class="chip" onclick="setChip('time','13時',this)">13時</button>
+  <button class="chip" onclick="setChip('time','14時',this)">14時</button>
+  <button class="chip" onclick="setChip('time','15時',this)">15時</button>
+  <button class="chip" onclick="setChip('time','16時',this)">16時</button>
+  <button class="chip" onclick="setChip('time','17時',this)">17時</button>
+  <button class="chip" onclick="setChip('time','18時',this)">18時</button>
+  <button class="chip" onclick="setChip('time','19時',this)">19時</button>
+  <button class="chip" onclick="setChip('time','20時',this)">20時</button>
+  <button class="chip" onclick="setChip('time','21時',this)">21時</button>
+  <button class="chip" onclick="setChip('time','22時',this)">22時</button>
+  <button class="chip" onclick="setChip('time','23時',this)">23時</button>
+</div>
+ 
+<!-- ⑤ 指名 -->
+<div class="label">指名</div>
+<div class="chip-group">
+<button class="chip" onclick="setChip('shimei','フリー',this)">フリー</button>
+<button class="chip" onclick="setChip('shimei','NET',this)">NET</button>
+<button class="chip" onclick="setChip('shimei','P',this)">P</button>
+<button class="chip" onclick="setChip('shimei','リピ',this)">リピ</button>
+</div>
+
+<!-- ⑥ コース -->
+<div class="label">コース</div>
+<div class="chip-group">
+<button class="chip" onclick="setCoursePrice('30分',this)">30分</button>
+<button class="chip" onclick="setCoursePrice('45分',this)">45分</button>
+  <button class="chip" onclick="setChip('course','60分',this)">60分</button>
+<button class="chip" onclick="setChip('course','75分',this)">75分</button>
+<button class="chip" onclick="setChip('course','90分',this)">90分</button>
+  <button class="chip" onclick="setChip('course','極液',this)">極液</button>
+<button class="chip" onclick="setChip('course','120分',this)">120分</button>
+<button class="chip" onclick="setChip('course','150分',this)">150分</button>
+<button class="chip" onclick="setChip('course','180分',this)">180分</button>
+<button class="chip" onclick="setChip('course','210分',this)">210分</button>
+<button class="chip" onclick="setChip('course','240分',this)">240分</button>
+<button class="chip" onclick="setChip('course','270分',this)">270分</button>
+<button class="chip" onclick="setChip('course','300分',this)">300分</button>
+<button class="chip" onclick="setChip('course','330分',this)">330分</button>
+<button class="chip" onclick="setChip('course','その他',this)">その他</button>
+</div>
+
+<!-- ⑦ オプション -->
+<div class="label">オプション</div>
+<div class="chip-group">
+<button class="chip" onclick="toggleOp('AN',this)">AN</button>
+<button class="chip" onclick="toggleOp('SL',this)">SL</button>
+<button class="chip" onclick="toggleOp('NL',this)">NL</button>
+<button class="chip" onclick="toggleOp('K',this)">K</button>
+<button class="chip" onclick="toggleOp('CP',this)">CP</button>
+</div>
+
+ <!-- ⑧ 備考 -->
+<div class="label">備考</div>
+<div class="bikou-group">
+<button class="bikou" onclick="toggleBikou('ぴゅあらば',this)">ぴゅあらば</button>
+<button class="bikou" onclick="toggleBikou('マンステ',this)">マンステ</button>
+<button class="bikou" onclick="toggleBikou('クレカ',this)">クレカ</button>
+<button class="bikou" onclick="toggleBikou('クーポン',this)">クーポン</button>
+<button class="bikou" onclick="toggleBikou('口コミ',this)">口コミ</button>
+</div>
+<!-- ⑧ 総額 -->
+<input id="price" placeholder="金額">
+<div class="label">追加オプション（自動加算）</div>
+<div class="chip-group">
+  <button class="chip" onclick="toggleExtra('AN',3000,this)">AN +3000</button>
+  <button class="chip" onclick="toggleExtra('SL',2000,this)">SL +2000</button>
+  <button class="chip" onclick="toggleExtra('NL',3000,this)">NL +3000</button>
+  <button class="chip" onclick="toggleExtra('K',1000,this)">K +1000</button>
+  <button class="chip" onclick="toggleExtra('CP',1000,this)">CP +1000</button>
+  <button class="chip" onclick="toggleExtra('延長15分',5000,this)">延長15分 +5000</button>
+  <button class="chip" onclick="toggleExtra('延長30分',10000,this)">延長30分 +10000</button>
+　<button class="chip" onclick="toggleExtra('CB',-1000,this)">CB -1000</button>
+</div>
+
+
+<div class="bottomActions">
+  <button class="saveBtn" onclick="save()">保存</button>
+  <button class="backBtn" onclick="back()">戻る</button>
+</div>
+  <button id="deleteBtn" class="smallBtn" onclick="deleteRecord()" style="background:#ff4d4d;">削除</button>
+
+
+ 
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="fab" onclick="add()">＋</div>
+<!-- ① ここにFirebase追加 -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDTwjQIjolOfaBUNqtzwBTIGKMbUN51e_Y",
+  authDomain: "luxuryspa-fuga.firebaseapp.com",
+  projectId: "luxuryspa-fuga",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ★ここ重要（下のJSで使うため）
+window.db = db;
+window.collection = collection;
+window.addDoc = addDoc;
+window.getDocs = getDocs;
+window.deleteDoc = deleteDoc;
+window.doc = doc;
+window.updateDoc = updateDoc;
+</script>
+<script>
+const castList = [
+"あめり","かえで","かりん","はるか","すい","せれん","ましろ","みおり",
+"なな","のぞみ","おとは","りこ","ゆあ","ゆず","さあや","きょうか",
+"みみ","あむ","そら","ゆん","まりか","うい","えま","りん","みわ",
+"みれい","なつき","みお","しおり","みすず","まき","ゆいか","みおん",
+"なぎ","ふうか","せいら","れいあ","らな",
+"さくら","めい",
+"みこと","りの","はつね","かえ","うる","くるみ","ゆき","なずな","ひかる",
+"りか","えみり","れい","あやか","かりな","いよ","あみ","ここな","まこ",
+"かれん","みさき","かおり","つむぎ","れな","くみ","りあ","みゆき","うみ",
+"もも","しおん","あまね","まりあ","のん","える","まみ","ひなた","うづき",
+"るきあ","しの","ちあき","ここ","みく","とうか","いと"
+];
+let records = [];
+let allRecords = [];
+let todayCasts = [];
+const routeMap = {
+  日本: [
+    "シティヘブン",
+    "駅ちか",
+    "風俗じゃぱん",
+    "直接来店",
+    "姫予約",
+    "ぴゅあらば",
+    "マンステ",
+    "口コミ",
+    "その他",
+    "不明"
+  ],
+  海外: [
+    "YOASOBI",
+    "駅ちか",
+    "JPS",
+    "ぴゅあらば",
+    "マンステ",
+    "直接来店",
+    "その他",
+    "不明"
+  ]
+};
+async function loadAttendance(){
+  const today = new Date().toISOString().slice(0,10);
+
+  const snap = await getDocs(collection(window.db, "attendance"));
+
+  todayCasts = [];
+
+  snap.forEach(doc => {
+    const data = doc.data();
+
+    if(data.date === today){
+      todayCasts = data.casts || [];
+    }
+  });
+}
+function renderCastChips(){
+
+  const box = document.getElementById("castChips");
+  box.innerHTML = "";
+
+  todayCasts.forEach(c => {
+
+    const btn = document.createElement("button");
+    btn.className = "chip";
+    btn.innerText = `${c.name} ${c.start}-${c.end}`;
+
+    btn.onclick = () => {
+      document.getElementById("cast").value = c.name;
+    };
+
+    box.appendChild(btn);
+  });
+}
+let form = {
+  course:"",
+  country:"日本",
+  countryDetail:"",
+  type:"",
+  shimei:"",
+  visitType:"",
+  op:[],
+  bikou:[],
+  route:"",
+  extra:[]
+};
+window.addEventListener("load", function(){
+
+  document.getElementById("countrySelect")
+    .addEventListener("change", function(){
+      form.countryDetail = this.value;
+    });
+
+});
+let editIndex = null;
+
+const coursePriceMap = {
+  "30分": 8000,
+  "45分": 12000,
+  "60分": 16000,
+  "75分": 20000,
+  "90分": 24000,
+  "120分": 32000,
+  "極液": 30000,
+  "150分": 40000,
+  "180分": 48000,
+  "210分": 56000,
+  "240分": 64000,
+  "270分": 72000,
+  "300分": 80000,
+  "330分": 88000
+};
+const specialCasts = [
+  "みおん","すい","なつき","あめり","ゆいか","かえで","ゆん","きょうか"
+];
+
+const specialCoursePriceMap = {
+  "30分": 10000,
+  "45分": 15000,
+  "60分": 20000,
+  "75分": 25000,
+  "90分": 30000,
+  "120分": 40000,
+  "極液": 36000,
+  "150分": 50000,
+  "180分": 60000,
+  "210分": 70000,
+  "240分": 80000,
+  "270分": 90000,
+  "300分": 110000,
+  "330分": 110000
+};
+const serennPriceMap = {
+  "30分": 12000,
+  "45分": 18000,
+  "60分": 24000,
+  "75分": 30000,
+  "90分": 36000,
+  "120分": 48000,
+  "極液": 42000,
+  "150分": 60000,
+  "180分": 72000,
+  "210分": 84000,
+  "240分": 96000,
+  "270分": 108000,
+  "300分": 120000,
+  "330分": 132000
+};
+const optionPriceMap = {
+  "AN": 3000,
+  "SL": 2000,
+  "NL": 3000,
+  "K": 1000,
+  "CP": 1000
+};
+function isNightOrWeekend(){
+
+  const now = new Date();
+  const day = now.getDay(); // 0=日曜
+  const hour = now.getHours();
+
+  const isWeekend = (day === 0 || day === 6);
+  const isNight = (hour >= 21);
+
+  return isWeekend || isNight;
+}
+function recalcPrice(){
+
+  let total = 0;
+
+  // ③ 指名料金
+// ① コース
+const castName = document.getElementById("cast").value;
+
+let coursePrice;
+
+// ★① せれんは最優先
+if(castName === "せれん"){
+  coursePrice = serennPriceMap[form.course] || 0;
+
+// ★② 特別キャスト
+}else if(specialCasts.includes(castName)){
+  coursePrice = specialCoursePriceMap[form.course] || 0;
+
+// ★③ 通常
+}else{
+  coursePrice = coursePriceMap[form.course] || 0;
+}
+// ② 深夜・夜料金
+let nightFee = 0;
+
+// 20〜23時なら +1000
+if(
+  form.time === "20時" ||
+  form.time === "21時" ||
+  form.time === "22時" ||
+  form.time === "23時"
+){
+  nightFee = 1000;
+}
+// ②-2 曜日割引
+let weekdayDiscount = 0;
+
+// 入力された日付を取得
+const selectedDate = document.getElementById("date").value;
+
+if(selectedDate){
+
+  const dateObj = new Date(selectedDate);
+
+  const month = dateObj.getMonth() + 1;
+  const date = dateObj.getDate();
+  const day = dateObj.getDay();
+
+  // ★ GW期間（5/1〜5/6）は割引なし
+  if(month === 5 && date >= 1 && date <= 6){
+
+    weekdayDiscount = 0;
+
+  }else{
+
+    // 土日
+    if(day === 0 || day === 6){
+
+      weekdayDiscount = -1000;
+
+    }else{
+
+      // 平日
+      weekdayDiscount = -2000;
+    }
+  }
+}
+
+// ③ 指名
+let shimeiFee = 0;
+if(form.shimei === "NET" || form.shimei === "P"){
+  shimeiFee = 2000;
+}
+if(form.shimei === "リピ"){
+  shimeiFee = 3000;
+}
+if(form.bikou.includes("クーポン")){
+  shimeiFee = 0;
+}
+// ★追加オプション割引（備考）
+let bikouDiscount = 0;
+
+if(form.bikou.includes("ぴゅあらば")){
+  bikouDiscount -= 1000;
+}
+
+if(form.bikou.includes("マンステ")){
+  bikouDiscount -= 1000;
+}
+if(form.bikou.includes("口コミ")){
+  bikouDiscount -= 1000;
+}
+// 合計に追加
+total += coursePrice + nightFee + shimeiFee + bikouDiscount + weekdayDiscount;
+// オプション加算
+form.op.forEach(op=>{
+  total += optionPriceMap[op] || 0;
+});
+// ★クレカ
+if(form.bikou.includes("クレカ")){
+  const base = coursePrice + nightFee + shimeiFee;
+  total += Math.floor(base * 0.15);
+}
+
+  // 最低0円制御（保険）
+  if(total < 0) total = 0;
+
+  // ※追加オプションは除外（既存のtoggleExtraで処理）
+
+  document.getElementById("price").value = total;
+}
+function scrollNext(el){
+
+  // 今押したボタンの親グループ
+  const currentGroup = el.closest(".chip-group");
+
+  if(!currentGroup) return;
+
+  // 次の要素を探す
+  let next = currentGroup.nextElementSibling;
+
+  while(next){
+
+    // label / input / select を見つけたらスクロール
+    if(
+      next.classList?.contains("label") ||
+      next.tagName === "INPUT" ||
+      next.tagName === "SELECT"
+    ){
+
+      next.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+      });
+
+      break;
+    }
+
+    next = next.nextElementSibling;
+  }
+}
+/* ===== 画面切替 ===== */
+function add(){
+form = {
+  time:"",
+  course:"",
+  country:"日本",
+  type:"",
+  shimei:"",
+  visitType:"",
+  op:[],
+  bikou:[],
+  route:"",
+  extra:[]// ←これ追加
+};
+
+  editIndex = null;
+document.getElementById("deleteBtn").style.display = "none";
+  document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+  document.getElementById("countrySelectBox").classList.add("hidden");
+  document.getElementById("cast").value = "";
+document.getElementById("price").value = "";
+  // ↓ここ追加（今日の日付を自動入力）
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth()+1).padStart(2,'0');
+  const dd = String(today.getDate()).padStart(2,'0');
+
+  document.getElementById("date").value = `${yyyy}-${mm}-${dd}`;
+  // ↑ここまで追加
+
+const detailPage = document.getElementById("detailPage");
+
+document.getElementById("listPage").
+style.display = "none";
+document.getElementById("detailPage").style.display = "block";
+
+// ★追加
+detailPage.scrollTop = 0;
+window.scrollTo(0, 0);
+}
+
+function back(){
+
+  document.getElementById("listPage").style.display="block";
+  document.getElementById("detailPage").style.display="none";
+  document.getElementById("deleteBtn").style.display = "none";
+
+  // ★追加
+  document.getElementById("detailPage").scrollTop = 0;
+  window.scrollTo(0,0);
+}
+document.getElementById("cast").addEventListener("input", function(){
+
+  const val = this.value.trim();
+
+  if(!val){
+    document.getElementById("suggestBox").innerHTML = "";
+    return;
+  }
+
+  // ★ 頭文字優先＋部分一致
+  const result = castList
+    .filter(name => name.startsWith(val))
+    .concat(
+      castList.filter(name =>
+        !name.startsWith(val) && name.includes(val)
+      )
+    );
+
+  renderSuggest(result);
+});
+function renderSuggest(list){
+
+  const box = document.getElementById("suggestBox");
+  box.innerHTML = "";
+
+  list.slice(0,10).forEach(name => {
+
+    const btn = document.createElement("button");
+    btn.className = "chip";
+    btn.innerText = name;
+
+    btn.onclick = () => {
+      document.getElementById("cast").value = name;
+      box.innerHTML = "";
+    };
+
+    box.appendChild(btn);
+  });
+}
+/* ===== チップ ===== */
+function setChip(type,value,el){
+  form[type]=value;
+
+  const group=el.parentNode;
+  group.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+  el.classList.add("active");
+
+  // ★これ追加（超重要）
+recalcPrice();
+scrollNext(el);
+}
+function setCoursePrice(course, el){
+  form.course = course;
+
+document.querySelectorAll(".chip").forEach(c=>{
+  if(c.parentNode === el.parentNode){
+    c.classList.remove("active");
+  }
+});
+
+el.classList.add("active");
+recalcPrice();
+scrollNext(el);
+
+}
+function setCountry(val,el){
+  form.country = val;
+
+  document.querySelectorAll(".chip-group .chip").forEach(c=>{
+    if(c.innerText==="日本" || c.innerText==="海外"){
+      c.classList.remove("active");
+    }
+  });
+
+  el.classList.add("active");
+
+  const jp = document.getElementById("routeBoxJP");
+  const ov = document.getElementById("routeBoxOverseas");
+
+  if(val === "日本"){
+    jp.classList.remove("hidden");
+    ov.classList.add("hidden");
+    form.route = "";
+  } else {
+    jp.classList.add("hidden");
+    ov.classList.remove("hidden");
+    form.route = "";
+  }
+
+  // 国籍詳細
+  const countryBox = document.getElementById("countrySelectBox");
+  if(val === "海外"){
+    countryBox.classList.remove("hidden");
+  } else {
+    countryBox.classList.add("hidden");
+    form.countryDetail = "";
+  }
+}
+
+function toggleOp(val,el){
+
+  const input = document.getElementById("price");
+  let current = Number(input.value) || 0;
+
+  const price = optionPriceMap[val] || 0;
+
+  if(form.op.includes(val)){
+    // OFF（引く）
+    form.op = form.op.filter(v=>v!==val);
+    current -= price;
+    el.classList.remove("active");
+  }else{
+    // ON（足す）
+    form.op.push(val);
+    current += price;
+    el.classList.add("active");
+  }
+
+input.value = current;
+
+scrollNext(el);
+}
+
+function toggleBikou(val,el){
+  if(form.bikou.includes(val)){
+    form.bikou = form.bikou.filter(v=>v!==val);
+    el.classList.remove("active");
+  }else{
+    form.bikou.push(val);
+    el.classList.add("active");
+  }
+
+recalcPrice();
+scrollNext(el);
+}
+
+function toggleExtra(name, price, el){
+
+  const input = document.getElementById("price");
+  let current = Number(input.value) || 0;
+
+  if(form.extra.includes(name)){
+    // OFF（引く）
+    form.extra = form.extra.filter(v=>v!==name);
+    current -= price;
+    el.classList.remove("active");
+  }else{
+    // ON（足す）
+    form.extra.push(name);
+    current += price;
+    el.classList.add("active");
+  }
+
+input.value = current;
+
+scrollNext(el);
+}
+/* ===== 保存 ===== */
+let isSaving = false;
+
+async function save(){
+
+  if(isSaving) return;
+  isSaving = true;
+
+  try {
+
+const record = {
+  date: document.getElementById("date").value,
+  cast: document.getElementById("cast").value,
+  price: Number(document.getElementById("price").value),
+
+  course: form.course,
+  country: form.country,
+  countryDetail: form.countryDetail,
+  route: form.route,
+  time: form.time,
+  type: form.type,
+  shimei: form.shimei,
+  visitType: form.visitType,
+  op: form.op,
+  bikou: form.bikou,
+  extra: form.extra,
+  createdAt: Date.now(),
+};
+
+// undefined対策
+Object.keys(record).forEach(key=>{
+  if(record[key] === undefined){
+    record[key] = "";
+  }
+});
+
+    const attendanceRecord = {
+      date: record.date,
+      cast: record.cast,
+      createdAt: Date.now()
+    };
+
+    // ===== 更新モード =====
+    if(editIndex !== null && editIndex !== undefined){
+
+      await updateDoc(
+        doc(window.db, "records", editIndex),
+        record
+      );
+
+    }else{
+
+      // ===== 新規 =====
+      await addDoc(
+        collection(window.db, "records"),
+        record
+      );
+
+      await addDoc(
+        collection(window.db, "attendance"),
+        attendanceRecord
+      );
+    }
+
+    await render();
+    back(); // ←成功した時だけ閉じる
+
+  } catch (error) {
+
+    console.log("保存エラー:", error);
+    alert("保存に失敗しました");
+
+  } finally {
+
+    isSaving = false;
+
+  }
+}
+async function deleteRecord(){
+
+  if(editIndex === null){
+    alert("削除対象がありません");
+    return;
+  }
+
+  if(confirm("このデータを削除しますか？")){
+
+    try {
+
+      await deleteDoc(
+        doc(window.db, "records", editIndex)
+      );
+
+      alert("削除しました");
+
+      // ★重要：状態リセット
+      editIndex = null;
+      form = {
+        time:"",
+        course:"",
+        country:"日本",
+        type:"",
+        shimei:"",
+        op:[],
+        bikou:[],
+        route:"",
+        extra:[]
+      };
+
+      back();
+      render();
+
+    } catch (e) {
+      console.log(e);
+      alert("削除失敗");
+    }
+
+  }
+}
+function editRecord(r){
+
+  // 🔥 ここが超重要（FirestoreのID）
+  editIndex = r.id;
+
+  document.getElementById("deleteBtn").style.display = "block";
+
+  document.getElementById("date").value = r.date || "";
+  document.getElementById("cast").value = r.cast || "";
+  document.getElementById("price").value = r.price || "";
+
+  const countrySelect = document.getElementById("countrySelect");
+
+// 保存されている国名
+const savedCountry = r.countryDetail || "";
+
+// optionの中に存在するか確認
+const exists = [...countrySelect.options]
+  .some(option => option.value === savedCountry);
+
+// 存在するならその国
+// 無ければ「不明」
+countrySelect.value = exists
+  ? savedCountry
+  : "不明";
+
+  form.time = r.time;
+  form.course = r.course;
+  form.country = r.country || "日本";
+  form.type = r.type;
+  form.shimei = r.shimei;
+  form.visitType = r.visitType;
+  form.op = r.op || [];
+  form.bikou = r.bikou || [];
+  form.route = r.route || "";
+  form.extra = r.extra || [];
+
+  document.getElementById("listPage").style.display="none";
+  document.getElementById("detailPage").style.display = "block";
+
+  reflectChips();
+}
+  function reflectChips(){
+  document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+
+  document.querySelectorAll(".chip").forEach(c=>{
+    if(c.innerText == form.course) c.classList.add("active");
+    if(c.innerText == form.shimei) c.classList.add("active");
+    if(c.innerText == form.type) c.classList.add("active");
+    if(c.innerText == form.time) c.classList.add("active");
+    if(c.innerText == form.visitType) c.classList.add("active");
+   
+
+    if(form.country == "日本" && c.innerText=="日本") c.classList.add("active");
+    if(form.country == "海外" && c.innerText=="海外") c.classList.add("active");
+if(c.classList.contains("bikou") && form.bikou.includes(c.innerText)){
+  c.classList.add("active");
+}
+if(c.innerText == form.route) c.classList.add("active");
+    if(form.op.includes(c.innerText)) c.classList.add("active");
+         // 追加オプション反映
+if(form.extra && form.extra.includes(c.innerText.replace(/ [+-].*/,""))){
+  c.classList.add("active");
+}
+  });
+ 
+if(form.country==="海外"){
+
+  document.getElementById("countrySelectBox").classList.remove("hidden");
+
+  document.getElementById("routeBoxJP").classList.add("hidden");
+  document.getElementById("routeBoxOverseas").classList.remove("hidden");
+
+}else{
+
+  document.getElementById("countrySelectBox").classList.add("hidden");
+
+  document.getElementById("routeBoxJP").classList.remove("hidden");
+  document.getElementById("routeBoxOverseas").classList.add("hidden");
+}
+}
+
+ 
+/* ===== 描画 ===== */
+function filterData(){
+
+  const month = document.getElementById("monthFilter").value;
+  const date = document.getElementById("dateFilter").value;
+
+  const filtered = allRecords.filter(r => {
+
+    if(!r.date) return true;
+
+    const matchMonth = month ? r.date.slice(5,7) === month : true;
+    const matchDate = date ? r.date.slice(8,10) === date : true;
+
+    return matchMonth && matchDate;
+  });
+
+  records = filtered;
+
+  // ★ここ重要（renderじゃなくこれ）
+  drawList(records);
+}
+async function render(){
+
+  try {
+
+    const snap = await getDocs(
+      collection(window.db, "records")
+    );
+
+    let data = [];
+
+    snap.forEach((doc) => {
+      data.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+
+    allRecords = data;
+
+    // ★ここ変更（フィルターを必ず通す）
+    filterData();
+
+  } catch (error) {
+    console.log(error);
+  }
+}
+function drawList(data){
+
+  const list = document.getElementById("listPage");
+  list.innerHTML = "";
+
+  // 日付順（古い→新しい）で並べる
+const sorted = data
+    .slice()
+    .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0))
+    .map((r, index) => ({
+      ...r,
+      number: index + 1
+    }))
+    .reverse();
+
+  sorted.forEach((r) => {
+
+      const div = document.createElement("div");
+
+      div.innerHTML = `
+<span style="display:flex; align-items:center; gap:8px; width:100%;">
+
+<span style="width:28px; font-size:12px; font-weight:400;">
+  ${r.number}
+</span>
+
+<span>
+  ${r.type || ""}｜${r.cast || ""}｜${r.course || ""}｜${r.shimei || ""}
+</span>
+
+<span style="margin-left:auto; font-weight:600;">
+  ${r.price ? Number(r.price).toLocaleString() + "円" : ""}
+</span>
+
+</span>
+`;
+
+      div.onclick = () => editRecord(r);
+      list.appendChild(div);
+    });
+  <!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Meiryo";
+
+  background:
+    linear-gradient(180deg,#f6fbff 0%, #edf5ff 100%);
+
+  color:#24324a;
+
+  min-height:100vh;
+}
+
+.container{
+  padding:16px;
+}
+
+h1{
+  font-size:20px;
+  margin-bottom:10px;
+}
+
+.button{
+  padding:10px;
+  border-radius:12px;
+  border:none;
+  background:#1a1d26;
+  color:white;
+  margin-bottom:10px;
+}
+
+/* LIST */
+.list > div{
+  padding:13px 14px;
+  border-radius:18px;
+  margin-bottom:10px;
+
+  width:100%;
+  box-sizing:border-box;
+
+  display:flex;
+  align-items:center;
+  gap:14px;
+
+  font-size:12px;
+
+  background:rgba(255,255,255,0.62);
+
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+
+  border:1px solid rgba(255,255,255,0.9);
+
+  box-shadow:
+    0 4px 12px rgba(140,180,255,0.08);
+
+  color:#24324a;
+
+  transition:0.2s;
+}
+
+.list > div:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,0.75);
+}
+
+/* CHIP */
+.label{
+  font-size:11px;
+  color:rgba(160,170,210,0.7);
+  margin:10px 0 6px;
+}
+
+.chip-group{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.chip{
+  padding:9px 14px;
+  border-radius:999px;
+
+  background:rgba(255,255,255,0.6);
+
+  border:1px solid rgba(220,230,245,0.95);
+
+  color:#4a5a74;
+
+  font-size:12px;
+
+  backdrop-filter:blur(10px);
+
+  transition:0.2s;
+}
+
+.chip.active{
+  background:#d9ebff;
+
+  color:#2563eb;
+
+  border:1px solid #b8d8ff;
+
+  box-shadow:
+    0 2px 8px rgba(120,170,255,0.15);
+}
+.bikou{
+  padding:9px 13px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.75);
+  font-size:12px;
+}
+.bikou.active{
+  background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+  color:white;
+}
+/* DETAIL */
+#detailPage{
+  display:none;
+  padding:16px;
+  height:100vh;
+  overflow-y:auto;
+  box-sizing:border-box;
+}
+
+.card{
+  padding:18px;
+  border-radius:24px;
+
+  background:rgba(255,255,255,0.58);
+
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
+
+  border:1px solid rgba(255,255,255,0.9);
+
+  box-shadow:
+    0 8px 24px rgba(120,160,220,0.08);
+}
+
+input,select{
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+
+  border-radius:14px;
+
+  border:1px solid rgba(210,225,245,0.9);
+
+  background:rgba(255,255,255,0.72);
+
+  backdrop-filter:blur(10px);
+
+  color:#24324a;
+
+  box-sizing:border-box;
+
+  font-size:14px;
+}
+
+.smallBtn{
+  width:100%;
+  padding:10px;
+  border-radius:12px;
+  margin-top:10px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  color:white;
+}
+
+/* FAB */
+.fab{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+
+  width:58px;
+  height:58px;
+
+  border-radius:50%;
+
+  background:rgba(255,255,255,0.72);
+
+  backdrop-filter:blur(20px);
+
+  border:1px solid rgba(255,255,255,0.95);
+
+  color:#4a90ff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:30px;
+
+  box-shadow:
+    0 6px 18px rgba(120,170,255,0.12);
+}
+
+/* hidden */
+.hidden{ display:none; }
+  /* ナビボタン全体 */
+.nav-buttons{
+  position:fixed;
+  bottom:20px;   /* ＋ボタンと同じ高さ */
+  right:90px;    /* ←＋ボタンの左にずらす */
+  display:flex;
+  flex-direction:row;
+  gap:10px;
+  z-index:999;
+}
+
+/* ボタン本体 */
+.nav-btn{
+  padding:10px 14px;
+  border-radius:12px;
+  text-decoration:none;
+  color:white;
+  font-size:12px;
+
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+
+  backdrop-filter: blur(20px);
+
+  transition:0.2s;
+}
+
+/* ホバー（浮く感じ） */
+.nav-btn:hover{
+  transform:translateY(-2px);
+  background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+  border:1px solid transparent;
+}
+.header{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+  padding:16px 0;
+}
+
+.menuBtn{
+  position:absolute;
+  right:20px;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.menu{
+  position:fixed;
+  top:70px;
+  right:20px;
+  width:240px;
+  background:rgba(255,255,255,0.06);
+  border-radius:16px;
+  backdrop-filter:blur(30px);
+  overflow:hidden;
+  z-index:999;
+}
+
+.menuItem{
+  padding:14px;
+  cursor:pointer;
+}
+
+.menuSubItem{
+  padding:12px 14px;
+  font-size:13px;
+  opacity:0.85;
+}
+
+.subMenu{
+  padding-left:16px;
+  border-left:1px solid rgba(255,255,255,0.08);
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  transition:0.3s;
+}
+
+.subMenu.open{
+  max-height:500px;
+  opacity:1;
+}
+
+.hidden{
+  display:none;
+}
+
+.dashboardCard{
+  padding:18px;
+  border-radius:22px;
+  margin-bottom:12px;
+
+  background:linear-gradient(135deg, rgba(106,162,255,0.15), rgba(255,122,217,0.15));
+  backdrop-filter: blur(40px);
+
+  border:1px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.4),
+    inset 0 1px 1px rgba(255,255,255,0.08);
+
+  cursor:pointer;
+  transition:0.25s;
+}
+
+.dashboardCard:hover{
+  transform:translateY(-2px) scale(1.01);
+}
+
+.dashTitle{
+  font-size:16px;
+  font-weight:700;
+  margin-bottom:6px;
+
+  background:linear-gradient(90deg,#6aa2ff,#ff7ad9);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.dashSub{
+  font-size:12px;
+  opacity:0.7;
+}
+/* ←ここに追加がベスト */
+.totalCard{
+  background:
+    linear-gradient(
+      135deg,
+      rgba(125,211,252,0.22),
+      rgba(96,165,250,0.18)
+    );
+
+  border:1px solid rgba(180,220,255,0.9);
+
+  box-shadow:
+    0 10px 30px rgba(96,165,250,0.12);
+}
+
+.totalPrice{
+  font-size:28px;
+  font-weight:800;
+  color:#2563eb;
+  margin-top:8px;
+}
+.bottomActions{
+  position:sticky;
+  bottom:0;
+  left:0;
+
+  display:flex;
+  gap:10px;
+
+  padding:14px 0 20px;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(246,251,255,0.96),
+      rgba(246,251,255,0)
+    );
+
+  backdrop-filter:blur(12px);
+}
+
+.saveBtn,
+.backBtn{
+  flex:1;
+
+  padding:16px;
+
+  border:none;
+  border-radius:18px;
+
+  font-size:16px;
+  font-weight:700;
+
+  cursor:pointer;
+}
+
+.saveBtn{
+  background:linear-gradient(135deg,#7dd3fc,#60a5fa);
+  color:white;
+
+  box-shadow:
+    0 8px 24px rgba(96,165,250,0.25);
+}
+
+.backBtn{
+  background:rgba(255,255,255,0.7);
+
+  border:1px solid rgba(180,210,255,0.9);
+
+  color:#3b4a68;
+}
+</style>
+</head>
+
+<body>
+<!-- ヘッダー -->
+<div class="header">
+  <h2>来客名簿</h2>
+  <div class="menuBtn" onclick="toggleMenu()">☰</div>
+</div>
+
+<!-- メニュー -->
+<div id="menu" class="menu hidden">
+
+  <div class="menuTitle">MENU</div>
+
+  <div class="menuItem" onclick="location.href='top.html'">TOP</div>
+
+  <div class="menuItem" onclick="toggleSub('manualSub')">マニュアル ▶</div>
+  <div id="manualSub" class="subMenu">
+    <div class="menuSubItem" onclick="location.href='manual.html'">一覧</div>
+    <div class="menuSubItem" onclick="location.href='manual_sub1.html'">部屋セット</div>
+    <div class="menuSubItem" onclick="location.href='manual_sub2.html'">チャット予約</div>
+    <div class="menuSubItem" onclick="location.href='manual_sub3.html'">メルマガ</div>
+    <div class="menuSubItem" onclick="location.href='manual_sub4.html'">部屋繋ぎ</div>
+  </div>
+
+  <div class="menuItem" onclick="location.href='index.html'">個人KPI</div>
+
+  <div class="menuItem" onclick="toggleSub('salesSub')">売上管理 ▶</div>
+  <div id="salesSub" class="subMenu">
+    <div class="menuSubItem" onclick="location.href='kanri.html'">来客名簿</div>
+    <div class="menuSubItem" onclick="location.href='money.html'">ダッシュボード</div>
+    <div class="menuSubItem" onclick="location.href='kaigai.html'">海外分析</div>
+  </div>
+
+</div>
+<div class="container">
+
+<div style="display:flex; gap:8px; margin-bottom:10px;">
+  <!-- 月フィルター -->
+  <select class="smallBtn" id="monthFilter" onchange="filterData(); saveFilterState()">
+    <option value="">全ての月</option>
+    <option value="01">1月</option>
+    <option value="02">2月</option>
+    <option value="03">3月</option>
+    <option value="04">4月</option>
+    <option value="05">5月</option>
+    <option value="06">6月</option>
+    <option value="07">7月</option>
+    <option value="08">8月</option>
+    <option value="09">9月</option>
+    <option value="10">10月</option>
+    <option value="11">11月</option>
+    <option value="12">12月</option>
+  </select>
+
+  <!-- 日付フィルター -->
+ <select class="smallBtn" id="dateFilter" onchange="filterData(); saveFilterState()">
+  <option value="">全日</option>
+  <option value="01">1日</option>
+  <option value="02">2日</option>
+  <option value="03">3日</option>
+  <option value="04">4日</option>
+  <option value="05">5日</option>
+  <option value="06">6日</option>
+  <option value="07">7日</option>
+  <option value="08">8日</option>
+  <option value="09">9日</option>
+  <option value="10">10日</option>
+  <option value="11">11日</option>
+  <option value="12">12日</option>
+  <option value="13">13日</option>
+  <option value="14">14日</option>
+  <option value="15">15日</option>
+  <option value="16">16日</option>
+  <option value="17">17日</option>
+  <option value="18">18日</option>
+  <option value="19">19日</option>
+  <option value="20">20日</option>
+  <option value="21">21日</option>
+  <option value="22">22日</option>
+  <option value="23">23日</option>
+  <option value="24">24日</option>
+  <option value="25">25日</option>
+  <option value="26">26日</option>
+  <option value="27">27日</option>
+  <option value="28">28日</option>
+  <option value="29">29日</option>
+  <option value="30">30日</option>
+  <option value="31">31日</option>
+</select>
+
+</div>
+
+<!-- 👇ここに置く -->
+<div class="dashboardCard" onclick="location.href='https://luxuryspa-fuga.web.app/money.html'">
+  <div class="dashTitle">分析ダッシュボード</div>
+  <div class="dashSub">売上・海外比率・詳細分析を見る →</div>
+</div>
+<!-- 合計金額カード -->
+<div class="dashboardCard totalCard">
+  <div class="dashTitle">現在の合計売上</div>
+  <div id="totalPrice" class="totalPrice">0円</div>
 </div>
 </div>
 <div id="listPage" class="list"></div>
@@ -1498,6 +3049,93 @@ const sorted = data
       list.appendChild(div);
     });
 }
+function drawList(data){
+
+  const list = document.getElementById("listPage");
+  list.innerHTML = "";
+
+  const sorted = data
+    .slice()
+    .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0))
+    .map((r, index) => ({
+      ...r,
+      number: index + 1
+    }))
+    .reverse();
+
+  sorted.forEach((r) => {
+
+    const div = document.createElement("div");
+
+    div.innerHTML = `
+    ...
+    `;
+
+    div.onclick = () => editRecord(r);
+    list.appendChild(div);
+  });
+
+}
+function toggleMenu(){
+  document.getElementById("menu").classList.toggle("hidden");
+}
+
+function toggleSub(id){
+
+  const target = document.getElementById(id);
+
+  document.querySelectorAll(".subMenu").forEach(el=>{
+    if(el !== target){
+      el.classList.remove("open");
+    }
+  });
+
+  target.classList.toggle("open");
+}
+
+/* ★★★ ここに入れる ★★★ */
+function saveFilterState(){
+  const state = {
+    month: document.getElementById("monthFilter").value,
+    date: document.getElementById("dateFilter").value
+  };
+  localStorage.setItem("filterState", JSON.stringify(state));
+}
+
+function restoreFilterState(){
+  const saved = JSON.parse(localStorage.getItem("filterState"));
+  if(!saved) return;
+
+  document.getElementById("monthFilter").value = saved.month || "";
+  document.getElementById("dateFilter").value = saved.date || "";
+}
+/* ★★★ ここまで ★★★ */
+/* 外クリックで閉じる */
+window.addEventListener("click", function(e){
+  if(!e.target.closest(".menu") && !e.target.closest(".menuBtn")){
+    document.getElementById("menu").classList.add("hidden");
+    document.querySelectorAll(".subMenu").forEach(el=>{
+      el.classList.remove("open");
+    });
+   
+  }
+});
+window.addEventListener("load", async function () {
+
+  restoreFilterState();
+
+  await render();          // 来客データ
+  await loadAttendance();  // 出勤データ
+
+  renderCastChips();       // チップ生成
+});
+</script>
+
+</body>
+</html>
+
+}
+
 function toggleMenu(){
   document.getElementById("menu").classList.toggle("hidden");
 }

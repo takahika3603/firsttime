@@ -22,13 +22,14 @@ body{
     sans-serif;
 
   background:#f3f6fb;
-  overflow:hidden;
+  overflow-y:auto;
 }
 
 .wrapper{
   position:relative;
   width:100vw;
-  height:100vh;
+  min-height:100vh;
+  padding-bottom:40px;
 }
 
 /* ======================
@@ -62,15 +63,13 @@ LAYOUT
 ====================== */
 
 .columns{
-  position:absolute;
-  top:56px;
-  left:0;
+  margin-top:56px;
 
   width:100%;
-  height:calc(100vh - 56px);
 
   display:flex;
   justify-content:space-between;
+  align-items:flex-start;
 
   padding:10px;
 }
@@ -172,7 +171,7 @@ SVG
 ====================== */
 
 svg{
-  position:absolute;
+  position:fixed;
   inset:0;
 
   width:100%;

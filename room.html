@@ -57,7 +57,7 @@ LAYOUT
 
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:5px;
 }
 
 .side-title{
@@ -80,7 +80,7 @@ ROOM CARD
 
   padding:10px;
 
-  min-height:82px;
+  min-height:60px;
 
   box-shadow:
     0 4px 14px rgba(0,0,0,.06);
@@ -304,13 +304,17 @@ room.innerHTML = `
     <input
       class="input name-input"
       placeholder="女の子の名前"
+      data-key="${side}-${roomNo}-name"
     >
 
   </div>
 
-<select class="input time-input">
-  ${createTimeOptions()}
-</select>
+  <select
+    class="input time-input"
+    data-key="${side}-${roomNo}-time"
+  >
+    ${createTimeOptions()}
+  </select>
 `;
 
   return room;
@@ -320,7 +324,50 @@ ROOM_LIST.forEach(no=>{
   morning.appendChild(createRoom("morning",no));
   afternoon.appendChild(createRoom("afternoon",no));
 });
+function saveAll(){
 
+  const data = {};
+
+  document
+    .querySelectorAll("[data-key]")
+    .forEach(el=>{
+
+      data[el.dataset.key] = el.value;
+    });
+
+  localStorage.setItem(
+    "room-data",
+    JSON.stringify(data)
+  );
+}
+function loadAll(){
+
+  const data =
+    JSON.parse(
+      localStorage.getItem("room-data")
+    ) || {};
+
+  document
+    .querySelectorAll("[data-key]")
+    .forEach(el=>{
+
+      const value =
+        data[el.dataset.key];
+
+      if(value !== undefined){
+        el.value = value;
+      }
+    });
+}
+document.addEventListener(
+  "input",
+  saveAll
+);
+
+document.addEventListener(
+  "change",
+  saveAll
+);
 /* ======================
 UTIL
 ====================== */
@@ -632,6 +679,7 @@ window.addEventListener(
     });
   }
 );
+loadAll();
 </script>
 
 </body>

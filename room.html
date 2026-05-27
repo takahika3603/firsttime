@@ -41,7 +41,7 @@ HEADER
 LAYOUT
 ====================== */
 .columns{
-  margin-top:56px;
+  margin-top:10px;
   
   width:100%;
 
@@ -255,6 +255,31 @@ const morning = document.getElementById("morning");
 const afternoon = document.getElementById("afternoon");
 const svg = document.getElementById("svg");
 
+function createTimeOptions(){
+
+  let html = `<option value="">時間</option>`;
+
+  for(let h = 0; h < 24; h++){
+
+    for(let m = 0; m < 60; m += 10){
+
+      const hh =
+        String(h).padStart(2,"0");
+
+      const mm =
+        String(m).padStart(2,"0");
+
+      html += `
+        <option value="${hh}:${mm}">
+          ${hh}:${mm}
+        </option>
+      `;
+    }
+  }
+
+  return html;
+}
+  
 function createRoom(side,roomNo){
 
   const room = document.createElement("div");
@@ -283,10 +308,9 @@ room.innerHTML = `
 
   </div>
 
-  <input
-    class="input time-input"
-    placeholder="時間"
-  >
+  <select class="input time-input">
+    ${createTimeOptions()}
+  </select>
 `;
 
   return room;

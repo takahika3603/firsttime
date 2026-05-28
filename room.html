@@ -450,8 +450,78 @@ function cleanup(){
 
   startConnector = null;
 }
+function saveConnections(){
 
-function createConnection(from,to){
+  const data = connections.map(c=>{
+
+    const fromRoom =
+      c.from.closest(".room");
+
+    const toRoom =
+      c.to.closest(".room");
+
+    return {
+
+      fromSide:
+        fromRoom.dataset.side,
+
+      fromRoom:
+        fromRoom.dataset.room,
+
+      toSide:
+        toRoom.dataset.side,
+
+      toRoom:
+        toRoom.dataset.room
+    };
+  });
+
+  localStorage.setItem(
+    "room-connections",
+    JSON.stringify(data)
+  );
+}
+function loadConnections(){
+
+  const data =
+    JSON.parse(
+      localStorage.getItem(
+        "room-connections"
+      )
+    ) || [];
+
+  data.forEach(item=>{
+
+    const fromRoom =
+      document.querySelector(
+        `.room[data-side="${item.fromSide}"][data-room="${item.fromRoom}"]`
+      );
+
+    const toRoom =
+      document.querySelector(
+        `.room[data-side="${item.toSide}"][data-room="${item.toRoom}"]`
+      );
+
+    if(!fromRoom || !toRoom) return;
+
+    const fromConnector =
+      fromRoom.querySelector(".connector");
+
+    const toConnector =
+      toRoom.querySelector(".connector");
+
+    createConnection(
+      fromConnector,
+      toConnector,
+      false
+    );
+  });
+}
+function createConnection(
+  from,
+  to,
+  shouldSave = true
+){
 
   const p1 = connectorCenter(from);
   const p2 = connectorCenter(to);
@@ -521,10 +591,14 @@ function createConnection(from,to){
 
     const i = connections.indexOf(obj);
 
-    if(i > -1){
-      connections.splice(i,1);
-    }
+if(i > -1){
+  connections.splice(i,1);
+  saveConnections();
+}
   });
+    if(shouldSave){
+    saveConnections();
+  }
 }
 
 /* ======================
@@ -653,6 +727,7 @@ window.addEventListener(
   }
 );
 loadAll();
+loadConnections();
 </script>
 
 </body>

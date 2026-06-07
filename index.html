@@ -220,6 +220,13 @@ body{
 .status-select.prep{
   background:#64748b;
 }
+ .status-select.guide{
+  background:#22c55e;
+}
+
+.status-select.leave{
+  background:#ef4444;
+} 
 .label{
   font-size:11px;
   color:#94a3b8;
@@ -361,12 +368,14 @@ const rooms =
   || defaultRooms;
 
 const statusText = {
-  busy:'接客中',
-  wait:'待機',
-  clean:'清掃中',
-  move:'トイレ',
   empty:'空き',
-  prep:'準備中'
+  wait:'待機',
+  prep:'準備中',
+  guide:'案内待ち',
+  busy:'接客中',
+  move:'トイレ',
+  leave:'お帰り待ち',
+  clean:'清掃中',
 };
 
 const grid = document.getElementById('roomGrid');
@@ -386,12 +395,14 @@ rooms.forEach(room=>{
       <select
   class="status-select ${room.status}"
   data-room="${room.room}">
-        <option value="busy" ${room.status==='busy'?'selected':''}>接客中</option>
-        <option value="wait" ${room.status==='wait'?'selected':''}>待機</option>
-        <option value="move" ${room.status==='move'?'selected':''}>移動中</option>
-        <option value="clean" ${room.status==='clean'?'selected':''}>清掃中</option>
         <option value="empty" ${room.status==='empty'?'selected':''}>空き</option>
+        <option value="wait" ${room.status==='wait'?'selected':''}>待機</option>
         <option value="prep" ${room.status==='prep'?'selected':''}>準備中</option>
+        <option value="guide" ${room.status==='guide'?'selected':''}>案内待ち</option>
+        <option value="busy" ${room.status==='busy'?'selected':''}>接客中</option>
+        <option value="move" ${room.status==='move'?'selected':''}>移動中</option>
+        <option value="leave" ${room.status==='leave'?'selected':''}>お帰り待ち</option>
+        <option value="clean" ${room.status==='clean'?'selected':''}>清掃中</option>
 
       </select>
     </div>
@@ -465,6 +476,8 @@ document.querySelectorAll('.status-select').forEach(select=>{
     select.classList.remove(
   'busy',
   'wait',
+  'guide',
+  'leave',
   'clean',
   'move',
   'empty',

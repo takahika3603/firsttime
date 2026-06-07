@@ -27,71 +27,6 @@ body{
 }
 
 /* =====================
-エレベーター
-===================== */
-.elevator-side{
-  width:90px;
-  background:#111827;
-  border-right:1px solid rgba(255,255,255,0.1);
-  position:relative;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-.elevator-line{
-  width:6px;
-  height:78%;
-  background:rgba(255,255,255,0.15);
-  border-radius:999px;
-  position:relative;
-}
-
-.floor-dot{
-  position:absolute;
-  left:50%;
-  transform:translate(-50%,-50%);
-  width:16px;
-  height:16px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.5);
-  border:1px solid rgba(255,255,255,0.3);
-  transition:0.25s;
-  cursor:pointer;
-}
-
-.floor-dot.active{
-  width:30px;
-  height:30px;
-  background:#34d399;
-  box-shadow:0 0 20px rgba(52,211,153,0.9);
-}
-
-.floor-label{
-  position:absolute;
-  left:-35px;
-  color:#d1d5db;
-  font-size:12px;
-  transform:translateY(-50%);
-}
-
-.current-floor{
-  position:absolute;
-  bottom:20px;
-  text-align:center;
-}
-
-.current-floor small{
-  color:#94a3b8;
-  font-size:11px;
-}
-
-.current-floor h2{
-  color:#6ee7b7;
-  font-size:28px;
-}
-
-/* =====================
 メイン
 ===================== */
 .main{
@@ -299,33 +234,6 @@ body{
 
 <div class="wrapper">
 
-  <!-- エレベーター -->
-  <div class="elevator-side">
-
-    <div class="elevator-line">
-
-      <div class="floor-label" style="top:0%;">5F</div>
-      <div class="floor-dot" style="top:0%;"></div>
-
-      <div class="floor-label" style="top:23%;">4F</div>
-      <div class="floor-dot" style="top:23%;"></div>
-
-      <div class="floor-label" style="top:46%;">3F</div>
-      <div class="floor-dot active" style="top:46%;"></div>
-
-      <div class="floor-label" style="top:69%;">2F</div>
-      <div class="floor-dot" style="top:69%;"></div>
-
-      <div class="floor-label" style="top:92%;">1F</div>
-      <div class="floor-dot" style="top:92%;"></div>
-
-    </div>
-
-    <div class="current-floor">
-      <small>現在位置</small>
-      <h2 id="floorText">3F</h2>
-    </div>
-  </div>
 
 
   <!-- メイン -->
@@ -341,10 +249,7 @@ body{
 </div>
 
 <script>
-// =========================
-// 保存キー
-// =========================
-const STORAGE_KEY_FLOOR = 'elevatorCurrentFloor';
+
 
 // =========================
 // ルームデータ
@@ -426,45 +331,6 @@ rooms.forEach(room=>{
   `;
 });
 
-// =========================
-// エレベーター位置保存機能
-// =========================
-const dots = document.querySelectorAll('.floor-dot');
-const floorText = document.getElementById('floorText');
-
-const floors = ['5F','4F','3F','2F','1F'];
-
-// 階数表示更新関数
-function setFloor(index){
-
-  dots.forEach(d=>d.classList.remove('active'));
-
-  dots[index].classList.add('active');
-
-  floorText.innerText = floors[index];
-
-  // 保存
-  localStorage.setItem(STORAGE_KEY_FLOOR,index);
-}
-
-// 保存済み階数を読み込み
-const savedFloor = localStorage.getItem(STORAGE_KEY_FLOOR);
-
-// 保存があれば反映
-if(savedFloor !== null){
-  setFloor(Number(savedFloor));
-}
-
-// クリック時
-dots.forEach((dot,index)=>{
-
-  dot.addEventListener('click',()=>{
-
-    setFloor(index);
-
-  });
-
-});
 
 // =========================
 // ステータス色変更

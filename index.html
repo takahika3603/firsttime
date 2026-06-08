@@ -167,6 +167,14 @@ body{
 .status-select.leave{
   background:#ef4444;
 } 
+.status-select.setwait{
+  background:#06b6d4;
+}
+
+.status-select.setting{
+  background:#14b8a6;
+}
+  
 .label{
   font-size:11px;
   color:#94a3b8;
@@ -290,7 +298,9 @@ const statusText = {
   move3:'移動中（3F）',
   move5:'移動中（5F）',
   leave:'お帰り待ち',
-  clean:'清掃中',
+  clean:'片付中',
+  setwait:'セット待ち',
+  setting:'セット中',
 };
 
 const grid = document.getElementById('roomGrid');
@@ -318,7 +328,9 @@ rooms.forEach(room=>{
         <option value="move3" ${room.status==='move3'?'selected':''}>移動中（3F）</option>
         <option value="move5" ${room.status==='move5'?'selected':''}>移動中（5F）</option>
         <option value="leave" ${room.status==='leave'?'selected':''}>お帰り待ち</option>
-        <option value="clean" ${room.status==='clean'?'selected':''}>清掃中</option>
+        <option value="clean" ${room.status==='clean'?'selected':''}>片付中</option>
+        <option value="setwait" ${room.status==='setwait'?'selected':''}>セット待ち</option>
+        <option value="setting" ${room.status==='setting'?'selected':''}>セット中</option>
 
       </select>
     </div>
@@ -359,7 +371,9 @@ document.querySelectorAll('.status-select').forEach(select=>{
   'move3',
   'move5',
   'empty',
-  'prep'
+  'prep',
+  'setwait',
+  'setting'   
 );
     select.classList.add(select.value);
 

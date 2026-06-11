@@ -91,6 +91,13 @@ body{
 .room-card.alert .room-number{
   color:#dc2626;
 }
+.room-card.move-alert{
+  border:2px solid #a855f7 !important;
+}
+
+.room-card.move-alert .room-number{
+  color:#a855f7;
+}
 .room-card.half{
   grid-column:span 1;
 }
@@ -396,19 +403,26 @@ const updateColor = ()=>{
 
   select.classList.add(select.value);
 
-  const card = select.closest('.room-card');
+const card = select.closest('.room-card');
 
-  card.classList.remove('alert');
+card.classList.remove('alert','move-alert');
 
-  if(
-    select.value === 'prepcall' ||
-    select.value === 'prep' ||
-    select.value === 'guide' ||
-    select.value === 'leave' ||
-    select.value === 'downwait'
-  ){
-    card.classList.add('alert');
-  }
+if(
+  select.value === 'prepcall' ||
+  select.value === 'prep' ||
+  select.value === 'guide' ||
+  select.value === 'leave' ||
+  select.value === 'downwait'
+){
+  card.classList.add('alert');
+}
+
+if(
+  select.value === 'move3' ||
+  select.value === 'move5'
+){
+  card.classList.add('move-alert');
+}
 
 };
 

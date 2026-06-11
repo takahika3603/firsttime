@@ -176,6 +176,9 @@ body{
 .status-select.downwait{
   background:#f97316;
 }  
+.status-select.prepcall{
+  background:#eab308;
+}
   
 .label{
   font-size:11px;
@@ -294,6 +297,7 @@ const rooms =
 const statusText = {
   empty:'空き',
   wait:'待機',
+  prepcall:'準備コール',
   prep:'準備中',
   guide:'案内待ち',
   busy:'接客中',
@@ -325,6 +329,7 @@ rooms.forEach(room=>{
   data-room="${room.room}">
         <option value="empty" ${room.status==='empty'?'selected':''}>空き</option>
         <option value="wait" ${room.status==='wait'?'selected':''}>待機</option>
+        <option value="prepcall" ${room.status==='prepcall'?'selected':''}>準備コール</option>
         <option value="prep" ${room.status==='prep'?'selected':''}>準備中</option>
         <option value="guide" ${room.status==='guide'?'selected':''}>案内待ち</option>
         <option value="busy" ${room.status==='busy'?'selected':''}>接客中</option>
@@ -369,6 +374,7 @@ document.querySelectorAll('.status-select').forEach(select=>{
     select.classList.remove(
   'busy',
   'wait',
+  'prepcall',
   'guide',
   'leave',
   'clean',

@@ -84,6 +84,13 @@ body{
   padding:5px;
   box-shadow:none;
 }
+.room-card.alert{
+  border:2px solid #dc2626 !important;
+}
+
+.room-card.alert .room-number{
+  color:#dc2626;
+}
 .room-card.half{
   grid-column:span 1;
 }
@@ -369,26 +376,41 @@ rooms.forEach(room=>{
 // =========================
 document.querySelectorAll('.status-select').forEach(select=>{
 
-  const updateColor = ()=>{
+const updateColor = ()=>{
 
-    select.classList.remove(
-  'busy',
-  'wait',
-  'prepcall',
-  'guide',
-  'leave',
-  'clean',
-  'move3',
-  'move5',
-  'empty',
-  'prep',
-  'setwait',
-  'setting',
-  'downwait'
-);
-    select.classList.add(select.value);
+  select.classList.remove(
+    'busy',
+    'wait',
+    'prepcall',
+    'guide',
+    'leave',
+    'clean',
+    'move3',
+    'move5',
+    'empty',
+    'prep',
+    'setwait',
+    'setting',
+    'downwait'
+  );
 
-  };
+  select.classList.add(select.value);
+
+  const card = select.closest('.room-card');
+
+  card.classList.remove('alert');
+
+  if(
+    select.value === 'prepcall' ||
+    select.value === 'prep' ||
+    select.value === 'guide' ||
+    select.value === 'leave' ||
+    select.value === 'downwait'
+  ){
+    card.classList.add('alert');
+  }
+
+};
 
   updateColor();
 

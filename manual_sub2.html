@@ -3,275 +3,340 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat Reservation Checklist</title>
+
+<title>時間計算ツール</title>
 
 <style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+}
+
 body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans","Meiryo",sans-serif;
-  background: radial-gradient(circle at 20% 10%, #1b2a3a, #05070c 60%);
-  color:#eaf2ff;
-  padding:20px;
-  overflow:hidden;
+
+    height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:
+    radial-gradient(circle at top left,#9ed8ff 0%,transparent 35%),
+    radial-gradient(circle at bottom right,#dff8ff 0%,transparent 40%),
+    linear-gradient(135deg,#f9fcff,#edf8ff);
+
+    overflow:hidden;
 }
 
-/* header */
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
+/* 背景の光 */
+
+body::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:600px;
+    height:600px;
+
+    background:#9fdcff;
+
+    filter:blur(160px);
+
+    opacity:.25;
+
+    animation:float 8s ease-in-out infinite;
+
 }
 
-.title{
-  font-size:18px;
-  font-weight:600;
+@keyframes float{
+
+0%{transform:translate(-120px,-80px);}
+50%{transform:translate(120px,80px);}
+100%{transform:translate(-120px,-80px);}
+
+}
+
+.container{
+
+    width:92%;
+    max-width:470px;
+
+    padding:35px;
+
+    border-radius:35px;
+
+    background:rgba(255,255,255,.65);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.8);
+
+    box-shadow:
+    0 25px 60px rgba(0,120,255,.12),
+    inset 0 1px 0 rgba(255,255,255,.8);
+
+    text-align:center;
+
+    position:relative;
+
+    z-index:1;
+
+}
+
+.label{
+
+    color:#7d94a8;
+
+    font-size:17px;
+
+    letter-spacing:2px;
+
+    margin-bottom:12px;
+
+}
+
+#now{
+
+    font-size:42px;
+
+    font-weight:700;
+
+    color:#495a6c;
+
+}
+
+#result{
+
+    margin:35px 0;
+
+    font-size:86px;
+
+    font-weight:800;
+
+    color:#2196F3;
+
+    text-shadow:0 10px 25px rgba(33,150,243,.25);
+
+    transition:.25s;
+
+    min-height:95px;
+
+}
+
+.buttons{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:16px;
+
 }
 
 button{
-  background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.15);
-  color:#eaf2ff;
-  padding:8px 12px;
-  border-radius:12px;
-  cursor:pointer;
+
+    position:relative;
+
+    overflow:hidden;
+
+    border:none;
+
+    border-radius:22px;
+
+    padding:22px;
+
+    font-size:24px;
+
+    font-weight:700;
+
+    color:#2196F3;
+
+    background:white;
+
+    box-shadow:
+
+    0 10px 25px rgba(0,120,255,.10);
+
+    transition:.18s;
+
+    cursor:pointer;
+
 }
 
-/* progress */
-.progress-wrap{
-  height:10px;
-  background:rgba(255,255,255,0.08);
-  border-radius:999px;
-  overflow:hidden;
-  margin:10px 0 18px;
+button:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 18px 35px rgba(0,120,255,.15);
+
 }
 
-.progress{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#6aa9ff,#8be7ff);
-  transition:0.3s ease;
+button:active{
+
+    transform:scale(.95);
+
+    background:#2196F3;
+
+    color:white;
+
 }
 
-/* grid */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2, 1fr);
-  gap:14px;
+/* Ripple */
+
+button span{
+
+    position:absolute;
+
+    border-radius:50%;
+
+    transform:scale(0);
+
+    background:rgba(255,255,255,.55);
+
+    animation:ripple .55s linear;
+
 }
 
-/* card（上品縮小） */
-.card{
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:18px;
-  padding:14px;
-  backdrop-filter: blur(14px);
-  display:flex;
-  align-items:center;
-  gap:10px;
-  transition:0.25s ease;
-  font-size:13px;
+@keyframes ripple{
+
+to{
+
+transform:scale(8);
+
+opacity:0;
+
 }
 
-/* 未チェック発光 */
-.card:not(.done){
-  box-shadow:0 0 16px rgba(120,180,255,0.18);
 }
 
-/* 完了 */
-.card.done{
-  opacity:0.4;
-  transform:scale(0.98);
-  box-shadow:none;
+.footer{
+
+    margin-top:25px;
+
+    color:#7f96aa;
+
+    font-size:14px;
+
 }
 
-.card:active{
-  transform:scale(0.96);
-}
-
-/* checkbox */
-input{
-  width:15px;
-  height:15px;
-  accent-color:#6aa9ff;
-}
-
-/* particle */
-.particle{
-  position:fixed;
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:rgba(140,200,255,0.9);
-  pointer-events:none;
-  box-shadow:0 0 12px rgba(120,180,255,0.8);
-}
-
-/* =========================
-   BACK BUTTON（追加）
-========================= */
-
-.back-btn{
-  position:fixed;
-  bottom:22px;
-  left:50%;
-  transform:translateX(-50%);
-
-  padding:10px 16px;
-  border-radius:999px;
-
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.12);
-
-  backdrop-filter: blur(18px);
-
-  color:rgba(230,240,255,0.8);
-  font-size:12px;
-
-  cursor:pointer;
-
-  box-shadow:0 20px 60px rgba(0,0,0,0.6);
-
-  transition:0.25s ease;
-}
-
-/* ホバー時＝Vision Pro風に浮く */
-.back-btn:hover{
-  transform:translateX(-50%) translateY(-4px) scale(1.02);
-  background:rgba(255,255,255,0.10);
-  border:1px solid rgba(120,180,255,0.35);
-  box-shadow:
-    0 25px 70px rgba(0,0,0,0.75),
-    0 0 20px rgba(120,180,255,0.25);
-  color:#eaf2ff;
-}
-
-/* 押下 */
-.back-btn:active{
-  transform:translateX(-50%) translateY(1px) scale(0.98);
-}
 </style>
+
 </head>
 
 <body>
 
-<div class="header">
-  <div class="title">Chat Reservation Checklist</div>
-  <button onclick="resetAll()">Reset</button>
+<div class="container">
+
+<div class="label">
+現在時刻
 </div>
 
-<div class="progress-wrap">
-  <div class="progress" id="progress"></div>
+<div id="now">
+--:--:--
 </div>
 
-<div class="grid">
+<div id="result">
+--:--
+</div>
 
-  <div class="card"><input type="checkbox">時間設定</div>
-  <div class="card"><input type="checkbox">お昼／夜の区別</div>
+<div class="buttons">
 
-  <div class="card"><input type="checkbox">明日出勤の子か確認</div>
-  <div class="card"><input type="checkbox">URL貼り付け</div>
+<button onclick="calc(event,45)">45分</button>
 
-  <div class="card"><input type="checkbox">年齢チェック</div>
-  <div class="card"><input type="checkbox">キャッチコピー作成</div>
+<button onclick="calc(event,60)">60分</button>
+
+<button onclick="calc(event,75)">75分</button>
+
+<button onclick="calc(event,90)">90分</button>
+
+<button onclick="calc(event,120)">120分</button>
+
+<button onclick="calc(event,180)">180分</button>
 
 </div>
 
-<!-- BACK BUTTON -->
-<div class="back-btn" onclick="goManual()">
-  ← MANUALに戻る
+<div class="footer">
+タップすると現在時刻から自動計算
+</div>
+
 </div>
 
 <script>
-const cards = document.querySelectorAll(".card");
-const progress = document.getElementById("progress");
 
-let fired = false;
+function updateClock(){
 
-function update(){
+    const now=new Date();
 
-  let done = 0;
+    const h=String(now.getHours()).padStart(2,"0");
+    const m=String(now.getMinutes()).padStart(2,"0");
+    const s=String(now.getSeconds()).padStart(2,"0");
 
-  cards.forEach((card,i)=>{
-    const cb = card.querySelector("input");
+    document.getElementById("now").innerHTML=`${h}:${m}:${s}`;
 
-    if(cb.checked){
-      card.classList.add("done");
-      done++;
-    }else{
-      card.classList.remove("done");
-    }
-
-    localStorage.setItem("chat_check_"+i, cb.checked);
-  });
-
-  const percent = done / cards.length;
-  progress.style.width = (percent*100) + "%";
-
-  if(percent === 1 && !fired){
-    fired = true;
-    burst();
-  }
-
-  if(percent < 1){
-    fired = false;
-  }
 }
 
-/* particles */
-function burst(){
-  for(let i=0;i<45;i++){
-    const p = document.createElement("div");
-    p.className = "particle";
-    document.body.appendChild(p);
+updateClock();
 
-    const angle = Math.random()*Math.PI*2;
-    const radius = 70 + Math.random()*150;
+setInterval(updateClock,1000);
 
-    const x = Math.cos(angle)*radius;
-    const y = Math.sin(angle)*radius;
+function calc(e,minutes){
 
-    p.style.left="50%";
-    p.style.top="40%";
+    ripple(e);
 
-    p.animate([
-      {transform:"translate(0,0)",opacity:1},
-      {transform:`translate(${x}px,${y}px)`,opacity:0}
-    ],{
-      duration:1000,
-      easing:"cubic-bezier(0.16,1,0.3,1)"
-    });
+    const now=new Date();
 
-    setTimeout(()=>p.remove(),1000);
-  }
+    now.setMinutes(now.getMinutes()+minutes);
+
+    const h=String(now.getHours()).padStart(2,"0");
+    const m=String(now.getMinutes()).padStart(2,"0");
+
+    const result=document.getElementById("result");
+
+    result.style.transform="scale(.8)";
+    result.style.opacity="0";
+
+    setTimeout(()=>{
+
+        result.innerHTML=`${h}:${m}`;
+
+        result.style.transform="scale(1)";
+
+        result.style.opacity="1";
+
+    },120);
+
 }
 
-/* navigation */
-function goManual(){
-  window.location.href = "manual.html";
+function ripple(e){
+
+    const button=e.currentTarget;
+
+    const circle=document.createElement("span");
+
+    const d=Math.max(button.clientWidth,button.clientHeight);
+
+    circle.style.width=d+"px";
+    circle.style.height=d+"px";
+
+    const rect=button.getBoundingClientRect();
+
+    circle.style.left=(e.clientX-rect.left-d/2)+"px";
+    circle.style.top=(e.clientY-rect.top-d/2)+"px";
+
+    button.appendChild(circle);
+
+    setTimeout(()=>{
+
+        circle.remove();
+
+    },550);
+
 }
 
-/* load */
-cards.forEach((card,i)=>{
-  const cb = card.querySelector("input");
-  const saved = localStorage.getItem("chat_check_"+i);
-  if(saved==="true") cb.checked=true;
-
-  cb.addEventListener("change",update);
-});
-
-/* reset */
-function resetAll(){
-  cards.forEach((card,i)=>{
-    const cb = card.querySelector("input");
-    cb.checked=false;
-    localStorage.removeItem("chat_check_"+i);
-  });
-  update();
-}
-
-update();
 </script>
 
 </body>

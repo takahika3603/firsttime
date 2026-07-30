@@ -164,7 +164,19 @@ const taskList=[
 "時間軸更新"
 
 ];
+// 予約対応専用
 
+const reserveTasks=[
+
+"エニークラウド入力",
+"ポイント利用確認",
+"オプション確認",
+"金額相違確認",
+"ポイント処理（ある場合）",
+"チャット送信or電話",
+"即ヒメ更新"
+
+];
 
 let names=
 JSON.parse(localStorage.getItem("names"))
@@ -176,14 +188,15 @@ JSON.parse(localStorage.getItem("names"))
 "スタッフ4",
 "スタッフ5",
 "スタッフ6",
-"スタッフ7"
+"スタッフ7",
+"予約対応"
 ];
 
 
 let data=
 JSON.parse(localStorage.getItem("data"))
 ||
-Array.from({length:7},()=>Array(21).fill(false));
+Array.from({length:8},()=>Array(21).fill(false));
 
 
 let current=0;
@@ -211,7 +224,9 @@ names.forEach((n,i)=>{
 
 let count=data[i].filter(x=>x).length;
 
-let per=Math.floor(count/21*100);
+let total=i===7 ? 7 : 21;
+
+let per=Math.floor(count/total*100);
 
 
 let div=document.createElement("div");
@@ -260,7 +275,10 @@ let box=document.getElementById("tasks");
 box.innerHTML="";
 
 
-taskList.forEach((t,i)=>{
+let nowTasks = current===7 ? reserveTasks : taskList;
+
+
+nowTasks.forEach((t,i)=>{
 
 
 let div=document.createElement("div");

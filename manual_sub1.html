@@ -199,6 +199,11 @@ JSON.parse(localStorage.getItem("data"))
 Array.from({length:8},()=>Array(21).fill(false));
 
 
+if(data.length<8){
+data.push(Array(21).fill(false));
+}
+
+
 let current=0;
 
 

@@ -1,343 +1,1959 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>時間計算ツール</title>
+<title>佐賀市 エリアマーカー暗記帳</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
 
 <style>
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+* {
+    box-sizing: border-box;
 }
 
-body{
+body {
+    margin: 0;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        Meiryo,
+        sans-serif;
 
-    height:100vh;
+    background: #f3f8fb;
+    color: #17202a;
+}
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
+
+/* =========================
+HEADER
+========================= */
+
+header {
 
     background:
-    radial-gradient(circle at top left,#9ed8ff 0%,transparent 35%),
-    radial-gradient(circle at bottom right,#dff8ff 0%,transparent 40%),
-    linear-gradient(135deg,#f9fcff,#edf8ff);
+        linear-gradient(
+            135deg,
+            #073b5c,
+            #087fae
+        );
 
-    overflow:hidden;
-}
+    color: white;
 
-/* 背景の光 */
-
-body::before{
-
-    content:"";
-
-    position:absolute;
-
-    width:600px;
-    height:600px;
-
-    background:#9fdcff;
-
-    filter:blur(160px);
-
-    opacity:.25;
-
-    animation:float 8s ease-in-out infinite;
-
-}
-
-@keyframes float{
-
-0%{transform:translate(-120px,-80px);}
-50%{transform:translate(120px,80px);}
-100%{transform:translate(-120px,-80px);}
-
-}
-
-.container{
-
-    width:92%;
-    max-width:470px;
-
-    padding:35px;
-
-    border-radius:35px;
-
-    background:rgba(255,255,255,.65);
-
-    backdrop-filter:blur(18px);
-
-    border:1px solid rgba(255,255,255,.8);
+    padding: 18px 20px;
 
     box-shadow:
-    0 25px 60px rgba(0,120,255,.12),
-    inset 0 1px 0 rgba(255,255,255,.8);
-
-    text-align:center;
-
-    position:relative;
-
-    z-index:1;
-
+        0 3px 12px rgba(0,0,0,.16);
 }
 
-.label{
+.header-inner {
 
-    color:#7d94a8;
+    max-width: 1500px;
 
-    font-size:17px;
-
-    letter-spacing:2px;
-
-    margin-bottom:12px;
-
+    margin: auto;
 }
 
-#now{
+header h1 {
 
-    font-size:42px;
+    margin: 0;
 
-    font-weight:700;
+    font-size: 24px;
 
-    color:#495a6c;
-
+    font-weight: 900;
 }
 
-#result{
+header p {
 
-    margin:35px 0;
+    margin: 6px 0 0;
 
-    font-size:86px;
+    font-size: 13px;
 
-    font-weight:800;
-
-    color:#2196F3;
-
-    text-shadow:0 10px 25px rgba(33,150,243,.25);
-
-    transition:.25s;
-
-    min-height:95px;
-
+    opacity: .9;
 }
 
-.buttons{
 
-    display:grid;
+/* =========================
+MAIN
+========================= */
 
-    grid-template-columns:repeat(2,1fr);
+.app {
 
-    gap:16px;
+    max-width: 1500px;
 
+    margin: auto;
+
+    padding: 14px;
 }
 
-button{
+.layout {
 
-    position:relative;
+    display: grid;
 
-    overflow:hidden;
+    grid-template-columns:
+        minmax(0, 1.7fr)
+        minmax(320px, .8fr);
 
-    border:none;
+    gap: 14px;
+}
 
-    border-radius:22px;
 
-    padding:22px;
+/* =========================
+MAP CARD
+========================= */
 
-    font-size:24px;
+.map-card {
 
-    font-weight:700;
+    background: white;
 
-    color:#2196F3;
+    border-radius: 15px;
 
-    background:white;
+    overflow: hidden;
 
     box-shadow:
-
-    0 10px 25px rgba(0,120,255,.10);
-
-    transition:.18s;
-
-    cursor:pointer;
-
+        0 3px 15px rgba(0,0,0,.08);
 }
 
-button:hover{
+.map-header {
 
-    transform:translateY(-3px);
+    padding: 13px 15px;
 
-    box-shadow:0 18px 35px rgba(0,120,255,.15);
+    border-bottom:
+        1px solid #e1ebf0;
 
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
 }
 
-button:active{
+.map-title {
 
-    transform:scale(.95);
+    font-size: 17px;
 
-    background:#2196F3;
-
-    color:white;
-
+    font-weight: 900;
 }
 
-/* Ripple */
+.map-help {
 
-button span{
+    color: #617782;
 
-    position:absolute;
-
-    border-radius:50%;
-
-    transform:scale(0);
-
-    background:rgba(255,255,255,.55);
-
-    animation:ripple .55s linear;
-
+    font-size: 12px;
 }
 
-@keyframes ripple{
+#map {
 
-to{
+    width: 100%;
 
-transform:scale(8);
-
-opacity:0;
-
+    height: 700px;
 }
 
+
+/* =========================
+RIGHT PANEL
+========================= */
+
+.panel {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
 }
 
-.footer{
+.card {
 
-    margin-top:25px;
+    background: white;
 
-    color:#7f96aa;
+    border-radius: 14px;
 
-    font-size:14px;
+    padding: 15px;
 
+    box-shadow:
+        0 3px 15px rgba(0,0,0,.07);
+}
+
+
+/* =========================
+TOOL BUTTONS
+========================= */
+
+.tool-title {
+
+    font-size: 15px;
+
+    font-weight: 900;
+
+    margin-bottom: 10px;
+}
+
+.tool-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 8px;
+}
+
+.tool-btn {
+
+    border: 0;
+
+    padding: 12px 8px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    background: #e9f6fb;
+
+    color: #075d7c;
+
+    font-weight: 900;
+
+    font-size: 13px;
+}
+
+.tool-btn:hover {
+
+    background: #d7f2fa;
+}
+
+.tool-btn.active {
+
+    background: #10acd6;
+
+    color: white;
+}
+
+.tool-btn.danger {
+
+    background: #fff0f0;
+
+    color: #b52c2c;
+}
+
+
+/* =========================
+INFO
+========================= */
+
+.info-box {
+
+    background: #effaff;
+
+    border-left:
+        5px solid #14b8e4;
+
+    border-radius: 8px;
+
+    padding: 11px;
+
+    font-size: 12px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================
+FORM
+========================= */
+
+.form-group {
+
+    margin-bottom: 10px;
+}
+
+.form-group label {
+
+    display: block;
+
+    font-size: 12px;
+
+    color: #687985;
+
+    font-weight: 800;
+
+    margin-bottom: 5px;
+}
+
+input,
+textarea,
+select {
+
+    width: 100%;
+
+    border:
+        1px solid #d5e2e8;
+
+    border-radius: 8px;
+
+    padding: 10px;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+
+    border-color: #13afd9;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(19,175,217,.12);
+}
+
+textarea {
+
+    resize: vertical;
+
+    min-height: 75px;
+}
+
+
+/* =========================
+SAVE BUTTON
+========================= */
+
+.primary {
+
+    width: 100%;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    padding: 12px;
+
+    background: #087da8;
+
+    color: white;
+
+    font-weight: 900;
+
+    cursor: pointer;
+}
+
+.primary:hover {
+
+    background: #066b90;
+}
+
+
+/* =========================
+MARKER LIST
+========================= */
+
+.list-title {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 10px;
+
+    font-weight: 900;
+}
+
+.marker-count {
+
+    font-size: 11px;
+
+    background: #eaf7fb;
+
+    color: #087ca5;
+
+    padding: 4px 8px;
+
+    border-radius: 20px;
+}
+
+.marker-list {
+
+    max-height: 350px;
+
+    overflow-y: auto;
+}
+
+.marker-item {
+
+    border:
+        1px solid #dce7ed;
+
+    border-radius: 10px;
+
+    padding: 10px;
+
+    margin-bottom: 7px;
+
+    cursor: pointer;
+
+    transition: .15s;
+}
+
+.marker-item:hover {
+
+    background: #effaff;
+
+    border-color: #16afd8;
+}
+
+.marker-name {
+
+    font-size: 14px;
+
+    font-weight: 900;
+
+    color: #075d7b;
+}
+
+.marker-type {
+
+    font-size: 10px;
+
+    color: #82929b;
+
+    margin-top: 3px;
+}
+
+.marker-note {
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    margin-top: 5px;
+
+    color: #52636d;
+}
+
+.marker-actions {
+
+    display: flex;
+
+    gap: 6px;
+
+    margin-top: 8px;
+}
+
+.small-btn {
+
+    border: 0;
+
+    padding: 6px 9px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 11px;
+
+    font-weight: 800;
+}
+
+.small-btn.focus {
+
+    background: #e6f7fc;
+
+    color: #087da5;
+}
+
+.small-btn.delete {
+
+    background: #fff0f0;
+
+    color: #b52c2c;
+}
+
+
+/* =========================
+EMPTY
+========================= */
+
+.empty {
+
+    text-align: center;
+
+    color: #8a9aa3;
+
+    font-size: 12px;
+
+    padding: 25px 10px;
+}
+
+
+/* =========================
+STATUS
+========================= */
+
+.status {
+
+    padding: 10px;
+
+    border-radius: 8px;
+
+    background: #f5f9fb;
+
+    font-size: 12px;
+
+    color: #60717b;
+
+    line-height: 1.6;
+}
+
+
+/* =========================
+FOOTER
+========================= */
+
+.footer {
+
+    margin-top: 13px;
+
+    color: #73848d;
+
+    font-size: 11px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================
+LEAFLET POPUP
+========================= */
+
+.popup-title {
+
+    font-size: 17px;
+
+    font-weight: 900;
+
+    color: #075d7b;
+
+    margin-bottom: 5px;
+}
+
+.popup-note {
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+    color: #52636d;
+}
+
+
+/* =========================
+MOBILE
+========================= */
+
+@media(max-width:900px) {
+
+    .layout {
+
+        grid-template-columns: 1fr;
+    }
+
+    #map {
+
+        height: 500px;
+    }
+}
+
+@media(max-width:500px) {
+
+    header h1 {
+
+        font-size: 19px;
+    }
+
+    .app {
+
+        padding: 8px;
+    }
+
+    #map {
+
+        height: 450px;
+    }
+
+    .tool-grid {
+
+        grid-template-columns:
+            1fr 1fr;
+    }
 }
 
 </style>
 
-</head>
 
-<body>
 
-<div class="container">
 
-<div class="label">
-現在時刻
-</div>
 
-<div id="now">
---:--:--
-</div>
 
-<div id="result">
---:--
-</div>
 
-<div class="buttons">
+<header>
 
-<button onclick="calc(event,45)">45分</button>
+<div class="header-inner">
 
-<button onclick="calc(event,60)">60分</button>
+<h1>
+🏠 佐賀市 エリアマーカー暗記帳
+</h1>
 
-<button onclick="calc(event,75)">75分</button>
-
-<button onclick="calc(event,90)">90分</button>
-
-<button onclick="calc(event,120)">120分</button>
-
-<button onclick="calc(event,180)">180分</button>
+<p>
+地図に自分で線・囲み・ピンを引いて、不動産営業に必要な土地勘を覚える
+</p>
 
 </div>
+
+</header>
+
+
+<div class="app">
+
+
+<div class="layout">
+
+
+<!-- =====================================================
+MAP
+===================================================== -->
+
+<section class="map-card">
+
+
+<div class="map-header">
+
+<div class="map-title">
+🗺️ 佐賀市マップ
+</div>
+
+<div class="map-help">
+右上のボタンから線・エリア・ピンを追加できます
+</div>
+
+</div>
+
+
+<div id="map"></div>
+
+
+</section>
+
+
+<!-- =====================================================
+RIGHT PANEL
+===================================================== -->
+
+<aside class="panel">
+
+
+<!-- TOOL -->
+
+<div class="card">
+
+<div class="tool-title">
+✏️ マーカーを描く
+</div>
+
+
+<div class="tool-grid">
+
+<button class="tool-btn" onclick="startPolygon()">
+🔵 エリアを囲む
+</button>
+
+
+<button class="tool-btn" onclick="startPolyline()">
+〰️ 線を引く
+</button>
+
+
+<button class="tool-btn" onclick="startMarker()">
+📍 ピンを置く
+</button>
+
+
+<button class="tool-btn danger" onclick="clearAll()">
+🗑️ 全消去
+</button>
+
+</div>
+
+</div>
+
+
+<!-- INFO -->
+
+<div class="card">
+
+<div class="info-box">
+
+<strong>使い方</strong><br>
+
+①「エリアを囲む」を押す<br>
+
+② 地図上で兵庫北などを囲む<br>
+
+③ 最後に確定する<br>
+
+④ 名前とメモを入力<br>
+
+⑤ 保存すると次回も残ります
+
+</div>
+
+</div>
+
+
+<!-- FORM -->
+
+<div id="editCard" class="card" style="display:none;">
+
+<div class="tool-title">
+📝 マーカー情報
+</div>
+
+
+<div class="form-group">
+
+<label>
+エリア名・名称
+</label>
+
+<input id="markerName" type="text" placeholder="例：兵庫北">
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+メモ
+</label>
+
+<textarea id="markerNote" placeholder="例：佐賀駅の北東。ゆめタウン周辺。"></textarea>
+
+</div>
+
+
+<div class="form-group">
+
+<label>
+色
+</label>
+
+<select id="markerColor">
+
+<option value="#19b7e6">
+水色
+</option>
+
+<option value="#27ae60">
+緑
+</option>
+
+<option value="#f39c12">
+オレンジ
+</option>
+
+<option value="#e74c3c">
+赤
+</option>
+
+<option value="#8e44ad">
+紫
+</option>
+
+</select>
+
+</div>
+
+
+<button class="primary" onclick="saveMarker()">
+💾 このマーカーを保存
+</button>
+
+</div>
+
+
+<!-- STATUS -->
+
+<div class="card">
+
+<div class="tool-title">
+📊 現在の状態
+</div>
+
+<div id="status" class="status">
+マーカーを追加してください。
+</div>
+
+</div>
+
+
+<!-- LIST -->
+
+<div class="card">
+
+<div class="list-title">
+
+<span>
+📍 保存したエリア
+</span>
+
+<span id="markerCount" class="marker-count">
+0件
+</span>
+
+</div>
+
+
+<div id="markerList" class="marker-list">
+
+<div class="empty">
+まだマーカーがありません
+</div>
+
+</div>
+
+</div>
+
+
+</aside>
+
+</div>
+
 
 <div class="footer">
-タップすると現在時刻から自動計算
-</div>
+
+<strong>おすすめの使い方：</strong>
+
+まず佐賀駅を中心に、
+「北＝兵庫北・若楠・高木瀬」
+「東＝大財・巨勢・兵庫南」
+「西＝神野西・開成・鍋島」
+「南＝本庄・赤松・新栄」
+というように、自分で水色の囲みを作ってください。
+
+その後、主要道路・駅・商業施設などを線やピンで追加すると、
+不動産営業で使える「頭の中の佐賀市地図」を作れます。
+
+<br><br>
+
+※このシステムで描くマーカーは暗記・学習用です。
+行政上の町界を正確に示すものではありません。
 
 </div>
+
+
+</div>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js">
+</script>
+
 
 <script>
 
-function updateClock(){
+/* =========================================================
+MAP
+========================================================= */
 
-    const now=new Date();
+const map = L.map("map").setView(
+    [33.265, 130.295],
+    13
+);
 
-    const h=String(now.getHours()).padStart(2,"0");
-    const m=String(now.getMinutes()).padStart(2,"0");
-    const s=String(now.getSeconds()).padStart(2,"0");
 
-    document.getElementById("now").innerHTML=`${h}:${m}:${s}`;
+L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+        maxZoom: 19,
+
+        attribution:
+            '&copy; OpenStreetMap contributors'
+    }
+).addTo(map);
+
+
+/* =========================================================
+DRAW LAYER
+========================================================= */
+
+const drawnItems =
+    new L.FeatureGroup();
+
+map.addLayer(
+    drawnItems
+);
+
+
+/* =========================================================
+DRAW CONTROL
+========================================================= */
+
+const drawControl =
+    new L.Control.Draw({
+
+        edit: {
+
+            featureGroup:
+                drawnItems,
+
+            remove: true
+        },
+
+        draw: {
+
+            polygon: {
+
+                allowIntersection: false,
+
+                showArea: true,
+
+                shapeOptions: {
+
+                    color: "#19b7e6",
+
+                    fillColor:
+                        "#6dd8f3",
+
+                    fillOpacity:
+                        0.25,
+
+                    weight: 4
+                }
+            },
+
+            polyline: {
+
+                shapeOptions: {
+
+                    color:
+                        "#19b7e6",
+
+                    weight: 5
+                }
+            },
+
+            marker: true,
+
+            circle: false,
+
+            rectangle: false,
+
+            circlemarker: false
+        }
+
+    });
+
+
+map.addControl(
+    drawControl
+);
+
+
+/* =========================================================
+CURRENT DRAW
+========================================================= */
+
+let pendingLayer = null;
+
+let pendingType = null;
+
+
+/* =========================================================
+DRAW CREATED
+========================================================= */
+
+map.on(
+    L.Draw.Event.CREATED,
+    function(event) {
+
+        pendingLayer =
+            event.layer;
+
+        pendingType =
+            event.layerType;
+
+
+        drawnItems.addLayer(
+            pendingLayer
+        );
+
+
+        /* =====================
+        POLYGON
+        ===================== */
+
+        if (
+            pendingType === "polygon"
+        ) {
+
+            pendingLayer.setStyle({
+
+                color:
+                    "#19b7e6",
+
+                fillColor:
+                    "#6dd8f3",
+
+                fillOpacity:
+                    0.25,
+
+                weight: 4
+            });
+
+        }
+
+
+        /* =====================
+        LINE
+        ===================== */
+
+        if (
+            pendingType === "polyline"
+        ) {
+
+            pendingLayer.setStyle({
+
+                color:
+                    "#19b7e6",
+
+                weight: 5
+            });
+
+        }
+
+
+        /* =====================
+        MARKER
+        ===================== */
+
+        if (
+            pendingType === "marker"
+        ) {
+
+            pendingLayer.bindTooltip(
+                "新しいピン",
+                {
+                    permanent: false
+                }
+            );
+
+        }
+
+
+        document.getElementById(
+            "editCard"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "markerName"
+        ).value = "";
+
+
+        document.getElementById(
+            "markerNote"
+        ).value = "";
+
+
+        document.getElementById(
+            "markerName"
+        ).focus();
+
+
+        updateStatus(
+            "マーカーが作成されました。名前とメモを入力して保存してください。"
+        );
+
+    }
+);
+
+
+/* =========================================================
+SAVE MARKER
+========================================================= */
+
+function saveMarker() {
+
+    if (!pendingLayer) {
+
+        alert(
+            "先に地図へマーカーを追加してください。"
+        );
+
+        return;
+    }
+
+
+    const name =
+        document.getElementById(
+            "markerName"
+        ).value.trim();
+
+
+    const note =
+        document.getElementById(
+            "markerNote"
+        ).value.trim();
+
+
+    const color =
+        document.getElementById(
+            "markerColor"
+        ).value;
+
+
+    if (!name) {
+
+        alert(
+            "エリア名を入力してください。"
+        );
+
+        return;
+    }
+
+
+    /* =====================
+    COLOR
+    ===================== */
+
+    if (
+        pendingLayer.setStyle
+    ) {
+
+        pendingLayer.setStyle({
+
+            color: color,
+
+            fillColor: color,
+
+            fillOpacity: .25,
+
+            weight: 4
+        });
+
+    }
+
+
+    /* =====================
+    DATA
+    ===================== */
+
+    const data = {
+
+        id:
+            Date.now(),
+
+        name:
+            name,
+
+        note:
+            note,
+
+        type:
+            pendingType,
+
+        color:
+            color,
+
+        geojson:
+            pendingLayer.toGeoJSON()
+    };
+
+
+    pendingLayer.markerData =
+        data;
+
+
+    bindPopup(
+        pendingLayer,
+        data
+    );
+
+
+    saveToStorage();
+
+
+    document.getElementById(
+        "editCard"
+    ).style.display =
+        "none";
+
+
+    pendingLayer = null;
+
+    pendingType = null;
+
+
+    renderList();
+
+
+    updateStatus(
+        `「${name}」を保存しました。`
+    );
 
 }
 
-updateClock();
 
-setInterval(updateClock,1000);
+/* =========================================================
+POPUP
+========================================================= */
 
-function calc(e,minutes){
+function bindPopup(
+    layer,
+    data
+) {
 
-    ripple(e);
+    const typeText = {
 
-    const now=new Date();
+        polygon:
+            "エリア",
 
-    now.setMinutes(now.getMinutes()+minutes);
+        polyline:
+            "線",
 
-    const h=String(now.getHours()).padStart(2,"0");
-    const m=String(now.getMinutes()).padStart(2,"0");
+        marker:
+            "ピン"
 
-    const result=document.getElementById("result");
+    }[data.type] || "マーカー";
 
-    result.style.transform="scale(.8)";
-    result.style.opacity="0";
 
-    setTimeout(()=>{
+    layer.bindPopup(`
 
-        result.innerHTML=`${h}:${m}`;
+        <div class="popup-title">
+            ${escapeHTML(data.name)}
+        </div>
 
-        result.style.transform="scale(1)";
+        <div style="
+            font-size:11px;
+            color:#80909a;
+            margin-bottom:6px;
+        ">
+            ${typeText}
+        </div>
 
-        result.style.opacity="1";
+        <div class="popup-note">
+            ${
+                escapeHTML(
+                    data.note ||
+                    "メモなし"
+                )
+            }
+        </div>
 
-    },120);
+    `);
+
+}
+
+
+/* =========================================================
+HTML ESCAPE
+========================================================= */
+
+function escapeHTML(text) {
+
+    return text
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
 
 }
 
-function ripple(e){
 
-    const button=e.currentTarget;
+/* =========================================================
+LOCAL STORAGE
+========================================================= */
 
-    const circle=document.createElement("span");
+const STORAGE_KEY =
+    "saga_area_markers_v1";
 
-    const d=Math.max(button.clientWidth,button.clientHeight);
 
-    circle.style.width=d+"px";
-    circle.style.height=d+"px";
+function saveToStorage() {
 
-    const rect=button.getBoundingClientRect();
+    const data = [];
 
-    circle.style.left=(e.clientX-rect.left-d/2)+"px";
-    circle.style.top=(e.clientY-rect.top-d/2)+"px";
 
-    button.appendChild(circle);
+    drawnItems.eachLayer(
+        layer => {
 
-    setTimeout(()=>{
+            if (
+                layer.markerData
+            ) {
 
-        circle.remove();
+                data.push(
+                    layer.markerData
+                );
 
-    },550);
+            }
+
+        }
+    );
+
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(data)
+    );
 
 }
+
+
+/* =========================================================
+LOAD STORAGE
+========================================================= */
+
+function loadFromStorage() {
+
+    const raw =
+        localStorage.getItem(
+            STORAGE_KEY
+        );
+
+
+    if (!raw) return;
+
+
+    try {
+
+        const data =
+            JSON.parse(raw);
+
+
+        data.forEach(
+            item => {
+
+                const geoLayer =
+                    L.geoJSON(
+                        item.geojson
+                    );
+
+
+                let layer =
+                    null;
+
+
+                geoLayer.eachLayer(
+                    l => {
+
+                        layer = l;
+
+                    }
+                );
+
+
+                if (!layer) return;
+
+
+                if (
+                    item.type ===
+                    "polygon"
+                ) {
+
+                    layer.setStyle({
+
+                        color:
+                            item.color,
+
+                        fillColor:
+                            item.color,
+
+                        fillOpacity:
+                            .25,
+
+                        weight: 4
+                    });
+
+                }
+
+
+                if (
+                    item.type ===
+                    "polyline"
+                ) {
+
+                    layer.setStyle({
+
+                        color:
+                            item.color,
+
+                        weight: 5
+                    });
+
+                }
+
+
+                layer.markerData =
+                    item;
+
+
+                bindPopup(
+                    layer,
+                    item
+                );
+
+
+                drawnItems.addLayer(
+                    layer
+                );
+
+            }
+        );
+
+
+        renderList();
+
+
+    } catch(error) {
+
+        console.error(
+            "保存データの読み込み失敗",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+LIST
+========================================================= */
+
+function renderList() {
+
+    const list =
+        document.getElementById(
+            "markerList"
+        );
+
+
+    const items = [];
+
+
+    drawnItems.eachLayer(
+        layer => {
+
+            if (
+                layer.markerData
+            ) {
+
+                items.push(
+                    layer
+                );
+
+            }
+
+        }
+    );
+
+
+    document.getElementById(
+        "markerCount"
+    ).textContent =
+        `${items.length}件`;
+
+
+    if (
+        items.length === 0
+    ) {
+
+        list.innerHTML = `
+
+            <div class="empty">
+                まだマーカーがありません
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    list.innerHTML = "";
+
+
+    items
+        .sort(
+            (a,b) =>
+                b.markerData.id -
+                a.markerData.id
+        )
+        .forEach(
+            layer => {
+
+                const data =
+                    layer.markerData;
+
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.className =
+                    "marker-item";
+
+
+                const typeText = {
+
+                    polygon:
+                        "🔵 エリア",
+
+                    polyline:
+                        "〰️ 線",
+
+                    marker:
+                        "📍 ピン"
+
+                }[data.type];
+
+
+                item.innerHTML = `
+
+                    <div class="marker-name">
+                        ${escapeHTML(data.name)}
+                    </div>
+
+                    <div class="marker-type">
+                        ${typeText}
+                    </div>
+
+                    ${
+                        data.note
+                        ?
+                        `
+                        <div class="marker-note">
+                            ${escapeHTML(data.note)}
+                        </div>
+                        `
+                        :
+                        ""
+                    }
+
+                    <div class="marker-actions">
+
+                        <button
+                            class="small-btn focus"
+                        >
+                            🗺️ 地図で見る
+                        </button>
+
+                        <button
+                            class="small-btn delete"
+                        >
+                            🗑️ 削除
+                        </button>
+
+                    </div>
+
+                `;
+
+
+                item.querySelector(
+                    ".focus"
+                ).onclick =
+                    function(event) {
+
+                        event.stopPropagation();
+
+                        focusLayer(
+                            layer
+                        );
+
+                    };
+
+
+                item.querySelector(
+                    ".delete"
+                ).onclick =
+                    function(event) {
+
+                        event.stopPropagation();
+
+                        deleteLayer(
+                            layer
+                        );
+
+                    };
+
+
+                item.onclick =
+                    function() {
+
+                        focusLayer(
+                            layer
+                        );
+
+                    };
+
+
+                list.appendChild(
+                    item
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+FOCUS
+========================================================= */
+
+function focusLayer(layer) {
+
+    if (
+        layer.getBounds
+    ) {
+
+        const bounds =
+            layer.getBounds();
+
+
+        if (
+            bounds.isValid()
+        ) {
+
+            map.fitBounds(
+                bounds,
+                {
+                    padding:
+                        [50,50],
+
+                    maxZoom:
+                        16
+                }
+            );
+
+        }
+
+    } else if (
+        layer.getLatLng
+    ) {
+
+        map.flyTo(
+            layer.getLatLng(),
+            16,
+            {
+                duration:
+                    .7
+            }
+        );
+
+    }
+
+
+    setTimeout(
+        function() {
+
+            layer.openPopup();
+
+        },
+        500
+    );
+
+}
+
+
+/* =========================================================
+DELETE
+========================================================= */
+
+function deleteLayer(
+    layer
+) {
+
+    const name =
+        layer.markerData?.name ||
+        "このマーカー";
+
+
+    if (
+        !confirm(
+            `「${name}」を削除しますか？`
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    drawnItems.removeLayer(
+        layer
+    );
+
+
+    saveToStorage();
+
+    renderList();
+
+    updateStatus(
+        `「${name}」を削除しました。`
+    );
+
+}
+
+
+/* =========================================================
+CLEAR ALL
+========================================================= */
+
+function clearAll() {
+
+    const count =
+        drawnItems.getLayers().length;
+
+
+    if (
+        count === 0
+    ) {
+
+        alert(
+            "削除するマーカーがありません。"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !confirm(
+            `保存されている${count}件のマーカーをすべて削除しますか？`
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    drawnItems.clearLayers();
+
+
+    localStorage.removeItem(
+        STORAGE_KEY
+    );
+
+
+    renderList();
+
+
+    updateStatus(
+        "すべてのマーカーを削除しました。"
+    );
+
+}
+
+
+/* =========================================================
+STATUS
+========================================================= */
+
+function updateStatus(
+    message
+) {
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        message;
+
+}
+
+
+/* =========================================================
+CUSTOM DRAW BUTTONS
+========================================================= */
+
+function startPolygon() {
+
+    new L.Draw.Polygon(
+        map,
+        {
+
+            allowIntersection:
+                false,
+
+            showArea:
+                true,
+
+            shapeOptions: {
+
+                color:
+                    "#19b7e6",
+
+                fillColor:
+                    "#6dd8f3",
+
+                fillOpacity:
+                    .25,
+
+                weight:
+                    4
+            }
+
+        }
+    ).enable();
+
+
+    updateStatus(
+        "地図上をクリックしてエリアを囲んでください。最後に始点をクリックすると確定します。"
+    );
+
+}
+
+
+function startPolyline() {
+
+    new L.Draw.Polyline(
+        map,
+        {
+
+            shapeOptions: {
+
+                color:
+                    "#19b7e6",
+
+                weight:
+                    5
+            }
+
+        }
+    ).enable();
+
+
+    updateStatus(
+        "地図上をクリックして線を引いてください。最後にダブルクリックで確定します。"
+    );
+
+}
+
+
+function startMarker() {
+
+    new L.Draw.Marker(
+        map
+    ).enable();
+
+
+    updateStatus(
+        "地図上の好きな場所をタップしてください。"
+    );
+
+}
+
+
+/* =========================================================
+DRAW EDIT
+========================================================= */
+
+map.on(
+    L.Draw.Event.EDITED,
+    function() {
+
+        saveToStorage();
+
+        renderList();
+
+        updateStatus(
+            "マーカーの位置を更新しました。"
+        );
+
+    }
+);
+
+
+/* =========================================================
+DRAW DELETE
+========================================================= */
+
+map.on(
+    L.Draw.Event.DELETED,
+    function() {
+
+        saveToStorage();
+
+        renderList();
+
+        updateStatus(
+            "マーカーを削除しました。"
+        );
+
+    }
+);
+
+
+/* =========================================================
+KEYBOARD
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            pendingLayer = null;
+
+            pendingType = null;
+
+            document.getElementById(
+                "editCard"
+            ).style.display =
+                "none";
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+INITIAL LOAD
+========================================================= */
+
+loadFromStorage();
+
+
+renderList();
+
+
+updateStatus(
+    "準備完了。まず地図上にマーカーを描いてください。"
+);
 
 </script>
-
-</body>
-</html>

@@ -3,207 +3,4022 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>散歩系雑談マスター</title>
+
 <style>
+
+/* =====================================================
+   基本
+===================================================== */
+
 *{
     box-sizing:border-box;
 }
+
+:root{
+    --blue:#69bfdc;
+    --blue-dark:#429ab9;
+    --blue-light:#eaf7fb;
+    --blue-pale:#f5fbfd;
+
+    --text:#263238;
+    --sub:#78909c;
+
+    --bg:#f3f8fa;
+    --white:#ffffff;
+
+    --border:#dce9ed;
+
+    --green:#75c6a0;
+    --yellow:#f3c969;
+    --pink:#e7a5b8;
+    --purple:#aa9cdb;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
 body{
+
     margin:0;
+
+    background:var(--bg);
+
+    color:var(--text);
+
     font-family:
         -apple-system,
         BlinkMacSystemFont,
         "Noto Sans JP",
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
         sans-serif;
-    background:#f4f8fb;
-    color:#263238;
+
+    -webkit-tap-highlight-color:transparent;
 }
-/* =========================
-   HEADER
-========================= */
-header{
-    background:linear-gradient(135deg,#82c9e8,#b9e4f5);
-    color:white;
-    padding:18px 20px;
-    position:sticky;
-    top:0;
-    z-index:20;
-    box-shadow:0 3px 12px rgba(0,0,0,.12);
-}
-.header-inner{
-    max-width:1100px;
-    margin:auto;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:15px;
-}
-.logo{
-    font-size:21px;
-    font-weight:800;
-}
-.subtitle{
-    font-size:12px;
-    opacity:.9;
-    margin-top:3px;
-}
-.header-buttons{
-    display:flex;
-    gap:7px;
-    flex-wrap:wrap;
-}
-.header-btn{
-    background:white;
-    color:#4295b8;
-    border-radius:20px;
-    padding:8px 13px;
-    font-weight:bold;
-}
-/* =========================
-   CONTAINER
-========================= */
-.container{
-    max-width:1100px;
-    margin:0 auto;
-    padding:20px;
-}
-/* =========================
-   DASHBOARD
-========================= */
-.dashboard{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:12px;
-    margin-bottom:20px;
-}
-.stat{
-    background:white;
-    border-radius:15px;
-    padding:15px;
-    box-shadow:0 2px 10px rgba(0,0,0,.06);
-}
-.stat-label{
-    font-size:12px;
-    color:#78909c;
-}
-.stat-number{
-    font-size:27px;
-    font-weight:800;
-    color:#42a5c8;
-    margin-top:4px;
-}
-/* =========================
-   ADD AREA
-========================= */
-.add-area{
-    background:white;
-    border-radius:18px;
-    padding:20px;
-    margin-bottom:15px;
-    box-shadow:0 2px 10px rgba(0,0,0,.06);
-}
-.add-area h2{
-    margin:0 0 12px;
-    font-size:17px;
-}
-.input-row{
-    display:flex;
-    gap:9px;
-}
-input,textarea,select{
-    width:100%;
-    border:1px solid #d8e5ea;
-    border-radius:10px;
-    padding:11px 12px;
-    font-size:14px;
-    outline:none;
+
+button,
+input,
+textarea,
+select{
     font-family:inherit;
 }
+
+button{
+    cursor:pointer;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+header{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:100;
+
+    background:
+        linear-gradient(
+            135deg,
+            #70c5e2,
+            #b9e5f2
+        );
+
+    color:white;
+
+    box-shadow:
+        0 3px 15px
+        rgba(0,0,0,.12);
+}
+
+.header-inner{
+
+    max-width:1150px;
+
+    margin:auto;
+
+    padding:
+        15px 18px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:12px;
+}
+
+.logo{
+
+    font-size:21px;
+
+    font-weight:900;
+
+    letter-spacing:.2px;
+}
+
+.subtitle{
+
+    font-size:11px;
+
+    opacity:.92;
+
+    margin-top:3px;
+}
+
+.header-actions{
+
+    display:flex;
+
+    gap:6px;
+
+    flex-wrap:wrap;
+}
+
+.header-btn{
+
+    border:0;
+
+    background:white;
+
+    color:var(--blue-dark);
+
+    border-radius:20px;
+
+    padding:
+        8px 12px;
+
+    font-size:12px;
+
+    font-weight:800;
+}
+
+.header-btn:active{
+    transform:scale(.96);
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.container{
+
+    max-width:1150px;
+
+    margin:auto;
+
+    padding:18px;
+}
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+.dashboard{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(5,1fr);
+
+    gap:9px;
+
+    margin-bottom:14px;
+}
+
+.stat{
+
+    background:white;
+
+    border-radius:15px;
+
+    padding:13px;
+
+    box-shadow:
+        0 2px 9px
+        rgba(0,0,0,.05);
+}
+
+.stat-label{
+
+    font-size:10px;
+
+    color:var(--sub);
+}
+
+.stat-number{
+
+    font-size:25px;
+
+    font-weight:900;
+
+    color:var(--blue-dark);
+
+    margin-top:2px;
+}
+
+
+/* =====================================================
+   ADD CATEGORY
+===================================================== */
+
+.add-category{
+
+    background:white;
+
+    border-radius:17px;
+
+    padding:17px;
+
+    margin-bottom:11px;
+
+    box-shadow:
+        0 2px 9px
+        rgba(0,0,0,.05);
+}
+
+.section-title{
+
+    font-size:15px;
+
+    font-weight:900;
+
+    margin-bottom:10px;
+}
+
+.input-row{
+
+    display:flex;
+
+    gap:8px;
+}
+
+input,
+textarea,
+select{
+
+    width:100%;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:10px;
+
+    padding:10px 11px;
+
+    font-size:14px;
+
+    outline:none;
+
+    background:white;
+}
+
 input:focus,
 textarea:focus,
 select:focus{
-    border-color:#76c3df;
-    box-shadow:0 0 0 3px rgba(118,195,223,.15);
+
+    border-color:
+        var(--blue);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(105,191,220,.13);
 }
-.add-main{
-    background:#59b6d7;
-    color:white;
-    border-radius:10px;
-    padding:0 18px;
-    font-weight:bold;
-    white-space:nowrap;
-}
-/* =========================
-   TOOLBAR
-========================= */
-.toolbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    margin-bottom:14px;
-}
-.search{
+
+.category-input{
+
     flex:1;
 }
+
+.category-color{
+
+    width:120px;
+}
+
+.primary-btn{
+
+    border:0;
+
+    border-radius:10px;
+
+    background:
+        var(--blue);
+
+    color:white;
+
+    padding:
+        0 18px;
+
+    font-weight:800;
+
+    white-space:nowrap;
+}
+
+
+/* =====================================================
+   TOOLBAR
+===================================================== */
+
+.toolbar{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin-bottom:12px;
+}
+
+.search{
+
+    flex:1;
+}
+
 .search input{
     background:white;
 }
-.toolbar-buttons{
+
+.toolbar-actions{
+
     display:flex;
+
     gap:6px;
 }
+
 .tool-btn{
+
+    border:
+        1px solid
+        var(--border);
+
     background:white;
-    border:1px solid #dce8ec;
-    color:#55808e;
+
+    color:#557783;
+
     border-radius:9px;
-    padding:9px 12px;
-    font-size:12px;
-    font-weight:bold;
+
+    padding:
+        9px 11px;
+
+    font-size:11px;
+
+    font-weight:800;
+
+    white-space:nowrap;
 }
-/* =========================
-   TOPICS
-========================= */
-.topic-list{
+
+
+/* =====================================================
+   CATEGORY LIST
+===================================================== */
+
+.category-list{
+
     display:flex;
+
     flex-direction:column;
-    gap:12px;
+
+    gap:11px;
 }
-.topic-card{
+
+
+/* =====================================================
+   CATEGORY CARD
+===================================================== */
+
+.category-card{
+
     background:white;
+
     border-radius:17px;
-    box-shadow:0 3px 12px rgba(0,0,0,.07);
+
+    box-shadow:
+        0 3px 12px
+        rgba(0,0,0,.06);
+
     overflow:hidden;
 }
-.topic-header{
+
+
+/* =====================================================
+   CATEGORY HEADER
+===================================================== */
+
+.category-header{
+
     display:flex;
+
     align-items:center;
-    gap:9px;
-    padding:14px;
+
+    gap:8px;
+
+    padding:13px;
+
+    border-bottom:
+        1px solid
+        transparent;
 }
-.topic-main{
+
+.category-header.open{
+
+    border-bottom-color:
+        #edf3f5;
+}
+
+.category-toggle{
+
+    width:35px;
+
+    height:35px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:
+        var(--blue-light);
+
+    color:
+        var(--blue-dark);
+
+    font-size:16px;
+
+    flex-shrink:0;
+}
+
+.category-icon{
+
+    width:38px;
+
+    height:38px;
+
+    border-radius:11px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:20px;
+
+    flex-shrink:0;
+}
+
+.category-main{
+
     flex:1;
+
     min-width:0;
 }
-.topic-title{
-    font-weight:800;
+
+.category-name{
+
     font-size:16px;
+
+    font-weight:900;
+
     word-break:break-word;
 }
+
+.category-meta{
+
+    margin-top:3px;
+
+    color:var(--sub);
+
+    font-size:10px;
+}
+
+.category-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:5px;
+}
+
+
+/* =====================================================
+   CATEGORY PLUS
+===================================================== */
+
+.category-plus{
+
+    width:37px;
+
+    height:37px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:
+        var(--blue);
+
+    color:white;
+
+    font-size:22px;
+
+    line-height:37px;
+
+    font-weight:400;
+}
+
+
+/* =====================================================
+   DELETE
+===================================================== */
+
+.delete-btn{
+
+    width:31px;
+
+    height:31px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:#f1f4f5;
+
+    color:#90a4ae;
+
+    font-size:16px;
+}
+
+
+/* =====================================================
+   CATEGORY CONTENT
+===================================================== */
+
+.category-content{
+
+    padding:
+        0 13px 14px 13px;
+}
+
+
+/* =====================================================
+   TOPIC
+===================================================== */
+
+.topic{
+
+    border:
+        1px solid
+        #e2edf0;
+
+    border-radius:14px;
+
+    background:
+        var(--blue-pale);
+
+    margin-top:8px;
+
+    overflow:hidden;
+}
+
+.topic-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    padding:10px;
+}
+
+.topic-toggle{
+
+    width:30px;
+
+    height:30px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:#e8f5f8;
+
+    color:#5598ad;
+
+    font-size:14px;
+
+    flex-shrink:0;
+}
+
+.topic-main{
+
+    flex:1;
+
+    min-width:0;
+}
+
+.topic-title{
+
+    font-size:14px;
+
+    font-weight:900;
+
+    word-break:break-word;
+}
+
 .topic-note{
-    color:#78909c;
-    font-size:13px;
-    margin-top:5px;
+
+    font-size:11px;
+
+    color:var(--sub);
+
+    margin-top:3px;
+
     white-space:pre-wrap;
 }
-.category{
+
+.topic-meta{
+
+    margin-top:4px;
+
+    font-size:10px;
+
+    color:#8aa0a8;
+}
+
+.topic-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:5px;
+}
+
+
+/* =====================================================
+   TOPIC PLUS
+===================================================== */
+
+.topic-plus{
+
+    width:30px;
+
+    height:30px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:#91d1e4;
+
+    color:white;
+
+    font-size:18px;
+}
+
+
+/* =====================================================
+   CHILDREN
+===================================================== */
+
+.children{
+
+    position:relative;
+
+    padding:
+        0 10px
+        11px 37px;
+}
+
+.children-line{
+
+    position:absolute;
+
+    left:20px;
+
+    top:0;
+
+    bottom:17px;
+
+    width:2px;
+
+    background:#d9edf2;
+}
+
+
+/* =====================================================
+   CHILD
+===================================================== */
+
+.child{
+
+    position:relative;
+
+    background:white;
+
+    border:
+        1px solid
+        #e4eef1;
+
+    border-radius:12px;
+
+    margin-top:7px;
+
+    overflow:hidden;
+}
+
+.child::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:-17px;
+
+    top:20px;
+
+    width:17px;
+
+    height:2px;
+
+    background:#d9edf2;
+}
+
+.child-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    padding:9px;
+}
+
+.child-main{
+
+    flex:1;
+
+    min-width:0;
+}
+
+.child-title{
+
+    font-size:13px;
+
+    font-weight:800;
+
+    word-break:break-word;
+}
+
+.child-note{
+
+    color:var(--sub);
+
+    font-size:10px;
+
+    margin-top:3px;
+
+    white-space:pre-wrap;
+}
+
+.child-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:4px;
+}
+
+.child-toggle{
+
+    width:27px;
+
+    height:27px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:#f0f7f9;
+
+    color:#5794a7;
+
+    font-size:12px;
+}
+
+.child-plus{
+
+    width:28px;
+
+    height:28px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:#a5dbe9;
+
+    color:white;
+
+    font-size:17px;
+}
+
+
+/* =====================================================
+   COUNT BADGE
+===================================================== */
+
+.count-badge{
+
     display:inline-block;
-    background:#e7f6fb;
-    color:#3294b8;
+
+    margin-left:5px;
+
+    padding:
+        2px 6px;
+
     border-radius:20px;
-    padding:4px 9px;
+
+    background:#eef2f3;
+
+    color:#78909c;
+
+    font-size:9px;
+
+    vertical-align:middle;
+}
+
+
+/* =====================================================
+   EMPTY
+===================================================== */
+
+.empty{
+
+    background:white;
+
+    border-radius:17px;
+
+    text-align:center;
+
+    padding:55px 20px;
+
+    color:#90a4ae;
+}
+
+.empty-icon{
+    font-size:42px;
+}
+
+.empty-title{
+
+    margin-top:8px;
+
+    font-weight:900;
+}
+
+.empty-sub{
+
+    margin-top:4px;
+
     font-size:11px;
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal-bg{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:500;
+
+    background:
+        rgba(25,45,55,.48);
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:18px;
+}
+
+.modal-bg.show{
+    display:flex;
+}
+
+.modal{
+
+    width:100%;
+
+    max-width:520px;
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:20px;
+
+    box-shadow:
+        0 15px 50px
+        rgba(0,0,0,.25);
+
+    animation:
+        modalIn .15s ease;
+}
+
+@keyframes modalIn{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            translateY(10px)
+            scale(.98);
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+.modal-title{
+
+    font-size:18px;
+
+    font-weight:900;
+
+    margin-bottom:14px;
+}
+
+.form-group{
+    margin-bottom:11px;
+}
+
+.form-label{
+
+    display:block;
+
+    font-size:11px;
+
+    color:#607d8b;
+
     margin-bottom:5px;
 }
-/* =========================
+
+.parent-display{
+
+    background:#f3f8fa;
+
+    color:#607d8b;
+
+    padding:10px;
+
+    border-radius:9px;
+
+    font-size:12px;
+
+    word-break:break-word;
+}
+
+.modal-buttons{
+
+    display:flex;
+
+    gap:8px;
+
+    margin-top:15px;
+}
+
+.modal-btn{
+
+    flex:1;
+
+    border:0;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    font-weight:800;
+}
+
+.cancel-btn{
+
+    background:#edf2f4;
+
+    color:#607d8b;
+}
+
+.save-btn{
+
+    background:var(--blue);
+
+    color:white;
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+.toast{
+
+    position:fixed;
+
+    left:50%;
+
+    bottom:20px;
+
+    transform:
+        translateX(-50%)
+        translateY(20px);
+
+    background:
+        rgba(38,50,56,.92);
+
+    color:white;
+
+    padding:
+        10px 16px;
+
+    border-radius:20px;
+
+    font-size:12px;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:.2s;
+
+    z-index:1000;
+}
+
+.toast.show{
+
+    opacity:1;
+
+    transform:
+        translateX(-50%)
+        translateY(0);
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:700px){
+
+    .container{
+        padding:10px;
+    }
+
+    .header-inner{
+        align-items:flex-start;
+    }
+
+    .logo{
+        font-size:18px;
+    }
+
+    .dashboard{
+
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+    .dashboard
+    .stat:last-child{
+
+        grid-column:
+            span 2;
+    }
+
+    .input-row{
+
+        flex-direction:column;
+    }
+
+    .category-color{
+
+        width:100%;
+    }
+
+    .primary-btn{
+
+        padding:12px;
+    }
+
+    .toolbar{
+
+        flex-wrap:wrap;
+    }
+
+    .search{
+
+        flex-basis:100%;
+    }
+
+    .toolbar-actions{
+
+        width:100%;
+    }
+
+    .tool-btn{
+
+        flex:1;
+    }
+
+    .category-name{
+        font-size:15px;
+    }
+
+    .children{
+
+        padding-left:29px;
+    }
+
+    .children-line{
+
+        left:14px;
+    }
+
+    .child::before{
+
+        left:-15px;
+
+        width:15px;
+    }
+
+}
+
+
+/* =====================================================
+   SCROLLBAR
+===================================================== */
+
+::-webkit-scrollbar{
+    width:7px;
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#c7dde4;
+
+    border-radius:10px;
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+HEADER
+===================================================== -->
+
+<header>
+
+<div class="header-inner">
+
+<div>
+
+<div class="logo">
+🚶 散歩系雑談マスター
+</div>
+
+<div class="subtitle">
+話題 → 派生 → さらに派生。雑談を会話の地図にする
+</div>
+
+</div>
+
+
+<div class="header-actions">
+
+<button
+class="header-btn"
+onclick="exportData()"
+>
+💾 バックアップ
+</button>
+
+<button
+class="header-btn"
+onclick="clearAll()"
+>
+🗑 全削除
+</button>
+
+</div>
+
+</div>
+
+</header>
+
+
+<!-- =====================================================
+MAIN
+===================================================== -->
+
+<div class="container">
+
+
+<!-- =====================================================
+DASHBOARD
+===================================================== -->
+
+<div class="dashboard">
+
+<div class="stat">
+
+<div class="stat-label">
+カテゴリー
+</div>
+
+<div
+class="stat-number"
+id="categoryCount"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+メイン話題
+</div>
+
+<div
+class="stat-number"
+id="topicCount"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+派生話題
+</div>
+
+<div
+class="stat-number"
+id="branchCount"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+総ストック
+</div>
+
+<div
+class="stat-number"
+id="totalCount"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+しまった数
+</div>
+
+<div
+class="stat-number"
+id="collapsedCount"
+>
+0
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+CATEGORY ADD
+===================================================== -->
+
+<div class="add-category">
+
+<div class="section-title">
+📁 新しいカテゴリーを作る
+</div>
+
+
+<div class="input-row">
+
+<input
+id="categoryName"
+class="category-input"
+placeholder="例：天気・食べ物・仕事・休日"
+/>
+
+
+<select
+id="categoryColor"
+class="category-color"
+>
+
+<option value="blue">
+🔵 ブルー
+</option>
+
+<option value="green">
+🟢 グリーン
+</option>
+
+<option value="yellow">
+🟡 イエロー
+</option>
+
+<option value="pink">
+🩷 ピンク
+</option>
+
+<option value="purple">
+🟣 パープル
+</option>
+
+</select>
+
+
+<button
+class="primary-btn"
+onclick="addCategory()"
+>
+＋ 作成
+</button>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+TOOLBAR
+===================================================== -->
+
+<div class="toolbar">
+
+<div class="search">
+
+<input
+id="search"
+placeholder="🔎 話題・メモ・カテゴリーを検索..."
+oninput="render()"
+/>
+
+</div>
+
+
+<div class="toolbar-actions">
+
+<button
+class="tool-btn"
+onclick="foldEverything()"
+>
+▶ 全部しまう
+</button>
+
+<button
+class="tool-btn"
+onclick="unfoldEverything()"
+>
+▼ 全部開く
+</button>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+CATEGORY LIST
+===================================================== -->
+
+<div
+id="categoryList"
+class="category-list"
+>
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+MODAL
+===================================================== -->
+
+<div
+id="modalBg"
+class="modal-bg"
+>
+
+<div class="modal">
+
+<div class="modal-title">
+🌱 話題を追加
+</div>
+
+
+<div class="form-group">
+
+<label class="form-label">
+追加先
+</label>
+
+<div
+id="parentDisplay"
+class="parent-display"
+>
+</div>
+
+</div>
+
+
+<div class="form-group">
+
+<label class="form-label">
+話題
+</label>
+
+<input
+id="branchTitle"
+placeholder="例：普段、散歩とかします？"
+/>
+
+</div>
+
+
+<div class="form-group">
+
+<label class="form-label">
+会話メモ
+</label>
+
+<textarea
+id="branchNote"
+placeholder="例：休日の過ごし方へ派生させる"
+></textarea>
+
+</div>
+
+
+<div class="modal-buttons">
+
+<button
+class="modal-btn cancel-btn"
+onclick="closeModal()"
+>
+キャンセル
+</button>
+
+<button
+class="modal-btn save-btn"
+onclick="saveBranch()"
+>
+追加する
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+TOAST
+===================================================== -->
+
+<div
+id="toast"
+class="toast"
+>
+保存しました
+</div>
+
+
+<script>
+
+
+/* =====================================================
+   DATA
+===================================================== */
+
+const STORAGE_KEY =
+    "walkingTalkMasterV4";
+
+
+let data = [];
+
+
+let currentParentId = null;
+
+
+let currentParentType = null;
+
+
+/* =====================================================
+   COLORS
+===================================================== */
+
+const colors = {
+
+    blue:{
+        background:"#e8f6fa",
+        color:"#429ab9"
+    },
+
+    green:{
+        background:"#eaf8f0",
+        color:"#54a77d"
+    },
+
+    yellow:{
+        background:"#fff8df",
+        color:"#bd9a31"
+    },
+
+    pink:{
+        background:"#fff0f4",
+        color:"#c57b92"
+    },
+
+    purple:{
+        background:"#f2effb",
+        color:"#806fb6"
+    }
+
+};
+
+
+/* =====================================================
+   ID
+===================================================== */
+
+function createId(){
+
+    return (
+        Date.now().toString(36)
+        +
+        Math.random()
+            .toString(36)
+            .substring(2,9)
+    );
+
+}
+
+
+/* =====================================================
+   LOAD
+===================================================== */
+
+function loadData(){
+
+    try{
+
+        const saved =
+            localStorage.getItem(
+                STORAGE_KEY
+            );
+
+        if(saved){
+
+            data =
+                JSON.parse(saved);
+
+        }
+
+    }catch(error){
+
+        console.error(error);
+
+        data=[];
+
+    }
+
+}
+
+
+/* =====================================================
+   SAVE
+===================================================== */
+
+function saveData(
+    showToast=false
+){
+
+    try{
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(data)
+        );
+
+        if(showToast){
+
+            showToastMessage(
+                "💾 保存しました"
+            );
+
+        }
+
+    }catch(error){
+
+        alert(
+            "保存に失敗しました。"
+        );
+
+        console.error(error);
+
+    }
+
+    render();
+
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+let toastTimer=null;
+
+
+function showToastMessage(
+    message
+){
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            ()=>{
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            1600
+        );
+
+}
+
+
+/* =====================================================
+   ADD CATEGORY
+===================================================== */
+
+function addCategory(){
+
+    const input =
+        document.getElementById(
+            "categoryName"
+        );
+
+
+    const name =
+        input.value.trim();
+
+
+    const color =
+        document.getElementById(
+            "categoryColor"
+        ).value;
+
+
+    if(!name){
+
+        alert(
+            "カテゴリー名を入力してください。"
+        );
+
+        return;
+
+    }
+
+
+    const exists =
+        data.some(
+            category =>
+                category.name === name
+        );
+
+
+    if(exists){
+
+        alert(
+            "同じカテゴリーがすでにあります。"
+        );
+
+        return;
+
+    }
+
+
+    data.push({
+
+        id:createId(),
+
+        type:"category",
+
+        name:name,
+
+        color:color,
+
+        collapsed:false,
+
+        children:[]
+
+    });
+
+
+    input.value="";
+
+
+    saveData(true);
+
+}
+
+
+/* =====================================================
+   ADD FIRST TOPIC
+===================================================== */
+
+function addFirstTopic(
+    categoryId
+){
+
+    openModal(
+        categoryId,
+        "category"
+    );
+
+}
+
+
+/* =====================================================
+   FIND NODE
+===================================================== */
+
+function findNode(
+    targetId
+){
+
+    for(
+        const category of data
+    ){
+
+        if(
+            category.id === targetId
+        ){
+
+            return category;
+
+        }
+
+
+        const found =
+            findInChildren(
+                category.children,
+                targetId
+            );
+
+
+        if(found){
+
+            return found;
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+function findInChildren(
+    children,
+    targetId
+){
+
+    if(!children)
+        return null;
+
+
+    for(
+        const child of children
+    ){
+
+        if(
+            child.id === targetId
+        ){
+
+            return child;
+
+        }
+
+
+        const found =
+            findInChildren(
+                child.children,
+                targetId
+            );
+
+
+        if(found)
+            return found;
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =====================================================
+   OPEN MODAL
+===================================================== */
+
+function openModal(
+    parentId,
+    type
+){
+
+    currentParentId =
+        parentId;
+
+    currentParentType =
+        type;
+
+
+    const parent =
+        findNode(parentId);
+
+
+    if(!parent)
+        return;
+
+
+    document
+        .getElementById(
+            "parentDisplay"
+        )
+        .textContent =
+            type === "category"
+            ?
+            "📁 "
+            + parent.name
+            :
+            "💬 "
+            + parent.title;
+
+
+    document
+        .getElementById(
+            "branchTitle"
+        )
+        .value="";
+
+
+    document
+        .getElementById(
+            "branchNote"
+        )
+        .value="";
+
+
+    document
+        .getElementById(
+            "modalBg"
+        )
+        .classList
+        .add("show");
+
+
+    setTimeout(
+        ()=>{
+
+            document
+                .getElementById(
+                    "branchTitle"
+                )
+                .focus();
+
+        },
+        100
+    );
+
+}
+
+
+/* =====================================================
+   CLOSE MODAL
+===================================================== */
+
+function closeModal(){
+
+    document
+        .getElementById(
+            "modalBg"
+        )
+        .classList
+        .remove("show");
+
+
+    currentParentId=null;
+
+    currentParentType=null;
+
+}
+
+
+/* =====================================================
+   SAVE BRANCH
+===================================================== */
+
+function saveBranch(){
+
+    const title =
+        document
+            .getElementById(
+                "branchTitle"
+            )
+            .value
+            .trim();
+
+
+    const note =
+        document
+            .getElementById(
+                "branchNote"
+            )
+            .value
+            .trim();
+
+
+    if(!title){
+
+        alert(
+            "話題を入力してください。"
+        );
+
+        return;
+
+    }
+
+
+    const parent =
+        findNode(
+            currentParentId
+        );
+
+
+    if(!parent)
+        return;
+
+
+    if(!parent.children){
+
+        parent.children=[];
+
+    }
+
+
+    parent.children.push({
+
+        id:createId(),
+
+        type:"topic",
+
+        title:title,
+
+        note:note,
+
+        collapsed:false,
+
+        children:[]
+
+    });
+
+
+    /*
+      親を自動的に開く
+    */
+
+    parent.collapsed=false;
+
+
+    closeModal();
+
+
+    saveData(true);
+
+}
+
+
+/* =====================================================
+   TOGGLE
+===================================================== */
+
+function toggleNode(
+    id
+){
+
+    const node =
+        findNode(id);
+
+
+    if(!node)
+        return;
+
+
+    node.collapsed =
+        !node.collapsed;
+
+
+    saveData();
+
+}
+
+
+/* =====================================================
+   DELETE NODE
+===================================================== */
+
+function deleteNode(
+    id
+){
+
+    const node =
+        findNode(id);
+
+
+    if(!node)
+        return;
+
+
+    const total =
+        countAll(node);
+
+
+    let message =
+        "削除しますか？";
+
+
+    if(total > 1){
+
+        message +=
+            "\n\nこの中には "
+            +
+            (total - 1)
+            +
+            "件の派生話題があります。";
+
+    }
+
+
+    if(
+        !confirm(message)
+    ){
+
+        return;
+
+    }
+
+
+    removeNode(
+        data,
+        id
+    );
+
+
+    saveData(true);
+
+}
+
+
+/* =====================================================
+   REMOVE
+===================================================== */
+
+function removeNode(
+    array,
+    id
+){
+
+    for(
+        let i=0;
+        i<array.length;
+        i++
+    ){
+
+        if(
+            array[i].id === id
+        ){
+
+            array.splice(
+                i,
+                1
+            );
+
+            return true;
+
+        }
+
+
+        if(
+            array[i].children
+            &&
+            removeNode(
+                array[i].children,
+                id
+            )
+        ){
+
+            return true;
+
+        }
+
+    }
+
+
+    return false;
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+function containsNode(
+    node,
+    keyword
+){
+
+    const text =
+        (
+            node.name
+            ||
+            node.title
+            ||
+            ""
+        )
+        +
+        " "
+        +
+        (
+            node.note
+            ||
+            ""
+        );
+
+
+    if(
+        text
+            .toLowerCase()
+            .includes(
+                keyword
+            )
+    ){
+
+        return true;
+
+    }
+
+
+    if(node.children){
+
+        return node.children.some(
+            child =>
+                containsNode(
+                    child,
+                    keyword
+                )
+        );
+
+    }
+
+
+    return false;
+
+}
+
+
+/* =====================================================
+   ESCAPE
+===================================================== */
+
+function escapeHtml(
+    value
+){
+
+    return String(
+        value ?? ""
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =====================================================
+   COUNT
+===================================================== */
+
+function countAll(
+    node
+){
+
+    let count=1;
+
+
+    if(node.children){
+
+        node.children.forEach(
+            child => {
+
+                count +=
+                    countAll(
+                        child
+                    );
+
+            }
+        );
+
+    }
+
+
+    return count;
+
+}
+
+
+function countChildren(
+    children
+){
+
+    if(!children)
+        return 0;
+
+
+    let count=0;
+
+
+    children.forEach(
+        child => {
+
+            count++;
+
+            count +=
+                countChildren(
+                    child.children
+                );
+
+        }
+    );
+
+
+    return count;
+
+}
+
+
+/* =====================================================
+   COUNT TOPICS ONLY
+===================================================== */
+
+function countDirectTopics(
+    category
+){
+
+    return category.children
+        ?
+        category.children.length
+        :
+        0;
+
+}
+
+
+/* =====================================================
+   COLLAPSED COUNT
+===================================================== */
+
+function countCollapsed(
+    node
+){
+
+    let count =
+        node.collapsed
+        ? 1
+        : 0;
+
+
+    if(node.children){
+
+        node.children.forEach(
+            child => {
+
+                count +=
+                    countCollapsed(
+                        child
+                    );
+
+            }
+        );
+
+    }
+
+
+    return count;
+
+}
+
+
+/* =====================================================
+   FOLD EVERYTHING
+===================================================== */
+
+function foldEverything(){
+
+    data.forEach(
+        category => {
+
+            collapseRecursive(
+                category
+            );
+
+        }
+    );
+
+
+    saveData();
+
+}
+
+
+function collapseRecursive(
+    node
+){
+
+    node.collapsed=true;
+
+
+    if(node.children){
+
+        node.children.forEach(
+            child =>
+                collapseRecursive(
+                    child
+                )
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   UNFOLD EVERYTHING
+===================================================== */
+
+function unfoldEverything(){
+
+    data.forEach(
+        category => {
+
+            expandRecursive(
+                category
+            );
+
+        }
+    );
+
+
+    saveData();
+
+}
+
+
+function expandRecursive(
+    node
+){
+
+    node.collapsed=false;
+
+
+    if(node.children){
+
+        node.children.forEach(
+            child =>
+                expandRecursive(
+                    child
+                )
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   RENDER CHILDREN
+===================================================== */
+
+function renderChildren(
+    children,
+    keyword
+){
+
+    if(
+        !children
+        ||
+        children.length===0
+    ){
+
+        return "";
+
+    }
+
+
+    const visible =
+        children.filter(
+            child => {
+
+                if(!keyword)
+                    return true;
+
+                return containsNode(
+                    child,
+                    keyword
+                );
+
+            }
+        );
+
+
+    if(
+        visible.length===0
+    ){
+
+        return "";
+
+    }
+
+
+    let html = `
+
+        <div class="children">
+
+            <div
+                class="children-line"
+            ></div>
+
+    `;
+
+
+    visible.forEach(
+        child => {
+
+            const hasChildren =
+                child.children
+                &&
+                child.children.length>0;
+
+
+            const count =
+                countChildren(
+                    child.children
+                );
+
+
+            /*
+              検索中は
+              該当ルートを自動展開
+            */
+
+            const open =
+                keyword
+                ?
+                true
+                :
+                !child.collapsed;
+
+
+            html += `
+
+            <div class="child">
+
+                <div class="child-header">
+
+                    ${
+                        hasChildren
+
+                        ?
+
+                        `
+                        <button
+                            class="child-toggle"
+                            onclick="
+                                toggleNode(
+                                    '${child.id}'
+                                )
+                            "
+                        >
+                            ${
+                                open
+                                ? "▼"
+                                : "▶"
+                            }
+                        </button>
+                        `
+
+                        :
+
+                        `
+                        <div
+                            style="
+                                width:27px;
+                                height:27px;
+                            "
+                        ></div>
+                        `
+                    }
+
+
+                    <div class="child-main">
+
+                        <div class="child-title">
+
+                            ${escapeHtml(
+                                child.title
+                            )}
+
+                            ${
+                                count>0
+
+                                ?
+
+                                `
+                                <span
+                                    class="count-badge"
+                                >
+                                    ${count}件
+                                </span>
+                                `
+
+                                :
+
+                                ""
+                            }
+
+                        </div>
+
+
+                        ${
+                            child.note
+
+                            ?
+
+                            `
+                            <div
+                                class="child-note"
+                            >
+                                ${escapeHtml(
+                                    child.note
+                                )}
+                            </div>
+                            `
+
+                            :
+
+                            ""
+                        }
+
+                    </div>
+
+
+                    <div class="child-actions">
+
+                        <button
+                            class="child-plus"
+                            onclick="
+                                openModal(
+                                    '${child.id}',
+                                    'topic'
+                                )
+                            "
+                        >
+                            +
+                        </button>
+
+
+                        <button
+                            class="delete-btn"
+                            onclick="
+                                deleteNode(
+                                    '${child.id}'
+                                )
+                            "
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                ${
+                    hasChildren && open
+
+                    ?
+
+                    renderChildren(
+                        child.children,
+                        keyword
+                    )
+
+                    :
+
+                    ""
+                }
+
+            </div>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+        </div>
+    `;
+
+
+    return html;
+
+}
+
+
+/* =====================================================
+   RENDER CATEGORY
+===================================================== */
+
+function renderCategory(
+    category,
+    keyword
+){
+
+    const visibleChildren =
+        category.children
+        ?
+        category.children.filter(
+            child =>
+                !keyword
+                ||
+                containsNode(
+                    child,
+                    keyword
+                )
+        )
+        :
+        [];
+
+
+    const total =
+        countChildren(
+            category.children
+        );
+
+
+    const direct =
+        countDirectTopics(
+            category
+        );
+
+
+    /*
+      検索中はカテゴリーを開く
+    */
+
+    const open =
+        keyword
+        ?
+        true
+        :
+        !category.collapsed;
+
+
+    const color =
+        colors[
+            category.color
+        ]
+        ||
+        colors.blue;
+
+
+    return `
+
+        <div
+            class="category-card"
+        >
+
+
+            <div
+                class="
+                    category-header
+                    ${open ? "open" : ""}
+                "
+            >
+
+
+                <button
+                    class="category-toggle"
+                    onclick="
+                        toggleNode(
+                            '${category.id}'
+                        )
+                    "
+                >
+                    ${
+                        open
+                        ? "▼"
+                        : "▶"
+                    }
+                </button>
+
+
+                <div
+                    class="category-icon"
+                    style="
+                        background:
+                            ${color.background};
+                        color:
+                            ${color.color};
+                    "
+                >
+                    📁
+                </div>
+
+
+                <div
+                    class="category-main"
+                >
+
+                    <div
+                        class="category-name"
+                    >
+                        ${escapeHtml(
+                            category.name
+                        )}
+                    </div>
+
+
+                    <div
+                        class="category-meta"
+                    >
+
+                        ${direct}個の話題
+
+                        ${
+                            total > direct
+
+                            ?
+
+                            `
+                            ・派生 ${total-direct}件
+                            `
+
+                            :
+
+                            ""
+                        }
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="category-actions"
+                >
+
+                    <button
+                        class="category-plus"
+                        onclick="
+                            addFirstTopic(
+                                '${category.id}'
+                            )
+                        "
+                    >
+                        +
+                    </button>
+
+
+                    <button
+                        class="delete-btn"
+                        onclick="
+                            deleteNode(
+                                '${category.id}'
+                            )
+                        "
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            ${
+                open
+
+                ?
+
+                `
+                <div
+                    class="category-content"
+                >
+
+                    ${
+                        visibleChildren.length
+
+                        ?
+
+                        visibleChildren
+                            .map(
+                                child =>
+                                    renderTopic(
+                                        child,
+                                        keyword
+                                    )
+                            )
+                            .join("")
+
+                        :
+
+                        `
+                        <div
+                            style="
+                                padding:
+                                    12px 5px
+                                    4px;
+                                text-align:center;
+                                color:#9aabb1;
+                                font-size:11px;
+                            "
+                        >
+                            まだ話題がありません。
+                            <br>
+                            上の「＋」から追加できます。
+                        </div>
+                        `
+                    }
+
+                </div>
+                `
+
+                :
+
+                ""
+            }
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   RENDER TOPIC
+===================================================== */
+
+function renderTopic(
+    topic,
+    keyword
+){
+
+    const hasChildren =
+        topic.children
+        &&
+        topic.children.length>0;
+
+
+    const count =
+        countChildren(
+            topic.children
+        );
+
+
+    const open =
+        keyword
+        ?
+        true
+        :
+        !topic.collapsed;
+
+
+    return `
+
+        <div class="topic">
+
+            <div class="topic-header">
+
+
+                ${
+                    hasChildren
+
+                    ?
+
+                    `
+                    <button
+                        class="topic-toggle"
+                        onclick="
+                            toggleNode(
+                                '${topic.id}'
+                            )
+                        "
+                    >
+                        ${
+                            open
+                            ? "▼"
+                            : "▶"
+                        }
+                    </button>
+                    `
+
+                    :
+
+                    `
+                    <div
+                        style="
+                            width:30px;
+                            height:30px;
+                        "
+                    ></div>
+                    `
+                }
+
+
+                <div class="topic-main">
+
+                    <div
+                        class="topic-title"
+                    >
+
+                        ${escapeHtml(
+                            topic.title
+                        )}
+
+                        ${
+                            count>0
+
+                            ?
+
+                            `
+                            <span
+                                class="count-badge"
+                            >
+                                ${count}件
+                            </span>
+                            `
+
+                            :
+
+                            ""
+                        }
+
+                    </div>
+
+
+                    ${
+                        topic.note
+
+                        ?
+
+                        `
+                        <div
+                            class="topic-note"
+                        >
+                            ${escapeHtml(
+                                topic.note
+                            )}
+                        </div>
+                        `
+
+                        :
+
+                        ""
+                    }
+
+                </div>
+
+
+                <div
+                    class="topic-actions"
+                >
+
+                    <button
+                        class="topic-plus"
+                        onclick="
+                            openModal(
+                                '${topic.id}',
+                                'topic'
+                            )
+                        "
+                    >
+                        +
+                    </button>
+
+
+                    <button
+                        class="delete-btn"
+                        onclick="
+                            deleteNode(
+                                '${topic.id}'
+                            )
+                        "
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            ${
+                hasChildren && open
+
+                ?
+
+                renderChildren(
+                    topic.children,
+                    keyword
+                )
+
+                :
+
+                ""
+            }
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   MAIN RENDER
+===================================================== */
+
+function render(){
+
+    const list =
+        document.getElementById(
+            "categoryList"
+        );
+
+
+    const keyword =
+        document
+            .getElementById(
+                "search"
+            )
+            .value
+            .trim()
+            .toLowerCase();
+
+
+    const visible =
+        data.filter(
+            category => {
+
+                if(!keyword)
+                    return true;
+
+
+                return (
+                    category.name
+                        .toLowerCase()
+                        .includes(keyword)
+                    ||
+                    containsNode(
+                        category,
+                        keyword
+                    )
+                );
+
+            }
+        );
+
+
+    if(
+        visible.length===0
+    ){
+
+        list.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    💬
+                </div>
+
+                <div class="empty-title">
+                    話題がありません
+                </div>
+
+                <div class="empty-sub">
+                    上からカテゴリーを作成してください
+                </div>
+
+            </div>
+
+        `;
+
+
+        updateStats();
+
+        return;
+
+    }
+
+
+    list.innerHTML =
+        visible
+            .map(
+                category =>
+                    renderCategory(
+                        category,
+                        keyword
+                    )
+            )
+            .join("");
+
+
+    updateStats();
+
+}
+
+
+/* =====================================================
+   UPDATE STATS
+===================================================== */
+
+function updateStats(){
+
+    let topics=0;
+
+    let branches=0;
+
+    let collapsed=0;
+
+
+    data.forEach(
+        category => {
+
+            topics +=
+                countDirectTopics(
+                    category
+                );
+
+
+            branches +=
+                Math.max(
+                    0,
+                    countChildren(
+                        category.children
+                    )
+                    -
+                    topics
+                );
+
+
+            collapsed +=
+                countCollapsed(
+                    category
+                );
+
+        }
+    );
+
+
+    /*
+      正確な派生数を計算
+    */
+
+    let totalTopicNodes=0;
+
+
+    data.forEach(
+        category => {
+
+            totalTopicNodes +=
+                countChildren(
+                    category.children
+                );
+
+        }
+    );
+
+
+    branches =
+        Math.max(
+            0,
+            totalTopicNodes
+            -
+            topics
+        );
+
+
+    document
+        .getElementById(
+            "categoryCount"
+        )
+        .textContent =
+            data.length;
+
+
+    document
+        .getElementById(
+            "topicCount"
+        )
+        .textContent =
+            topics;
+
+
+    document
+        .getElementById(
+            "branchCount"
+        )
+        .textContent =
+            branches;
+
+
+    document
+        .getElementById(
+            "totalCount"
+        )
+        .textContent =
+            topics
+            +
+            branches;
+
+
+    document
+        .getElementById(
+            "collapsedCount"
+        )
+        .textContent =
+            collapsed;
+
+}
+
+
+/* =====================================================
+   EXPORT
+===================================================== */
+
+function exportData(){
+
+    if(
+        data.length===0
+    ){
+
+        alert(
+            "バックアップするデータがありません。"
+        );
+
+        return;
+
+    }
+
+
+    const json =
+        JSON.stringify(
+            data,
+            null,
+            2
+        );
+
+
+    const blob =
+        new Blob(
+            [json],
+            {
+                type:
+                    "application/json"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const a =
+        document.createElement(
+            "a"
+        );
+
+
+    a.href=url;
+
+
+    a.download =
+        "散歩系雑談マスター_backup.json";
+
+
+    document
+        .body
+        .appendChild(a);
+
+
+    a.click();
+
+
+    a.remove();
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+
+    showToastMessage(
+        "💾 バックアップを作成しました"
+    );
+
+}
+
+
+/* =====================================================
+   CLEAR ALL
+===================================================== */
+
+function clearAll(){
+
+    if(
+        data.length===0
+    )
+        return;
+
+
+    if(
+        !confirm(
+            "すべてのカテゴリー・話題を削除しますか？\n\nこの操作は元に戻せません。"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    data=[];
+
+
+    saveData(true);
+
+}
+
+
+/* =====================================================
+   MODAL BACKGROUND
+===================================================== */
+
+document
+    .getElementById(
+        "modalBg"
+    )
+    .addEventListener(
+        "click",
+        function(e){
+
+            if(
+                e.target === this
+            ){
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+
+/* =====================================================
+   KEYBOARD
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(e){
+
+        if(
+            e.key === "Escape"
+        ){
+
+            closeModal();
+
+        }
+
+
+        if(
+            e.key === "Enter"
+            &&
+            !e.shiftKey
+            &&
+            document
+                .getElementById(
+                    "modalBg"
+                )
+                .classList
+                .contains("show")
+        ){
+
+            e.preventDefault();
+
+            saveBranch();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   DEFAULT DATA
+===================================================== */
+
+function createDefaultData(){
+
+    return [
+
+        {
+            id:createId(),
+
+            type:"category",
+
+            name:"🌤 天気",
+
+            color:"blue",
+
+            collapsed:false,
+
+            children:[
+
+                {
+
+                    id:createId(),
+
+                    type:"topic",
+
+                    title:
+                        "今日は天気いいですね",
+
+                    note:
+                        "天気から散歩・休日へ",
+
+                    collapsed:false,
+
+                    children:[
+
+                        {
+
+                            id:createId(),
+
+                            type:"topic",
+
+                            title:
+                                "こういう日に歩くの気持ちいいですよね",
+
+                            note:
+                                "",
+
+                            collapsed:false,
+
+                            children:[
+
+                                {
+
+                                    id:createId(),
+
+                                    type:"topic",
+
+                                    title:
+                                        "普段、散歩とかします？",
+
+                                    note:
+                                        "趣味・休日へ",
+
+                                    collapsed:false,
+
+                                    children:[
+
+                                        {
+
+                                            id:createId(),
+
+                                            type:"topic",
+
+                                            title:
+                                                "休みの日って何してることが多いですか？",
+
+                                            note:
+                                                "休日の過ごし方へ",
+
+                                            collapsed:false,
+
+                                            children:[
+
+                                                {
+
+                                                    id:createId(),
+
+                                                    type:"topic",
+
+                                                    title:
+                                                        "趣味とかあります？",
+
+                                                    note:
+                                                        "趣味へ派生",
+
+                                                    collapsed:false,
+
+                                                    children:[]
+
+                                                }
+
+                                            ]
+
+                                        }
+
+                                    ]
+
+                                }
+
+                            ]
+
+                        },
+
+
+                        {
+
+                            id:createId(),
+
+                            type:"topic",
+
+                            title:
+                                "最近ちょっと暑くなってきましたね",
+
+                            note:
+                                "季節・夏へ",
+
+                            collapsed:true,
+
+                            children:[
+
+                                {
+
+                                    id:createId(),
+
+                                    type:"topic",
+
+                                    title:
+                                        "夏って好きですか？",
+
+                                    note:
+                                        "",
+
+                                    collapsed:false,
+
+                                    children:[]
+
+                                },
+
+                                {
+
+                                    id:createId(),
+
+                                    type:"topic",
+
+                                    title:
+                                        "暑い日は何して過ごします？",
+
+                                    note:
+                                        "休日・室内の趣味へ",
+
+                                    collapsed:false,
+
+                                    children:[]
+
+                                }
+
+                            ]
+
+                        }
+
+                    ]
+
+                }
+
+            ]
+
+        },
+
+
+        {
+
+            id:createId(),
+
+            type:"category",
+
+            name:"🍜 食べ物",
+
+            color:"yellow",
+
+            collapsed:true,
+
+            children:[
+
+                {
+
+                    id:createId(),
+
+                    type:"topic",
+
+                    title:
+                        "この辺、飲食店多いですね",
+
+                    note:
+                        "好きな食べ物へ",
+
+                    collapsed:false,
+
+                    children:[
+
+                        {
+
+                            id:createId(),
+
+                            type:"topic",
+
+                            title:
+                                "この辺でよく行く店あります？",
+
+                            note:
+                                "おすすめの店へ",
+
+                            collapsed:false,
+
+                            children:[
+
+                                {
+
+                                    id:createId(),
+
+                                    type:"topic",
+
+                                    title:
+                                        "何系の料理が好きなんですか？",
+
+                                    note:
+                                        "食の好みへ",
+
+                                    collapsed:false,
+
+                                    children:[]
+
+                                }
+
+                            ]
+
+                        }
+
+                    ]
+
+                }
+
+            ]
+
+        },
+
+
+        {
+
+            id:createId(),
+
+            type:"category",
+
+            name:"🌿 休日",
+
+            color:"green",
+
+            collapsed:true,
+
+            children:[
+
+                {
+
+                    id:createId(),
+
+                    type:"topic",
+
+                    title:
+                        "休みの日って何してます？",
+
+                    note:
+                        "趣味・旅行・買い物へ派生",
+
+                    collapsed:false,
+
+                    children:[
+
+                        {
+
+                            id:createId(),
+
+                            type:"topic",
+
+                            title:
+                                "最近どこか行きました？",
+
+                            note:
+                                "旅行・お出かけへ",
+
+                            collapsed:false,
+
+                            children:[]
+
+                        },
+
+                        {
+
+                            id:createId(),
+
+                            type:"topic",
+
+                            title:
+                                "家でゆっくりするタイプですか？",
+
+                            note:
+                                "インドア・アウトドアへ",
+
+                            collapsed:false,
+
+                            children:[]
+
+                        }
+
+                    ]
+
+                }
+
+            ]
+
+        },
+
+
+        {
+
+            id:createId(),
+
+            type:"category",
+
+            name:"🏠 住んでいる場所",
+
+            color:"purple",
+
+            collapsed:true,
+
+            children:[
+
+                {
+
+                    id:createId(),
+
+                    type:"topic",
+
+                    title:
+                        "この辺、住みやすそうですよね",
+
+                    note:
+                        "住んでいる場所へ",
+
+                    collapsed:false,
+
+                    children:[
+
+                        {
+
+                            id:createId(),
+
+                            type:"topic",
+
+                            title:
+                                "この辺に住んでるんですか？",
+
+                            note:
+                                "居住地へ",
+
+                            collapsed:false,
+
+                            children:[]
+
+                        }
+
+                    ]
+
+                }
+
+            ]
+
+        }
+
+    ];
+
+}
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+loadData();
+
+
+if(
+    !Array.isArray(data)
+    ||
+    data.length===0
+){
+
+    data =
+        createDefaultData();
+
+    saveData();
+
+}else{
+
+    render();
+
+}
+
+
+/* =====================================================
+   MIGRATION
+===================================================== */
+
+function migrateData(){
+
+    /*
+      旧バージョンのデータにも
+      collapsed を追加
+    */
+
+    function migrateNode(node){
+
+        if(
+            typeof node.collapsed !== "boolean"
+        ){
+
+            node.collapsed=false;
+
+        }
+
+
+        if(node.children){
+
+            node.children.forEach(
+                child =>
+                    migrateNode(child)
+            );
+
+        }
+
+    }
+
+
+    data.forEach(
+        category =>
+            migrateNode(category)
+    );
+
+
+    saveData();
+
+}
+
+
+migrateData();
+
+</script>
+
+</body>
+</html>
